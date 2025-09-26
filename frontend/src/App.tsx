@@ -4,15 +4,21 @@ import { BrowserRouter as Routers, Routes, Route } from "react-router-dom";
 
 // Components
 import Navbar from "./components/Navbar";
+import Header from "./components/Header";
+import { useThemeStore } from "./store/useThemeStore";
 
 function App() {
+    const { theme } = useThemeStore()
     return (
-        <div className="h-screen max-h-screen bg-base-100">
+        <div className="h-screen max-h-screen flex flex-col md:flex-row bg-base-100 relative" data-theme={theme}>
             <Routers>
                 <Navbar />
-                <Routes>
-                    
-                </Routes>
+                <div className="h-full w-full flex flex-col">
+                    <Header />
+                    <Routes>
+                        {/* Routes Here */}
+                    </Routes>
+                </div>
             </Routers>
             
         </div>
