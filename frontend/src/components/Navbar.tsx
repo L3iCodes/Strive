@@ -16,7 +16,7 @@ const Navbar = () => {
 
     return (
         <div className={`absolute h-[60px] md:h-screen md:relative flex flex-col bg-base-200/90 border-r-1 border-r-base-content/10 text-base-content
-                        transition-all ease-in-out duration-300 ${navOpen ? 'w-[200px] h-screen' : "w-[60px]" }`}>
+                        transition-all ease-in-out duration-300 ${navOpen ? 'w-[200px] h-screen' : "w-[60px]" } z-100`}>
             <div className="w-full h-[60px] px-5 flex items-center border-b-1 border-base-content/10">
                 <h1 className={`font-bold ${!navOpen && 'hidden opacity-0'}`}>Strive</h1>
                 <div 

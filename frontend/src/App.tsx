@@ -12,12 +12,12 @@ import BoardPage from "./pages/BoardPage";
 function App() {
     const { theme } = useThemeStore()
     return (
-        <div className="h-screen max-h-screen flex flex-col md:flex-row bg-base-100 relative overflow-y-auto" data-theme={theme}>
+        <div className="h-screen max-h-screen flex flex-col md:flex-row bg-base-100 relative" data-theme={theme}>
             <Routers>
                 <Navbar />
                 <div className="h-full w-full flex flex-col"> {/* Right Side */}
                     <Header />
-                        <div className="w-full h-full p-2">
+                        <div className="w-full h-full p-2 overflow-hidden">
                             <Routes>
                                 <Route path="/" element={<BoardPage />} />
                             </Routes>
