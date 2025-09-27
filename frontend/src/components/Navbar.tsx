@@ -1,7 +1,8 @@
-import { ChevronLeft, Kanban, User, Settings, Menu } from "lucide-react"
+import { ChevronLeft, Kanban, User, Settings, Menu, Bell } from "lucide-react"
 import { useRef, useState } from "react"
 import { useLocation } from "react-router-dom";
 import { useThemeStore } from "../store/useThemeStore";
+import { useAuthStore } from "../store/useAuthStore";
 
 const navbarContent = [
     {id: "/", name: "Boards", icon: <Kanban size={18}/>},
@@ -11,6 +12,7 @@ const navbarContent = [
 
 const Navbar = () => {
     const [navOpen, setNavOpen] = useState<boolean>(false);
+    const { user } = useAuthStore();
     const location = useLocation();
     const pathName = location.pathname;
 
@@ -26,7 +28,19 @@ const Navbar = () => {
                         {navOpen ? <ChevronLeft size={20}/> : <><h1 className="hidden font-bold md:block">S</h1> <Menu className="md:hidden" size={20}/></>}
                 </div>
             </div>
-
+            <div className={`hidden w-full p-3 md:flex items-center gap-2 ${navOpen ? '!flex' : 'justify-center'}`}>
+                <img 
+                    src={'https://avatar.iran.liara.run/public'}
+                    className="w-6 h-6 object-cover border-1 border-primary rounded-2xl "
+                />
+                <h3
+                    className={`transition-all duration-300 overflow-hidden text-xs font-bold 
+                            ${navOpen ? "opacity-100 w-auto" : "opacity-0 hidden"}`}
+                >
+                    {user?.username}
+                </h3>
+                <Bell className={`ml-auto hover:fill-base-content cursor-pointer ${navOpen ? "opacity-100 w-auto" : "opacity-0 absolute"}`} size={18}/>
+            </div>
             <div className={`hidden h-fit w-full p-3 md:flex flex-col gap-2 ${navOpen && '!flex'}`}>
                 {navbarContent.map(item => (
                     <div key={item.id} className={`w-full p-2 flex items-center gap-3 rounded-xs text-xs font-medium cursor-pointer hover:bg-base-300/60 active:bg-base-300 ${pathName === item.id && ('bg-base-300 border-1 border-base-content/10')}`}>
@@ -44,7 +58,6 @@ const Navbar = () => {
             <div className={`hidden w-full h-[60px] md:flex items-center mt-auto border-t-1 border-base-content/10 ${!navOpen ? "justify-center" : "!flex"}`}>
                 {<ThemeControllerIcon navOpen={navOpen}/>}
             </div>
-
         </div>
     );
 };
