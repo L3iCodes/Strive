@@ -17,7 +17,7 @@ function App() {
                 <Navbar />
                 <div className="h-full w-full flex flex-col"> {/* Right Side */}
                     <Header />
-                        <div className="w-full h-full p-2 overflow-hidden">
+                        <div className="w-full h-full p-5 overflow-hidden">
                             <Routes>
                                 <Route path="/" element={<BoardPage />} />
                             </Routes>
