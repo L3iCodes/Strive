@@ -24,7 +24,7 @@ export const sampleUserData: {user: User; boards:Board[]} = {
           tasks: [
             {
               task_name: "Setup project",
-              done: false,
+              done: true,
               checklist: [
                 { sub_task: "Install Vite", done: true },
                 { sub_task: "Add Tailwind", done: false }

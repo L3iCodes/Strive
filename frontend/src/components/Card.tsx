@@ -1,5 +1,5 @@
 import { useAuthStore } from "../store/useAuthStore";
-import type { Board } from "../store/useBoardStore";
+import { useBoardStore, type Board } from "../store/useBoardStore";
 
 interface CardProps {
   board: Board;
@@ -7,6 +7,8 @@ interface CardProps {
 
 const Card = ({board}: CardProps) => {
     const { user } = useAuthStore()
+    const { getTaskCount } = useBoardStore();
+    const { done, total } = getTaskCount(board);
 
     return (
         <div className="w-full h-[200px] flex p-2 item flex-col border-[1.5px] border-base-content/10 rounded-xs cursor-pointer hover:bg-base-300/30 active:bg-base-300">
@@ -19,8 +21,8 @@ const Card = ({board}: CardProps) => {
             <textarea disabled={true} className="resize-none w-[90%] text-xs line-clamp-2" value={board.description} />
 
             <div className="mt-auto">
-                <p className="text-xs font-medium">Progress (1/3)</p>
-                <progress className="progress w-full" value="2" max="3"></progress>
+                <p className="text-xs font-medium">Progress ({done}/{total})</p>
+                <progress className="progress w-full" value={done} max={total}></progress>
             </div>
 
             <div className="w-full flex mt-2 items-center gap-2">

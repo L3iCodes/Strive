@@ -31,10 +31,11 @@ const BoardPage = () => {
     return (
         <div className="h-full flex flex-col gap-2">
             <ul className="flex gap-3 items-center text-xs shrink-0">
-                <li onClick={() => setTab('recent')}   className={`p-2 rounded-xs hover:bg-base-300 cursor-pointer ${tab === 'recent' &&  'bg-base-300'}`} >Recent</li>
-                <li onClick={() => setTab('personal')} className={`p-2 rounded-xs hover:bg-base-300 cursor-pointer ${tab === 'personal' &&  'bg-base-300'}`} >Personal</li>
-                <li onClick={() => setTab('shared')}   className={`p-2 rounded-xs hover:bg-base-300 cursor-pointer ${tab === 'shared' &&  'bg-base-300'}`} >Shared with me</li>
-                <li onClick={() => setIsCard(s => !s)} className="ml-2 p-2 bg-primary/50 rounded-xs text-primary-content cursor-pointer hover:bg-primary active:bg-primary/50">
+                <li onClick={() => setTab('recent')}   className={`p-2 rounded-xs hover:bg-base-300 cursor-pointer ${tab === 'recent' &&  'bg-base-300 font-medium'}`} >Recent</li>
+                <li onClick={() => setTab('personal')} className={`p-2 rounded-xs hover:bg-base-300 cursor-pointer ${tab === 'personal' &&  'bg-base-300 font-medium'}`} >Personal</li>
+                <li onClick={() => setTab('shared')}   className={`p-2 rounded-xs hover:bg-base-300 cursor-pointer ${tab === 'shared' &&  'bg-base-300 font-medium'}`} >Shared with me</li>
+                <p className="text-2xl text-base-content/10"> | </p>
+                <li onClick={() => setIsCard(s => !s)} className={`ml-auto xl:ml-2 p-2 bg-neutral/80 rounded-xs text-neutral-content cursor-pointer hover:bg-neutral active:bg-neutral/80`}>
                     {isCard ? (<Grid3x3 size={15}/>) : (<ListIcon size={15}/>)}
                 </li>
                 

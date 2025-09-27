@@ -49,6 +49,7 @@ interface BoardProps{
     boards: Board[];
     filteredBoards: Board[];
     setFilterBoard: (tab: 'recent' | 'personal' | 'shared') => void; 
+    getTaskCount: (board: Board) => {total: number, done: number};
 };
 
 
@@ -75,6 +76,20 @@ export const useBoardStore = create<BoardProps>((set, get) => ({
         }
 
         set({ filteredBoards: filtered });
+    },
+
+    getTaskCount: (board) => {
+        let total = 0;
+        let done = 0;
+
+        board.sections.forEach(section => {
+            section.tasks.forEach(task => {
+                total++;
+                if(task.done) done++
+            })
+        })
+
+        return {total, done}
     }
 }));
 
