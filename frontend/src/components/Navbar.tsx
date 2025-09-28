@@ -3,6 +3,7 @@ import { useRef, useState } from "react"
 import { useLocation } from "react-router-dom";
 import { useThemeStore } from "../store/useThemeStore";
 import { useAuthStore } from "../store/useAuthStore";
+import { useAuth } from "../hooks/useAuth";
 
 const navbarContent = [
     {id: "/", name: "Boards", icon: <Kanban size={18}/>},
@@ -12,6 +13,7 @@ const navbarContent = [
 
 const Navbar = () => {
     const [navOpen, setNavOpen] = useState<boolean>(false);
+    const { logoutMutation } = useAuth();
     const { user } = useAuthStore();
     const location = useLocation();
     const pathName = location.pathname;
@@ -54,6 +56,8 @@ const Navbar = () => {
                     </div>
                 ))}
             </div>
+
+            <button onClick={()=> logoutMutation.mutate()} className="btn btn-xs">Logout</button>
            
             <div className={`hidden w-full h-[60px] md:flex items-center mt-auto border-t-1 border-base-content/10 ${!navOpen ? "justify-center" : "!flex"}`}>
                 {<ThemeControllerIcon navOpen={navOpen}/>}
