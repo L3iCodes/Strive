@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { login, logout, verify } from "../apis/auth.api"
+import { useMutation } from "@tanstack/react-query"
+import { login, logout, signup, verify } from "../apis/auth.api"
 import { useAuthStore } from "../store/useAuthStore"
 
 export const useAuth = () => {
@@ -7,6 +7,17 @@ export const useAuth = () => {
 
     const loginMutation = useMutation({
         mutationFn: login,
+        onSuccess: (data) => {
+            setUser(data);
+            setIsAuthenticated(true);
+        },
+        onError: (error) => {
+            // Add notif
+        }
+    });
+
+    const signupMutation = useMutation({
+        mutationFn: signup,
         onSuccess: (data) => {
             setUser(data);
             setIsAuthenticated(true);
@@ -40,5 +51,5 @@ export const useAuth = () => {
         }
     });
 
-    return({loginMutation, verifyMutation, logoutMutation})
-}
+    return({loginMutation, verifyMutation, logoutMutation, signupMutation})
+};

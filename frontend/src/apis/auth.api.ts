@@ -1,6 +1,15 @@
 import { axiosInstance } from "../lib/axios";
 import type { User } from "../store/useAuthStore";
 
+export const signup = async (credentials:User) => {
+    try{
+        const res = await axiosInstance.post("/auth/signup", credentials);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};
+
 export const login = async (credentials:User) => {
     try{
         const res = await axiosInstance.post("/auth/login", credentials);

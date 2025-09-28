@@ -16,7 +16,7 @@ import { useEffect } from "react";
 
 function App() {
     const { theme } = useThemeStore()
-    const { isAuthenticated, user } = useAuthStore();
+    const { isAuthenticated } = useAuthStore();
     const { verifyMutation } = useAuth();
 
     useEffect(() => {

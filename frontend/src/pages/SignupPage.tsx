@@ -1,6 +1,7 @@
-import { EyeClosed, Eye, Lock, Mail } from "lucide-react"
+import { EyeClosed, Eye, Lock, Mail, User } from "lucide-react"
 import React, { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 interface Credentials {
     username: string;
@@ -11,10 +12,12 @@ interface Credentials {
 const SignupPage = () => {
     const [showPassword, setShowPassword] = useState<boolean>(true);
     const [credentials, setCredentials] = useState<Credentials>({username:"", email:"", password:""})
+    const { signupMutation } = useAuth();
     const navigate = useNavigate();
     
     const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        signupMutation.mutate(credentials);
     };
 
     return (
@@ -30,11 +33,12 @@ const SignupPage = () => {
                         <div className="w-full flex flex-col gap-2">
                             <label className="label text-[13px] font-medium">Username</label>
                             <div className="flex items-center border-1 border-base-content/10 text-base-content/50">
-                                <Mail className={'m-2'} size={18}/>
+                                <User className={'m-2'} size={18}/>
                                 <input 
-                                    type="Email" 
+                                    type="text" 
                                     placeholder="janedoe@email.com"
                                     value={credentials.username}
+                                    required={true}
                                     className="w-full px-2 py-2 rounded-xs"
                                     onChange={(e) => setCredentials({...credentials, username: e.currentTarget.value})} 
                                 />
@@ -49,6 +53,7 @@ const SignupPage = () => {
                                     type="Email" 
                                     placeholder="janedoe@email.com"
                                     value={credentials.email}
+                                    required={true}
                                     className="w-full px-2 py-2 rounded-xs"
                                     onChange={(e) => setCredentials({...credentials, email: e.currentTarget.value})} 
                                 />
@@ -62,7 +67,8 @@ const SignupPage = () => {
                                 <input 
                                     type={showPassword ? 'text' : 'password'} 
                                     placeholder="password"
-                                    value={credentials.email}
+                                    value={credentials.password}
+                                    required={true}
                                     className="w-full px-2 py-2 rounded-xs"
                                     onChange={(e) => setCredentials({...credentials, password: e.currentTarget.value})}  
                                 />
@@ -73,9 +79,22 @@ const SignupPage = () => {
                             </div>
                         </div>  
 
-                        <p className="text-error font-medium ml-auto opacity-0">Error</p>
+                        <p className={`text-error font-medium ml-auto ${!signupMutation?.isError && 'opacity-0'}`}>
+                            {signupMutation?.error instanceof Error
+                                ? signupMutation.error.message
+                                : "Something went wrong"
+                            }
+                        </p>
 
-                        <button type="submit" className="btn">Login</button>
+                        <button 
+                            type="submit" 
+                            className="btn"
+                        >
+                            {signupMutation?.isPending 
+                                ? (<span className="loading loading-dots loading-xs"></span>) 
+                                : 'Create Account'
+                            }
+                        </button>
 
                         <p className="mt-2 mx-auto md:ml-auto md:mx-0">
                             Already have an account? 
