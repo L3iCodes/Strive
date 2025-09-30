@@ -1,75 +1,96 @@
 import { create } from "zustand";
-import { sampleUserData } from "./sampleData";
 import { useAuthStore } from "./useAuthStore";
 
-interface Collaborators{
-    user: string;
-    email?: string;
-    role: 'viewer' | 'editor';
-    pending: boolean;
-};
+// interface Collaborators{
+//     user: string;
+//     email?: string;
+//     role: 'viewer' | 'editor';
+//     pending: boolean;
+// };
 
-interface CheckList{
-    sub_task: string;
-    done: boolean;
-}
+// interface CheckList{
+//     sub_task: string;
+//     done: boolean;
+// }
 
-interface Activities{
-    user: string;
-    email?: string;
-    message: string;
-    createdAt: Date | string;
-}
+// interface Activities{
+//     user: string;
+//     email?: string;
+//     message: string;
+//     createdAt: Date | string;
+// }
 
-interface Tasks{
-    task_name: string;
-    done:boolean;
-    checklist: CheckList[];
-    activities: Activities[];
-};
+// interface Tasks{
+//     task_name: string;
+//     done:boolean;
+//     checklist: CheckList[];
+//     activities: Activities[];
+// };
 
-interface Sections{
+// interface Sections{
+//     name: string;
+//     tasks: Tasks[];
+// };
+
+// export interface Board{
+//     _id: string;
+//     title: string;
+//     description: string;
+//     owner: string;
+//     collaborators: Collaborators[];
+//     sections: Sections[];
+//     lastOpened: Date | string;
+//     favorite?: boolean;
+//     pinned?: boolean;
+// }
+
+
+export interface BoardSummary {
+    _id: string; 
     name: string;
-    tasks: Tasks[];
-};
-
-export interface Board{
-    _id: string;
-    title: string;
-    description: string;
+    desc: string;
     owner: string;
-    collaborators: Collaborators[];
-    sections: Sections[];
-    lastOpened: Date | string;
-    favorite?: boolean;
-    pinned?: boolean;
+    collaborators: {
+        _id: string;
+        avatar: string;
+    }[];
+    totalTasks: number;
+    doneTasks: number;
+    lastOpened: string; 
 }
+
+
 
 interface BoardProps{
-    boards: Board[];
-    filteredBoards: Board[];
+    boards: BoardSummary[];
+    filteredBoards: BoardSummary[];
+    setBoards: (boards: BoardSummary[]) => void;
     setFilterBoard: (tab: 'recent' | 'personal' | 'shared') => void; 
-    getTaskCount: (board: Board) => {total: number, done: number};
 };
 
 
 export const useBoardStore = create<BoardProps>((set, get) => ({
-    boards: sampleUserData.boards,
-    filteredBoards: sampleUserData.boards,
+    boards: [],
+    filteredBoards: [],
+
+    setBoards: (boards) => {
+        set({boards})
+        set({filteredBoards: boards})
+    },
 
     setFilterBoard: (tab) => {
         const { user } = useAuthStore.getState(); // use getState() instead of hook
-        let filtered: Board[] = [];
+        let filtered: BoardSummary[] = [];
 
         switch(tab) {
             case 'recent':
                 filtered = [...get().boards].sort((a,b) => new Date(b.lastOpened).getTime() - new Date(a.lastOpened).getTime());
                 break;
             case 'personal':
-                filtered = get().boards.filter(board => board.owner === user._id);
+                filtered = get().boards.filter(board => board.owner === user?._id);
                 break;
             case 'shared':
-                filtered = get().boards.filter(board => board.owner !== user._id);
+                filtered = get().boards.filter(board => board.owner !== user?._id);
                 break;
             default:
                 filtered = get().boards;
@@ -77,20 +98,6 @@ export const useBoardStore = create<BoardProps>((set, get) => ({
 
         set({ filteredBoards: filtered });
     },
-
-    getTaskCount: (board) => {
-        let total = 0;
-        let done = 0;
-
-        board.sections.forEach(section => {
-            section.tasks.forEach(task => {
-                total++;
-                if(task.done) done++
-            })
-        })
-
-        return {total, done}
-    }
 }));
 
 
