@@ -58,7 +58,7 @@ const BoardPage = () => {
                         {isCard ? boardCards : boardLists}
                     </div>
                 )
-            )};
+            )}
             
         </div>
     );

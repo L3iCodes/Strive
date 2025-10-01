@@ -1,4 +1,5 @@
 import { axiosInstance } from "../lib/axios";
+import { type BoardProps } from "../store/useKanbanStore";
 
 export const getBoards = async () => {
     try{
@@ -9,9 +10,9 @@ export const getBoards = async () => {
     };
 };
 
-export const getKanbanBoard = async (boardId: String) => {
+export const getKanbanBoard = async (boardId: String): Promise<BoardProps> => {
     try{
-        const res = await axiosInstance.get(`/board/${boardId}`);
+        const res = await axiosInstance.get<{ board: BoardProps }>(`/board/${boardId}`);
         return res.data.board;
     }catch(error: any){
         throw new Error(error.response?.data?.message || 'An unexpected error occurred');

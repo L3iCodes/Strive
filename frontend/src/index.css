@@ -7,6 +7,6 @@
     font-family: 'Inter', sans-serif;
 }
 
-input {
+input, textarea {
     @apply focus:outline-none focus:ring-0
 }

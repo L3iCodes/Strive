@@ -1,12 +1,12 @@
 import { Ellipsis } from "lucide-react"
-import { type Collaborators } from "../store/useBoardStore";
+import { type Collaborators } from "../store/useKanbanStore";
 
 interface BoardHeaderProps{
     name: string;
     collaborators: Collaborators[];
 }
 
-const BoardHeader = ({name, collaborators}: BoardHeaderProps) => {
+export const BoardHeader = ({name, collaborators}: BoardHeaderProps) => {
     return (
         <div className="w-full flex items-center p-1 border-1 border-base-content/10 h-10">
             <div className="flex flex-col">
@@ -51,5 +51,3 @@ export const BoardHeaderLoading = () => {
         </div>
     );
 };
-
-export default BoardHeader

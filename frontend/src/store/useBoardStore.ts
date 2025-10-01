@@ -1,49 +1,6 @@
 import { create } from "zustand";
 import { useAuthStore, type User } from "./useAuthStore";
 
-export interface Collaborators{
-    user: User;
-    role: 'viewer' | 'editor';
-    status: 'pending' | 'accepted';
-};
-
-// interface CheckList{
-//     sub_task: string;
-//     done: boolean;
-// }
-
-// interface Activities{
-//     user: string;
-//     email?: string;
-//     message: string;
-//     createdAt: Date | string;
-// }
-
-// interface Tasks{
-//     task_name: string;
-//     done:boolean;
-//     checklist: CheckList[];
-//     activities: Activities[];
-// };
-
-// interface Sections{
-//     name: string;
-//     tasks: Tasks[];
-// };
-
-// export interface Board{
-//     _id: string;
-//     title: string;
-//     description: string;
-//     owner: string;
-//     collaborators: Collaborators[];
-//     sections: Sections[];
-//     lastOpened: Date | string;
-//     favorite?: boolean;
-//     pinned?: boolean;
-// }
-
-
 export interface BoardSummary {
     _id: string; 
     name: string;
@@ -58,15 +15,12 @@ export interface BoardSummary {
     lastOpened: string; 
 }
 
-
-
 interface BoardProps{
     boards: BoardSummary[];
     filteredBoards: BoardSummary[];
     setBoards: (boards: BoardSummary[]) => void;
     setFilterBoard: (tab: 'recent' | 'personal' | 'shared') => void; 
 };
-
 
 export const useBoardStore = create<BoardProps>((set, get) => ({
     boards: [],
@@ -98,6 +52,3 @@ export const useBoardStore = create<BoardProps>((set, get) => ({
         set({ filteredBoards: filtered });
     },
 }));
-
-
-

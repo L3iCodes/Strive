@@ -10,10 +10,13 @@ const TaskSchema = new Schema(
   {
     task_name: { type: String, required: true },
     description: { type: String },
+    board: { type: Schema.Types.ObjectId, ref: "Board" },
+    section: { type: Schema.Types.ObjectId, ref: "Section" },
     checklist: [ChecklistSchema],
     due_date: { type: Date },
-    priority: { type: String, enum: ["", "low", "medium", "high"], default: "" },
+    priority: { type: String, enum: ["low", "medium", "high"], default: "low" },
     assignees: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    done: {type: Boolean, default: false}
   },
   { timestamps: true }
 );

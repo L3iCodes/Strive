@@ -165,17 +165,17 @@ export const getKanbanBoard = async (req, res) => {
             })
 
             // Populate the sections (and tasks for each sections)
-            // .populate({
-            //     path: 'sections',
-            //     populate: {
-            //         path: 'tasks',
-            //         populate: {
-            //             path: 'assignees',
-            //             select: '_id username email avatar'
-            //         }      
-            //     }
-            // })
-            .populate('sections')
+            .populate({
+                path: 'sections',
+                options: { sort: { createdAt: 1 } },
+                populate: {
+                    path: 'tasks',
+                    populate: {
+                        path: 'assignees',
+                        select: '_id username email avatar'
+                    }      
+                }
+            })
 
             // Populate the activity log
             .populate({
