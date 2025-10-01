@@ -10,7 +10,6 @@ import Board from "../components/Board";
 // Store
 import { type BoardProps } from "../store/useKanbanStore";
 
-
 const KanbanBoard = () => {
     const param = useParams();
     

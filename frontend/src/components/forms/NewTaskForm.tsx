@@ -11,17 +11,17 @@ interface NewTaskFormProps  {
 const NewTaskForm = ({sectionId, onClose, position}: NewTaskFormProps) => {
     const params = useParams();
     const [task, setTask] = useState({name: "", desc: ""});
-    const { createTaskMutation } = useTask();
+    const { createTaskMutation } = useTask(params.id as string);
 
     const handleNewTask = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
   
-        createTaskMutation.mutate({boardId:params.id, sectionId, ...task, position});
-        
-        if (!createTaskMutation.isPending) {
-            console.log('Add task success')
-            onClose();
-        };
+        createTaskMutation.mutate(
+            {boardId:params.id, sectionId, ...task, position},
+            {onSuccess() {
+                onClose()
+            },}
+        );
     };
 
     return (

@@ -35,7 +35,7 @@ export interface Section{
     _id: string;
     name: string;
     board: string;
-    tasks?: Task[];
+    tasks: Task[];
 };
 
 export interface BoardProps{
