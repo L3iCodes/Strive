@@ -1,12 +1,11 @@
 import { create } from "zustand";
-import { useAuthStore } from "./useAuthStore";
+import { useAuthStore, type User } from "./useAuthStore";
 
-// interface Collaborators{
-//     user: string;
-//     email?: string;
-//     role: 'viewer' | 'editor';
-//     pending: boolean;
-// };
+export interface Collaborators{
+    user: User;
+    role: 'viewer' | 'editor';
+    status: 'pending' | 'accepted';
+};
 
 // interface CheckList{
 //     sub_task: string;

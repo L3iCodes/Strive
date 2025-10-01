@@ -13,6 +13,7 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import { useAuth } from "./hooks/useAuth";
 import { useEffect } from "react";
+import KanbanBoard from "./pages/KanbanBoard";
 
 function App() {
     const { theme } = useThemeStore()
@@ -40,6 +41,7 @@ function App() {
                                 <Route path="/" element={isAuthenticated ? <BoardPage /> : <Navigate to="/login" />} />
                                 <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
                                 <Route path="/signup" element={!isAuthenticated ? <SignupPage /> : <Navigate to="/" />} />
+                                <Route path="/board/:id" element={isAuthenticated ? <KanbanBoard /> : <Navigate to="/login" />} />
                             </Routes>
                         </div>
                     </div>

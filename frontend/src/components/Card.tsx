@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { useBoardStore, type BoardSummary } from "../store/useBoardStore";
 
@@ -7,9 +8,10 @@ interface CardProps {
 
 const Card = ({board}: CardProps) => {
     const { user } = useAuthStore()
+    const navigate = useNavigate();
 
     return (
-        <div className="w-full h-[200px] flex p-2 item flex-col border-[1.5px] border-base-content/10 rounded-xs cursor-pointer hover:bg-base-300/30 active:bg-base-300">
+        <div onClick={() => navigate(`/board/${board._id}`)} className="w-full h-[200px] flex p-2 item flex-col border-[1.5px] border-base-content/10 rounded-xs cursor-pointer hover:bg-base-300/30 active:bg-base-300">
             <div className="flex items-center">
                 <h1 className="font-medium">{board.name}</h1>
                 {user?._id !== board.owner && (
@@ -23,7 +25,7 @@ const Card = ({board}: CardProps) => {
                 <progress className="progress w-full" value={board.doneTasks} max={board.totalTasks}></progress>
             </div>
 
-            <div className="w-full flex mt-2 items-center gap-2">
+            <div className="w-full flex mt-2 items-center gap-2 h-5">
                 <p className="text-xs">Team</p>
                 <div className="w-full flex gap-1 relative justify-end">
                     {board.collaborators.map((collaborator) => (

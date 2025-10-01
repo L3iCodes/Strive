@@ -36,8 +36,8 @@ export const getBoardList = async (req, res) => {
                 }
             },
 
-                    // Project fields
-                    {
+            // Project fields
+            {
                 $project: {
                     _id: "$board._id",
                     name: "$board.name",
@@ -108,7 +108,6 @@ export const getBoardList = async (req, res) => {
 export const createBoard = async (req, res) => {
     const { _id } = req.user;
     const { name, desc, sections } = req.body;
-    
     try{
         const newBoard = await Board.create({
             name,
@@ -133,7 +132,7 @@ export const createBoard = async (req, res) => {
         // // Optionally, create section along with the board
         if (sections && sections.length > 0){
             await Promise.all(
-                sections.map(s => createSectionService(newBoard._id, _id, s))
+                sections.map(s => createSectionService(newBoard._id, s))
             );
         };
 
@@ -141,17 +140,55 @@ export const createBoard = async (req, res) => {
         await createActivityService(newBoard._id, _id, "Created board");
 
 
-        // Sample return data
-        const populatedBoard = await Board.findById(newBoard._id)
-            .populate("sections")
-            .populate("activities");
+        // // Sample return data
+        // const populatedBoard = await Board.findById(newBoard._id)
+        //     .populate("sections")
+        //     .populate("activities");
 
-        console.log(populatedBoard);
-
-
-        return res.status(201).json({populatedBoard});
+        return res.status(201).json({newBoard});
     }catch(error){
         console.log('Error in createBoard controller', error);
         return res.status(500).json({ message: "Internal Server Error"});
     };
+};
+
+export const getKanbanBoard = async (req, res) => {
+    const { id } = req.params;
+    
+    try{
+        const board = await Board.findById(id)
+            .populate('owner', '_id username avatar email')
+            .populate({
+                path: "collaborators.user",
+                model: "User", 
+                select: "username avatar email"
+            })
+
+            // Populate the sections (and tasks for each sections)
+            // .populate({
+            //     path: 'sections',
+            //     populate: {
+            //         path: 'tasks',
+            //         populate: {
+            //             path: 'assignees',
+            //             select: '_id username email avatar'
+            //         }      
+            //     }
+            // })
+            .populate('sections')
+
+            // Populate the activity log
+            .populate({
+                path: 'activities',
+                populate: {
+                    path: 'user',
+                    select: ('_id username email avatar')
+                }
+            });
+        
+        res.status(200).json({board});
+    }catch(error){
+        console.log('Error in getKanbanBoard controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    }
 };

@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const ChecklistSchema = new Schema({
     sub_task: { type: String, required: true },
-  done: { type: Boolean, default: false },
+    done: { type: Boolean, default: false },
 });
 
 const TaskSchema = new Schema(
@@ -12,7 +12,7 @@ const TaskSchema = new Schema(
     description: { type: String },
     checklist: [ChecklistSchema],
     due_date: { type: Date },
-    priority: { type: String, enum: ["low", "medium", "high"], default: "medium" },
+    priority: { type: String, enum: ["", "low", "medium", "high"], default: "" },
     assignees: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }

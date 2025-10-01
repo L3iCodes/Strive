@@ -51,11 +51,15 @@ const BoardPage = () => {
                     {isCard ? (<Grid3x3 size={15}/>) : (<ListIcon size={15}/>)}
                 </li>
             </ul>
-
-            {filteredBoards && filteredBoards?.length < 1 && (<h1 className="self-center my-auto text-base-content/50 text-3xl">No boards</h1>)}
-            <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 overflow-y-auto ${!isCard && '!grid-cols-1'}`}>
-                {isCard ? boardCards : boardLists}
-            </div>
+            {!isBoardLoading && (
+                filteredBoards && filteredBoards?.length < 1 
+                ? (<h1 className="self-center my-auto text-base-content/50 text-3xl">No boards</h1>)
+                : ( <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 overflow-y-auto ${!isCard && '!grid-cols-1'}`}>
+                        {isCard ? boardCards : boardLists}
+                    </div>
+                )
+            )};
+            
         </div>
     );
 };
