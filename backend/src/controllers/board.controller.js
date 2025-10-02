@@ -11,31 +11,36 @@ export const getBoardList = async (req, res) => {
         const result = await User.aggregate([
             // Find the user
             { $match: { _id } },
-
             // Unwind boards array
             { $unwind: "$boards" },
-
             // Lookup board details
             {
                 $lookup: {
-                from: "boards",
-                localField: "boards._id",
-                foreignField: "_id",
-                as: "board"
+                    from: "boards",
+                    localField: "boards._id",
+                    foreignField: "_id",
+                    as: "board"
                 }
             },
             { $unwind: "$board" },
-
+            // **ADD THIS: Lookup sections with tasks**
+            {
+                $lookup: {
+                    from: "sections",
+                    localField: "board.sections",
+                    foreignField: "_id",
+                    as: "sectionsData"
+                }
+            },
             // Lookup collaborator avatars
             {
                 $lookup: {
-                from: "users",
-                localField: "board.collaborators",
-                foreignField: "_id",
-                as: "collaborators"
+                    from: "users",
+                    localField: "board.collaborators",
+                    foreignField: "_id",
+                    as: "collaborators"
                 }
             },
-
             // Project fields
             {
                 $project: {
@@ -44,55 +49,53 @@ export const getBoardList = async (req, res) => {
                     desc: "$board.desc",
                     owner: "$board.owner",
                     collaborators: {
-                    $map: {
-                        input: "$collaborators",
-                        as: "c",
-                        in: { _id: "$$c._id", avatar: "$$c.avatar" }
-                    }
+                        $map: {
+                            input: "$collaborators",
+                            as: "c",
+                            in: { _id: "$$c._id", avatar: "$$c.avatar" }
+                        }
                     },
                     lastOpened: "$boards.lastOpened",
-
-                    // total tasks
+                    // total tasks - now using sectionsData
                     totalTasks: {
-                    $sum: {
-                        $map: {
-                        input: "$board.sections",
-                        as: "section",
-                        in: { $size: { $ifNull: ["$$section.tasks", []] } }
+                        $sum: {
+                            $map: {
+                                input: "$sectionsData",
+                                as: "section",
+                                in: { $size: { $ifNull: ["$$section.tasks", []] } }
+                            }
                         }
-                    }
                     },
-
                     // done subtasks
                     doneTasks: {
-                    $sum: {
-                        $map: {
-                        input: "$board.sections",
-                        as: "section",
-                        in: {
-                            $sum: {
+                        $sum: {
                             $map: {
-                                input: { $ifNull: ["$$section.tasks", []] },
-                                as: "task",
+                                input: "$sectionsData",
+                                as: "section",
                                 in: {
-                                $size: {
-                                    $ifNull: [
-                                    {
-                                        $filter: {
-                                        input: "$$task.checklist",
-                                        as: "item",
-                                        cond: { $eq: ["$$item.done", true] }
+                                    $sum: {
+                                        $map: {
+                                            input: { $ifNull: ["$$section.tasks", []] },
+                                            as: "task",
+                                            in: {
+                                                $size: {
+                                                    $ifNull: [
+                                                        {
+                                                            $filter: {
+                                                                input: "$$task.checklist",
+                                                                as: "item",
+                                                                cond: { $eq: ["$$item.done", true] }
+                                                            }
+                                                        },
+                                                        []
+                                                    ]
+                                                }
+                                            }
                                         }
-                                    },
-                                    []
-                                    ]
-                                }
+                                    }
                                 }
                             }
-                            }
                         }
-                        }
-                    }
                     }
                 }
             }

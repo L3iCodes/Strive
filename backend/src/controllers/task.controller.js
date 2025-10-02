@@ -37,3 +37,37 @@ export const createTask = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error"});
     };
 };
+
+export const deleteTask = async (req, res) => {
+    const { _id } = req.user;
+    const { boardId, taskId } = req.body;
+
+    try{
+        const task = await Task.findById(taskId);
+        if (!task) {
+            return res.status(404).json({ message: "Task not found" });
+        }
+
+        // Remove task reference from section
+        await Section.findByIdAndUpdate(
+            task.section,
+            { $pull: { tasks: taskId } }
+        );
+
+        // Delete task
+        await Task.findByIdAndDelete(taskId);
+
+        // Log into board activity
+        await createActivityService(
+            boardId, 
+            _id, 
+            `Deleted Task: [${task.task_name} from [${task.section}]`
+        );
+
+        
+        res.status(200).json(task)
+    }catch(error){
+        console.log('Error in deletTask controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};
