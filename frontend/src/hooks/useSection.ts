@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type BoardProps } from "../store/useKanbanStore";
-import { createSection } from "../apis/section.api";
+import { createSection, deleteSection } from "../apis/section.api";
 
 export const useSection = (boardId: string) => {
     const queryClient = useQueryClient();
@@ -26,5 +26,26 @@ export const useSection = (boardId: string) => {
         }
     });
 
-    return { createSectionMutation };
+    const deleteSectionMutation = useMutation({
+        mutationFn: deleteSection,
+        onSuccess: (data, _variables) => {
+            queryClient.setQueryData<BoardProps>(['kanban', boardId], (old) => {
+                if (!old) return old;
+
+                const updatedSection = old.sections.filter(section => section._id !== data._id);
+
+                return{
+                    ...old,
+                    sections: updatedSection
+                };
+            });
+        },
+        onError: (error) => {
+            console.log(error);
+            // Refetch if there's an error
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]});
+        }
+    })
+
+    return { createSectionMutation, deleteSectionMutation };
 };

@@ -18,9 +18,8 @@ const KanbanBoard = () => {
         queryFn: () => getKanbanBoard(param.id as string),
     });
 
-    // if(data){
-    //     console.log(data)
-    // }
+    console.log(data)
+    
     return (
         <div className="h-full flex flex-col gap-2">
             {isLoading

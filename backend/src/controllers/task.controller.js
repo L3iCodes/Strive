@@ -20,7 +20,7 @@ export const createTask = async (req, res) => {
         });
 
         // Log into board
-        await createActivityService(boardId, _id, `Created Task: [${name}]`)
+        await createActivityService(boardId, _id, `Created Task: [${task.name}]`)
 
         // Push into section
         await Section.findByIdAndUpdate(

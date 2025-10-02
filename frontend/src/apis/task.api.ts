@@ -11,7 +11,7 @@ export const createTask = async (newTask: any) => {
 };
 
 export const deleteTask = async (taskData: any) => {
-    console.log(taskData)
+    
     try{
         const res = await axiosInstance.post(`/task/delete`, taskData);
         return res.data;

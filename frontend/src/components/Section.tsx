@@ -3,12 +3,16 @@ import { type Section } from "../store/useKanbanStore"
 import { useState } from "react";
 import NewTaskForm from "./forms/NewTaskForm";
 import TaskComponent from "./Task";
+import { useSection } from "../hooks/useSection";
+import { useParams } from "react-router-dom";
 
 interface SectionComponentProps{
     section: Section;
 }
 
 const SectionComponent = ({section}: SectionComponentProps) => {
+    const param = useParams();
+    const { deleteSectionMutation } = useSection(param.id as string);
     const [showAddTaskTop, setShowAddTaskTop] = useState<boolean>(false);
     const [showAddTaskBot, setShowAddTaskBot] = useState<boolean>(false);
 
@@ -20,7 +24,7 @@ const SectionComponent = ({section}: SectionComponentProps) => {
                 <div className="ml-auto flex gap-1">
                     <Plus onClick={() => {setShowAddTaskTop(s => !s), setShowAddTaskBot(false);}} 
                         size={18} className="cursor-pointer"/>
-                    <Ellipsis size={18} className="cursor-pointer"/>
+                    <Ellipsis onClick={() => deleteSectionMutation.mutate(section._id)} size={18} className="cursor-pointer"/>
                 </div>
             </div>
 

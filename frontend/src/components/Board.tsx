@@ -20,7 +20,6 @@ const Board = ({board}: BoardComponentProps) => {
                 ? (<NewSectionForm onClose={() => setOpenNewSection(false)}/>)
                 : (<button onClick={() => setOpenNewSection(true)} className="btn w-[230px] btn-dash btn-primary"> New Section</button>)
             }
-        
         </div>
     );
 };

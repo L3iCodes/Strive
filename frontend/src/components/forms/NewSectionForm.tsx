@@ -15,10 +15,10 @@ const NewSectionForm = ({onClose}: NewSectionFormProps) => {
     const handleSectionCreation = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         
-        createSectionMutation.mutate({ boardId: param.id, sectionName });
-        if(createSectionMutation.isSuccess){
-            onClose();
-        };
+        createSectionMutation.mutate(
+            { boardId: param.id, sectionName },
+            { onSuccess: () => onClose()}
+        );
     };
 
     return (
