@@ -1,5 +1,5 @@
 import { Ellipsis, Plus } from "lucide-react";
-import { type Section } from "../store/useKanbanStore"
+import type { Section } from "../types";
 import { useState } from "react";
 import NewTaskForm from "./forms/NewTaskForm";
 import TaskComponent from "./Task";

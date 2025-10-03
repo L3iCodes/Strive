@@ -1,5 +1,5 @@
 import { axiosInstance } from "../lib/axios";
-import { type BoardProps } from "../store/useKanbanStore";
+import type { BoardProps } from "../types";
 
 export const getBoards = async () => {
     try{

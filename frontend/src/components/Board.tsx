@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { type BoardProps } from "../store/useKanbanStore"
+import type { BoardProps } from "../types";
+
 import SectionComponent from "./Section";
 import NewSectionForm from "./forms/NewSectionForm";
 

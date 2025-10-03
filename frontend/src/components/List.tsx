@@ -1,4 +1,4 @@
-import { useBoardStore, type BoardSummary } from "../store/useBoardStore";
+import type{ BoardSummary } from "../types";
 
 interface ListProps {
   board: BoardSummary;

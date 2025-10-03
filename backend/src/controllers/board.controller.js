@@ -5,6 +5,7 @@ import { createActivityService } from "../services/activity.service.js";
 import { createSectionService } from "../services/section.service.js";
 import Section from "../models/section.model.js";
 import Task from "../models/task.model.js";
+import Activity from "../models/activity.model.js";
 
 export const getBoardList = async (req, res) => {
     const { _id } = req.user;
@@ -223,6 +224,9 @@ export const deleteBoard = async (req, res) => {
                 })
             ) ;
         };
+
+        //Delete activities
+        await Activity.deleteMany({ board: board._id });
 
         // Delete the board
         await Board.findByIdAndDelete(board._id);

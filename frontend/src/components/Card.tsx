@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import { type BoardSummary } from "../store/useBoardStore";
+import type { BoardSummary } from "../types";
 import { useState } from "react";
 import { BoardMenu } from "./Menu";
 

@@ -1,7 +1,7 @@
 import { Trash } from "lucide-react";
 import { useTask } from "../hooks/useTask";
-import { type Task } from "../store/useKanbanStore"
 import { useParams } from "react-router-dom";
+import type { Task } from "../types";
 
 interface TaskProps{
     task: Task;

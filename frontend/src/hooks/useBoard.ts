@@ -2,7 +2,7 @@ import { useMutation, useQueryClient, useQuery} from "@tanstack/react-query";
 import { createBoard, deleteBoard, getBoards } from "../apis/board.api";
 import { useEffect } from "react";
 import { useBoardStore } from "../store/useBoardStore";
-import type { BoardSummary } from "../store/useBoardStore";
+import type { BoardSummary } from "../types";
 
 export const useBoard = (boardId: string) => {
     const queryClient = useQueryClient();
@@ -56,5 +56,5 @@ export const useBoard = (boardId: string) => {
         }
     });
 
-    return({createBoardMutation, isBoardLoading, deleteBoardMutation})
+    return({createBoardMutation, boardList:data, isBoardLoading, deleteBoardMutation})
 };

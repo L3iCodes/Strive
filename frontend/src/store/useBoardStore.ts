@@ -1,19 +1,6 @@
 import { create } from "zustand";
-import { useAuthStore, type User } from "./useAuthStore";
-
-export interface BoardSummary {
-    _id: string; 
-    name: string;
-    desc: string;
-    owner: string;
-    collaborators: {
-        _id: string;
-        avatar: string;
-    }[];
-    totalTasks: number;
-    doneTasks: number;
-    lastOpened: string; 
-}
+import { useAuthStore } from "./useAuthStore";
+import type { BoardSummary } from "../types";
 
 interface BoardProps{
     boards: BoardSummary[];

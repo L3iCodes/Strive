@@ -1,5 +1,5 @@
 import { Ellipsis } from "lucide-react"
-import { type Collaborators } from "../store/useKanbanStore";
+import type { Collaborators } from "../types";
 
 interface BoardHeaderProps{
     name: string;
