@@ -1,17 +1,27 @@
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import { useBoardStore, type BoardSummary } from "../store/useBoardStore";
+import { type BoardSummary } from "../store/useBoardStore";
+import { useState } from "react";
+import { BoardMenu } from "./Menu";
 
 interface CardProps {
   board: BoardSummary;
 }
 
 const Card = ({board}: CardProps) => {
-    const { user } = useAuthStore()
     const navigate = useNavigate();
+    const { user } = useAuthStore()
+    const [openMenu, setOpenMenu] = useState(false);
 
     return (
-        <div onClick={() => navigate(`/board/${board._id}`)} className="w-full h-[200px] flex p-2 item flex-col border-[1.5px] border-base-content/10 rounded-xs cursor-pointer hover:bg-base-300/30 active:bg-base-300">
+        <div 
+            onMouseEnter={() => setOpenMenu(true)}
+            onMouseLeave={() => setOpenMenu(false)}
+            onClick={() => navigate(`/board/${board._id}`)} 
+            className="relative w-full h-[200px] flex p-2 item flex-col border-[1.5px] border-base-content/10 rounded-xs cursor-pointer hover:bg-base-300/30 active:bg-base-300"
+        >
+            {openMenu && (<BoardMenu boardId={board._id} />)}
+            
             <div className="flex items-center">
                 <h1 className="font-medium">{board.name}</h1>
                 {user?._id !== board.owner && (

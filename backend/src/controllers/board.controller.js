@@ -3,6 +3,8 @@ import Board from "../models/board.model.js";
 import User from "../models/user.model.js";
 import { createActivityService } from "../services/activity.service.js";
 import { createSectionService } from "../services/section.service.js";
+import Section from "../models/section.model.js";
+import Task from "../models/task.model.js";
 
 export const getBoardList = async (req, res) => {
     const { _id } = req.user;
@@ -194,4 +196,40 @@ export const getKanbanBoard = async (req, res) => {
         console.log('Error in getKanbanBoard controller', error);
         return res.status(500).json({ message: "Internal Server Error"});
     }
+};
+
+export const deleteBoard = async (req, res) => {
+    const { boardId } = req.body;
+    console.log('Deleting Board: ', boardId);
+
+    try{
+        const board = await Board.findById(boardId);
+        if(!board){
+            return res.status(404).json({message: "Board does not exists"});
+        };
+
+        // Delete sections
+        await Section.deleteMany({ board: board._id });
+        // Delete tasks
+        await Task.deleteMany({ board: board._id });
+
+        // Delete board for owner
+        await User.findByIdAndUpdate(board.owner, { $pull: { boards: board._id }});
+        // Delete board for all collaborators
+        if(board.collaborators && board.collaborators.length > 0){
+            await Promise.all(
+                board.collaborators.map( async (collaborator) => {
+                    await User.findByIdAndUpdate(collaborator.user._id, {  $pull: { boards: board._id } });
+                })
+            ) ;
+        };
+
+        // Delete the board
+        await Board.findByIdAndDelete(board._id);
+
+        return res.status(200).json(board);
+    }catch(error){
+        console.log('Error in deleteBoard controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
 };

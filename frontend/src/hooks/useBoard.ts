@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient, useQuery} from "@tanstack/react-query";
-import { createBoard, getBoards } from "../apis/board.api";
+import { createBoard, deleteBoard, getBoards } from "../apis/board.api";
 import { useEffect } from "react";
 import { useBoardStore } from "../store/useBoardStore";
 import type { BoardSummary } from "../store/useBoardStore";
 
-export const useBoard = () => {
+export const useBoard = (boardId: string) => {
     const queryClient = useQueryClient();
-    const { setBoards } = useBoardStore();
+    const { setBoards, setFilterBoard } = useBoardStore();
 
     const { data, isLoading:isBoardLoading } = useQuery<BoardSummary[]>({
         queryKey: ["boards"],
@@ -29,5 +29,32 @@ export const useBoard = () => {
         }
     });
 
-    return({createBoardMutation, isBoardLoading})
+    const deleteBoardMutation = useMutation({
+        mutationFn: deleteBoard,
+        onMutate: (variables) => {
+            const previousBoards = queryClient.getQueryData<BoardSummary[]>(['boards']);
+
+            queryClient.setQueryData<BoardSummary[]>(['boards'], (old) => {
+                if(!old) return old;
+                const newBoards = old.filter(board => board._id != variables.boardId);
+                setBoards(newBoards);
+            });
+
+            return { previousBoards };
+        },  
+        onSuccess: (data) => {
+            
+        },
+        onError: (error, context) => {
+            console.log(error);
+            
+            if(context?.previousBoards){
+                queryClient.setQueryData(['boards'], context.previousBoards);
+                setBoards(context.previousBoards);
+            };
+        
+        }
+    });
+
+    return({createBoardMutation, isBoardLoading, deleteBoardMutation})
 };

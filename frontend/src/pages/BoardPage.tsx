@@ -9,14 +9,16 @@ import { Grid3x3, List as ListIcon, Plus } from "lucide-react"
 import Modal from "../components/Modal"
 import NewBoardForm from "../components/forms/NewBoardForm"
 import { useBoard } from "../hooks/useBoard"
+import { useParams } from "react-router-dom"
 
 // Types
 type TabState = 'recent' | 'personal' | 'shared'
 
 
 const BoardPage = () => {
+    const param = useParams();
     const { filteredBoards, setFilterBoard } = useBoardStore();
-    const { isBoardLoading } = useBoard();
+    const { isBoardLoading } = useBoard(param.id as string);
     const [tab, setTab] = useState<TabState>('recent');
     const [isCard, setIsCard] = useState<boolean>(true);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
