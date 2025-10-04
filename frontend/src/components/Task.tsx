@@ -1,29 +1,39 @@
-import { Trash } from "lucide-react";
-import { useTask } from "../hooks/useTask";
-import { useParams } from "react-router-dom";
+import { useBoardStore } from "../store/useTaskStore";
 import type { Task } from "../types";
+import { TaskMenu } from "./Menu";
+import { useState } from "react";
+
 
 interface TaskProps{
     task: Task;
 };
 
 const priorityMap: any = {
-  low: { classname: "bg-success text-success-content border-success-content/10" },
-  medium: { classname: "bg-warning text-warning-content border-warning-content/10" },
-  high: { classname: "bg-error text-error-content border-error-content/10" },
+  low: { classname: "bg-success/30 text-success" },
+  medium: { classname: "bg-warning/30 text-warning" },
+  high: { classname: "bg-error/30 text-warning" },
 };
 
 const TaskComponent = ({task}: TaskProps) => {
-    const param = useParams();
-    const { deleteTaskMutation } = useTask(param.id as string);
-
+    const { showPreview } = useBoardStore();
+    const [openTaskMenu, setOpenTaskMenu] = useState(false);
+    
+    
     return (
-        <div className="w-full h-[80px] shrink-0 flex flex-col gap-1 bg-base-100 rounded-xs border-1 border-base-content/10 p-1 text-xs relative">
-            <p className={`${priorityMap[task.priority]?.classname} px-1 w-10 text-center border-1 rounded-xs`}>
+        <div 
+            onMouseEnter={() => setOpenTaskMenu(true)}
+            onMouseLeave={() => setOpenTaskMenu(false)}
+            onMouseOver={() => () => setOpenTaskMenu(true)}
+            onClick={() => showPreview(task)}
+            className={`relative w-full h-[80px] shrink-0 flex flex-col gap-1 bg-base-100 rounded-xs border-1 border-base-content/10 p-1 text-xs cursor-pointer transition-all hover:scale-103 active:hover:scale-100 hover:border-2 hover:z-10`}
+            >
+            
+            {openTaskMenu && (<TaskMenu sectionId={task.section} taskId={task._id} />)}
+            
+            <p className={`${priorityMap[task.priority]?.classname} px-1 w-10 text-center rounded-tl-xs border-1 border-base-content/10 absolute top-0 left-0`}>
                 {task.priority}
             </p>
-            <h1 className="text-[14px] font-medium">{task.task_name}</h1>
-            <Trash onClick={() => deleteTaskMutation.mutate({sectionId:task.section, taskId:task._id})} />
+            <h1 className="text-[14px] mt-5 font-medium">{task.task_name}</h1>
         </div>
     );
 };
