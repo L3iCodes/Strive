@@ -5,6 +5,6 @@ import { createTask, deleteTask } from '../controllers/task.controller.js';
 const router = express.Router();
 
 router.post('/create',authenticateToken, createTask);
-router.post('/delete',authenticateToken, deleteTask);
+router.delete('/delete/:taskId',authenticateToken, deleteTask);
 
 export default router;

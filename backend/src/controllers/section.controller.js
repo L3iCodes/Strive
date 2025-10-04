@@ -22,7 +22,7 @@ export const createSection = async (req, res) => {
 
 export const deleteSection = async (req, res) => {
     const { _id } = req.user;
-    const { sectionId } = req.body;
+    const { sectionId } = req.params;
 
     try{
         const section = await Section.findByIdAndDelete(sectionId);

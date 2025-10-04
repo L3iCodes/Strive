@@ -1,23 +1,18 @@
 import { useMutation, useQueryClient, useQuery} from "@tanstack/react-query";
 import { createBoard, deleteBoard, getBoards } from "../apis/board.api";
-import { useEffect } from "react";
-import { useBoardStore } from "../store/useBoardStore";
+import { useState } from "react";
 import type { BoardSummary } from "../types";
+import { useAuthStore } from "../store/useAuthStore";
 
-export const useBoard = (boardId: string) => {
+export const useBoard = () => {
     const queryClient = useQueryClient();
-    const { setBoards, setFilterBoard } = useBoardStore();
+    const { user } = useAuthStore();
+    const [filteredBoards, setFilterBoard] = useState<BoardSummary[]>([]);
 
-    const { data, isLoading:isBoardLoading } = useQuery<BoardSummary[]>({
+    const { data:boardList, isLoading:isBoardLoading } = useQuery<BoardSummary[]>({
         queryKey: ["boards"],
         queryFn: getBoards,
     });
-
-    useEffect(() => {
-        if (data) {
-            setBoards(data);
-        }
-    }, [data, setBoards]);
 
     const createBoardMutation = useMutation({
         mutationFn: createBoard,
@@ -25,19 +20,25 @@ export const useBoard = (boardId: string) => {
             queryClient.invalidateQueries({queryKey: ["boards"]})
         },
         onError: (error) => {
-            console.log(error)
+            console.log(error);
         }
     });
 
     const deleteBoardMutation = useMutation({
-        mutationFn: deleteBoard,
-        onMutate: (variables) => {
-            const previousBoards = queryClient.getQueryData<BoardSummary[]>(['boards']);
+        mutationFn: (boardId: string) => deleteBoard(boardId),
+        onMutate: async (boardId) => {
+            console.log(boardId)
+            // Cancel queries
+            await queryClient.cancelQueries({ queryKey: ['boards'] });
 
+            // Store previous data
+            const previousBoards = queryClient.getQueryData<BoardSummary[]>(['boards']);
+            
+            // Cache new data
             queryClient.setQueryData<BoardSummary[]>(['boards'], (old) => {
                 if(!old) return old;
-                const newBoards = old.filter(board => board._id != variables.boardId);
-                setBoards(newBoards);
+                const newBoards = old.filter(board => board._id !== boardId);
+                return (newBoards)
             });
 
             return { previousBoards };
@@ -45,16 +46,35 @@ export const useBoard = (boardId: string) => {
         onSuccess: (data) => {
             
         },
-        onError: (error, context) => {
+        onError: (error, _boardId, context) => {
             console.log(error);
             
+            // Revert to previous board list
             if(context?.previousBoards){
                 queryClient.setQueryData(['boards'], context.previousBoards);
-                setBoards(context.previousBoards);
             };
-        
         }
     });
 
-    return({createBoardMutation, boardList:data, isBoardLoading, deleteBoardMutation})
+    const filter = (tab: any) => {
+            let filtered: BoardSummary[] = [];
+            if(!boardList) return;
+
+            switch(tab) {
+                case 'recent':
+                    filtered = [...boardList].sort((a,b) => new Date(b.lastOpened).getTime() - new Date(a.lastOpened).getTime());
+                    break;
+                case 'personal':
+                    filtered = boardList?.filter(board => board.owner === user?._id);
+                    break;
+                case 'shared':
+                    filtered = boardList?.filter(board => board.owner !== user?._id);
+                    break;
+                default:
+                    filtered = boardList;
+            }
+            setFilterBoard(filtered);
+        };
+
+    return({createBoardMutation, boardList, isBoardLoading, deleteBoardMutation, filter, filteredBoards});
 };

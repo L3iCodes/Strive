@@ -8,6 +8,6 @@ router.get('/boards',authenticateToken, getBoardList);
 router.get('/:id',authenticateToken, getKanbanBoard);
 
 router.post('/create',authenticateToken, createBoard);
-router.post('/delete',authenticateToken, deleteBoard);
+router.delete('/delete/:boardId',authenticateToken, deleteBoard);
 
 export default router;

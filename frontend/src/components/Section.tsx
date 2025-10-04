@@ -17,9 +17,9 @@ const SectionComponent = ({section}: SectionComponentProps) => {
     const [showAddTaskBot, setShowAddTaskBot] = useState<boolean>(false);
 
     return (
-        <div className="h-full w-[230px] p-2 flex shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto">
+        <div className="h-full w-[230px] p-2 pt-0 flex shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative">
             {/* Section Header */}
-            <div className="flex w-full items-center border-b-1 border-base-content/20">
+            <div className="p-[5px] flex w-full items-center bg-base-300 border-b-1 border-base-content/20 sticky top-0 z-10">
                 <h2 className="text-[14px] font-medium">{section.name}</h2>
                 <div className="ml-auto flex gap-1">
                     <Plus onClick={() => {setShowAddTaskTop(s => !s), setShowAddTaskBot(false);}} 
@@ -28,10 +28,11 @@ const SectionComponent = ({section}: SectionComponentProps) => {
                 </div>
             </div>
 
+            {/* Show new task form on top */}
             {showAddTaskTop && (<NewTaskForm onClose={() => setShowAddTaskTop(false)} sectionId={section._id as string} position="top"/>)}
 
             {section.tasks?.map(task => (
-                <TaskComponent task={task} />
+                <TaskComponent key={task._id} task={task} />
             ))}
 
             
@@ -40,7 +41,6 @@ const SectionComponent = ({section}: SectionComponentProps) => {
                 ? (<NewTaskForm onClose={() => {setShowAddTaskBot(false)}} sectionId={section._id as string} position="bot"/>)
                 : (<button onClick={() => {setShowAddTaskBot(true), setShowAddTaskTop(false)}}className="btn btn-dash btn-primary">Add Task</button>)
             }
-
         </div>
     )
 }

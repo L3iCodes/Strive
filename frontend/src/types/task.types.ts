@@ -1,5 +1,10 @@
 import type { User } from "../store/useAuthStore";
 
+export interface TaskDeletion{
+    sectionId: string;
+    taskId: string;
+};
+
 export interface CheckList{
     sub_task: string;
     done: boolean;

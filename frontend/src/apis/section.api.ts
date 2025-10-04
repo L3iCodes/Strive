@@ -11,7 +11,7 @@ export const createSection = async (sectionData: any) => {
 
 export const deleteSection = async (sectionId: string) => {
     try{
-        const res = await axiosInstance.post("/section/delete", {sectionId});
+        const res = await axiosInstance.delete(`/section/delete/${sectionId}`);
         return res.data;
     }catch(error: any){
         throw new Error(error.response?.data?.message || 'An unexpected error occurred');

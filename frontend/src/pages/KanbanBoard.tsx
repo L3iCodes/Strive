@@ -8,7 +8,7 @@ import { BoardHeader, BoardHeaderLoading } from "../components/BoardHeader";
 import Board from "../components/Board";
 
 // Store
-import { type BoardProps } from "../store/useKanbanStore";
+import type { BoardProps } from "../types";
 
 const KanbanBoard = () => {
     const param = useParams();
@@ -17,8 +17,6 @@ const KanbanBoard = () => {
         queryKey: ['kanban', param.id],   // include the id in the key
         queryFn: () => getKanbanBoard(param.id as string),
     });
-
-    console.log(data)
     
     return (
         <div className="h-full flex flex-col gap-2">

@@ -5,6 +5,6 @@ import { authenticateToken } from '../middleware/auth.middleware.js';
 const router = express.Router();
 
 router.post('/create', authenticateToken, createSection);
-router.post('/delete', authenticateToken, deleteSection);
+router.delete('/delete/:sectionId', authenticateToken, deleteSection);
 
 export default router;

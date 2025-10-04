@@ -10,10 +10,10 @@ export const createTask = async (newTask: any) => {
     };
 };
 
-export const deleteTask = async (taskData: any) => {
+export const deleteTask = async (taskId: string) => {
     
     try{
-        const res = await axiosInstance.post(`/task/delete`, taskData);
+        const res = await axiosInstance.delete(`/task/delete/${taskId}`);
         return res.data;
     }catch(error: any){
         throw new Error(error.response?.data?.message || 'An unexpected error occurred');

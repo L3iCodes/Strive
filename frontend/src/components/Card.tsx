@@ -17,6 +17,7 @@ const Card = ({board}: CardProps) => {
         <div 
             onMouseEnter={() => setOpenMenu(true)}
             onMouseLeave={() => setOpenMenu(false)}
+            onMouseOver={() => () => setOpenMenu(true)}
             onClick={() => navigate(`/board/${board._id}`)} 
             className="relative w-full h-[200px] flex p-2 item flex-col border-[1.5px] border-base-content/10 rounded-xs cursor-pointer hover:bg-base-300/30 active:bg-base-300"
         >

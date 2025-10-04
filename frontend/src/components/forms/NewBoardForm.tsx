@@ -1,5 +1,6 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useBoard } from "../../hooks/useBoard";
+import { useNavigate } from "react-router-dom";
 
 const templateChoice = {
     default: {name: "Kanban Page", desc:'Classic task management', sections: ['To-Do', 'In Progress', 'Review', 'Done']},
@@ -9,17 +10,25 @@ const templateChoice = {
 } as const;
 
 const NewBoardForm = () => {
+    const navigate = useNavigate();
+    const inputRef = useRef<HTMLInputElement>(null);
     const [template, setTemplate] = useState<keyof typeof templateChoice>('default')
     const [boardData, setBoardData] = useState({name: '', desc: '', sections: templateChoice[template].sections})
     const dropDownRef = useRef<HTMLDetailsElement>(null);
     const { createBoardMutation } = useBoard();
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
  
     const handleBoardCreation = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        createBoardMutation.mutate(boardData);
-        if(createBoardMutation.isSuccess){
-            // Redirect to the board
-        }
+        createBoardMutation.mutate(
+            boardData,
+            {onSuccess: (data) => {
+                navigate(`/board/${data._id}`);
+            }}
+        );
     };
 
     return (
@@ -32,6 +41,7 @@ const NewBoardForm = () => {
                 <label className="flex flex-col gap-1">
                     <span className="font-medium">Board Name</span>
                     <input 
+                        ref={inputRef}
                         type="text" 
                         placeholder="Enter board name" 
                         required={true}
@@ -55,9 +65,9 @@ const NewBoardForm = () => {
                             <p className="text-[10px] font-light text-base-content/50">{templateChoice[template].desc}</p>
                         </summary>
                         <ul className="menu dropdown-content bg-base-100 rounded-box z-1 p-2 shadow-sm w-full text-xs border-1 border-base-content/10">
-                            {Object.entries(templateChoice).map(([key, value]) => {
+                            {Object.entries(templateChoice).map(([key, value], index) => {
                                 if(key as keyof typeof templateChoice !== template) return (
-                                    <li className="font-medium border-b-1 border-base-content/10">
+                                    <li key={`${index}-${value}`} className="font-medium border-b-1 border-base-content/10">
                                         <a onClick={() => {
                                                 setTemplate(key as keyof typeof templateChoice);
                                                 setBoardData({...boardData, sections:value.sections})
@@ -77,8 +87,8 @@ const NewBoardForm = () => {
                         <div className="w-full flex flex-col p-2 gap-2 bg-base-200 border-1 border-base-content/5 rounded-xs">
                             <p>Columns that will be created:</p>
                             <div className="flex gap-1 flex-wrap">
-                                {templateChoice[template].sections.map(section => (
-                                    <p className="bg-base-100 p-1 px-2 rounded-md border-1 border-base-content/10">{section}</p>
+                                {templateChoice[template].sections.map((section, index) => (
+                                    <p key={`${index}-${section}`} className="bg-base-100 p-1 px-2 rounded-md border-1 border-base-content/10">{section}</p>
                                 ))}
                             </div>
                         </div>
@@ -88,7 +98,7 @@ const NewBoardForm = () => {
                 <button type='submit' className="btn w-full" disabled={createBoardMutation?.isPending}>
                     {createBoardMutation?.isPending 
                         ? (<span className="loading loading-dots loading-xs"></span>) 
-                        : 'Log In'
+                        : 'Create Board'
                     }
                 </button>
             </div>

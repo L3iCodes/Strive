@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTask, deleteTask } from "../apis/task.api";
-import { type BoardProps } from "../store/useKanbanStore";
+import type { BoardProps, TaskDeletion } from "../types";
 
 export const useTask = (boardId: string) => {
     const queryClient = useQueryClient();
@@ -35,31 +35,40 @@ export const useTask = (boardId: string) => {
     });
 
     const deleteTaskMutation = useMutation({
-        mutationFn: deleteTask,
-        onSuccess(data, _variables) {
-            // Update the cache directly removing the task
+        mutationFn: ({taskId}: TaskDeletion) => deleteTask(taskId),
+        onMutate: ({sectionId, taskId}) => {
+            const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
+
             queryClient.setQueryData<BoardProps>(['kanban', boardId], (old) => {
-                if (!old) return old;
-        
+                if(!old) return old;
+
                 const updateSection = old.sections.map((section) => 
-                    section._id === data.section
+                    section._id === sectionId
                         ?   {
                                 ...section,
-                                tasks: section.tasks.filter((task) => task._id != data._id)
+                                tasks: section.tasks.filter((task) => task._id != taskId)
                             }
                         : section
                     )
-
+                    
                 return {
                     ...old,
                     sections: updateSection
-                };
+                }
             });
+
+            return { previousBoard };
         },
-        onError: (error) => {
+        onSuccess(data) {
+            
+        },
+        onError: (error, _variables, context) => {
             console.log(error);
-            // Refetch if there's an error
-            queryClient.invalidateQueries({queryKey: ['kanban', boardId]});
+            
+            // Revert board data if there is an error
+            if(context?.previousBoard){
+                queryClient.setQueryData(['boards'], context.previousBoard);
+            };
         }
     })
 

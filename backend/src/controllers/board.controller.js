@@ -151,7 +151,7 @@ export const createBoard = async (req, res) => {
         //     .populate("sections")
         //     .populate("activities");
 
-        return res.status(201).json({newBoard});
+        return res.status(201).json(newBoard);
     }catch(error){
         console.log('Error in createBoard controller', error);
         return res.status(500).json({ message: "Internal Server Error"});
@@ -200,7 +200,7 @@ export const getKanbanBoard = async (req, res) => {
 };
 
 export const deleteBoard = async (req, res) => {
-    const { boardId } = req.body;
+    const { boardId } = req.params;
     console.log('Deleting Board: ', boardId);
 
     try{

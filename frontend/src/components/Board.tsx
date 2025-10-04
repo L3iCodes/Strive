@@ -10,7 +10,6 @@ interface BoardComponentProps {
 
 const Board = ({board}: BoardComponentProps) => {
     const [openNewSection, setOpenNewSection] = useState<boolean>(false);
-    console.log(board)
     return (
         <div className="w-full h-full flex gap-3 overflow-y-auto ">
             {board?.sections?.map(section => (

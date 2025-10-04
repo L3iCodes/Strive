@@ -40,7 +40,7 @@ export const createTask = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
     const { _id } = req.user;
-    const { boardId, taskId } = req.body;
+    const { taskId } = req.params;
 
     try{
         const task = await Task.findById(taskId);
@@ -51,15 +51,15 @@ export const deleteTask = async (req, res) => {
         // Remove task reference from section
         await Section.findByIdAndUpdate(
             task.section,
-            { $pull: { tasks: taskId } }
+            { $pull: { tasks: task._id } }
         );
 
         // Delete task
-        await Task.findByIdAndDelete(taskId);
+        await Task.findByIdAndDelete(task._id);
 
         // Log into board activity
         await createActivityService(
-            boardId, 
+            task.board, 
             _id, 
             `Deleted Task: [${task.task_name} from [${task.section}]`
         );

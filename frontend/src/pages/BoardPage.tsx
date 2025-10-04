@@ -17,16 +17,14 @@ type TabState = 'recent' | 'personal' | 'shared'
 
 const BoardPage = () => {
     const param = useParams();
-    const { filteredBoards, setFilterBoard } = useBoardStore();
-    const { isBoardLoading } = useBoard(param.id as string);
+    const { isBoardLoading, boardList, filter, filteredBoards } = useBoard();
     const [tab, setTab] = useState<TabState>('recent');
     const [isCard, setIsCard] = useState<boolean>(true);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-
     useEffect(() => {
-        setFilterBoard(tab)
-    }, [tab]);
+        if(boardList) filter(tab);
+    }, [tab, boardList]);
 
     const boardCards = useMemo(() => filteredBoards?.map(board => <Card key={board._id} board={board} />),
         [filteredBoards]

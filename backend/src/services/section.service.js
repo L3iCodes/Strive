@@ -3,7 +3,7 @@ import Board from "../models/board.model.js";
 
 export const createSectionService = async (boardId, sectionName) => {
     const newSection = await Section.create({
-        name: sectionName.trim() === "" ? 'New Task' : sectionName,
+        name: sectionName.trim() === "" ? 'New Section' : sectionName,
         board: boardId,
         tasks: []
     })

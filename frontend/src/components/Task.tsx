@@ -23,7 +23,7 @@ const TaskComponent = ({task}: TaskProps) => {
                 {task.priority}
             </p>
             <h1 className="text-[14px] font-medium">{task.task_name}</h1>
-            <Trash onClick={() => deleteTaskMutation.mutate({boardId:param.id, taskId:task._id})} />
+            <Trash onClick={() => deleteTaskMutation.mutate({sectionId:task.section, taskId:task._id})} />
         </div>
     );
 };

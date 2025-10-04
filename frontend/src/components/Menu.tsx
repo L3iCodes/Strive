@@ -1,23 +1,22 @@
 import { Trash } from "lucide-react"
 import { useBoard } from "../hooks/useBoard";
-import { useParams } from "react-router-dom";
 
 interface BoardMenuProps{
     boardId: string;
 };
 
 export const BoardMenu = ({ boardId }: BoardMenuProps) => {
-    const { deleteBoardMutation } = useBoard(boardId);
+    const { deleteBoardMutation } = useBoard();
     return (
-        <div className="w-fit flex items-center bg-base-100 border-1 border-base-content/20 rounded-xs shadow-xl shadow-base-content/25 absolute right-2 top-2 text-base-content">
+        <div className="w-fit h-fit p-[2px] flex items-center justify-center bg-base-content text-base-300 rounded-xs shadow-2xs/0 absolute top-2 right-2 ">
             <div 
                 onClick={(e) => {
                     e.stopPropagation();
-                    deleteBoardMutation.mutate({boardId});
+                    deleteBoardMutation.mutate(boardId);
                 }}
-                className="p-1 bg-base-300 text-error-content hover:bg-error active:bg-base-300">
+                className="p-1 hover:bg-error hover:text-error-content active:bg-base-300">
                 <Trash size={18} />
             </div>
         </div>
-    )
+    );
 }
