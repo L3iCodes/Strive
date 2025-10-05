@@ -19,3 +19,13 @@ export const deleteTask = async (taskId: string) => {
         throw new Error(error.response?.data?.message || 'An unexpected error occurred');
     };
 };
+
+export const updateTask = async (taskData: any) => {
+
+    try{
+        const res = await axiosInstance.post(`/task/update`, taskData);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};

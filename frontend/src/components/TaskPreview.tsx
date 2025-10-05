@@ -20,7 +20,7 @@ const TaskPreview = () => {
             </div>
             
             <div className="p-2 flex flex-col text-xs gap-5">
-                < TaskInfoForm name={task?.task_name} description={task?.description} priority={task?.priority} dueDate={task?.due_date}/>
+                < TaskInfoForm sectionId={task?.section as string} taskId={task?._id} name={task?.task_name} description={task?.description} priority={task?.priority} dueDate={task?.due_date}/>
 
                 <div className="flex flex-col gap-2 border-b-1 border-base-content/20">
                     <label className="flex items-center gap-1 text-base-content/80"><Users size={13}/>Assignees</label>

@@ -1,32 +1,53 @@
 import { Calendar, ChevronDown, Flag, Notebook } from 'lucide-react';
 import { useEffect, useState } from 'react'
 import { useTaskStore } from '../../store/useTaskStore';
+import { useTask } from '../../hooks/useTask';
+import { data, useParams } from 'react-router-dom';
 
-interface taskInfoForm {
+export interface TaskInfoFormProps {
+    sectionId?: string;
+    taskId?: string;
     name?: string;
     description?: string;
     priority?: 'none' | 'low' | 'medium' | 'high'
-    dueDate?: Date | undefined;
+    dueDate?: Date | null | undefined;
 };
 
-const TaskInfoForm = ({ name, description, priority, dueDate }: taskInfoForm) => {
-    const { isPreviewOpen, closePreview, task } = useTaskStore();
+const TaskInfoForm = ({ sectionId, taskId, name, description, priority, dueDate }: TaskInfoFormProps) => {
+    const param = useParams();
+    const { isPreviewOpen, closePreview } = useTaskStore();
+    const { updateTaskMutation } = useTask(param.id as string);
     const [editMode, setEditMode] = useState(false);
+    const [taskData, setTaskData] = useState({task_name: name, taskId, description, priority, dueDate})
     
+    useEffect(() => {
+        setTaskData({ task_name: name, taskId, description, priority, dueDate });
+    }, [name, description, priority, dueDate]);
+
     useEffect(() => {
         setEditMode(false);
     }, [isPreviewOpen])
 
+    const handleTaskUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        updateTaskMutation.mutate(
+            {sectionId, taskData},
+            {onSuccess: () => {
+                setEditMode(false);
+            }}
+        );
+    };
     return (
-        <form className="flex flex-col text-xs gap-3">
+        <form onSubmit={handleTaskUpdate} className="flex flex-col text-xs gap-3">
             <div className="flex flex-col gap-5">
                 <input 
                     type="text" 
                     placeholder="Board Name"
-                    value={name} 
+                    value={taskData.task_name} 
                     readOnly={!editMode}
                     className={`input w-full p-2 rounded-xs text-[15px] font-medium ${editMode ? 'cursor-text border-1 border-base-content/20 bg-base-100' : 'border-0 cursor-pointer bg-base-300 !px-0'}`}
-                    onChange={(e) => e.stopPropagation()}
+                    onChange={(e) => setTaskData({...taskData, task_name:e.currentTarget.value})}
                     onClick={() => setEditMode(true)}
                 />
                 
@@ -36,14 +57,14 @@ const TaskInfoForm = ({ name, description, priority, dueDate }: taskInfoForm) =>
                         
                         <details onClick={() => setEditMode(true)} className="dropdown">
                             <summary className={`w-full flex items-start p-2 border-1 border-base-content/20 cursor-pointer bg-base-100 ${editMode ? 'bg-base-100' : 'cursor-pointer bg-base-300'}`}>
-                                <p>{priority}</p>
+                                <p>{taskData.priority}</p>
                                 <ChevronDown className="ml-auto" size={16} />
                             </summary>
                             <ul className="menu dropdown-content bg-base-100 rounded-box z-1 p-1 shadow-sm w-full text-xs border-1 border-base-content/10">
-                                <li className="font-medium border-b-1 border-base-content/10"><a className={`${priority === 'none' && 'hidden'} flex flex-col gap-1 items-start`}>none</a></li>
-                                <li className="font-medium border-b-1 border-base-content/10"><a className={`${priority === 'low' && 'hidden'} flex flex-col gap-1 items-start`}>low</a></li>
-                                <li className="font-medium border-b-1 border-base-content/10"><a className={`${priority === 'medium' && 'hidden'} flex flex-col gap-1 items-start`}>medium</a></li>
-                                <li className="font-medium border-b-1 border-base-content/10"><a className={`${priority === 'high' && 'hidden'} flex flex-col gap-1 items-start`}>high</a></li>
+                                <li onClick={() => setTaskData({...taskData, priority: "none"})} className="font-medium border-b-1 border-base-content/10"><a className={`${taskData.priority === 'none' && 'hidden'} flex flex-col gap-1 items-start`}>none</a></li>
+                                <li onClick={() => setTaskData({...taskData, priority: "low"})} className="font-medium border-b-1 border-base-content/10"><a className={`${taskData.priority === 'low' && 'hidden'} flex flex-col gap-1 items-start`}>low</a></li>
+                                <li onClick={() => setTaskData({...taskData, priority: "medium"})} className="font-medium border-b-1 border-base-content/10"><a className={`${taskData.priority === 'medium' && 'hidden'} flex flex-col gap-1 items-start`}>medium</a></li>
+                                <li onClick={() => setTaskData({...taskData, priority: "high"})} className="font-medium border-b-1 border-base-content/10"><a className={`${taskData.priority === 'high' && 'hidden'} flex flex-col gap-1 items-start`}>high</a></li>
                             </ul>
                         </details>
                     </div>
@@ -54,9 +75,9 @@ const TaskInfoForm = ({ name, description, priority, dueDate }: taskInfoForm) =>
                             type="date" 
                             placeholder="Enter due date" 
                             readOnly={!editMode}
-                            value={dueDate ? new Date(dueDate).toISOString().split("T")[0] : ""}  
+                            value={taskData.dueDate ? new Date(taskData.dueDate).toISOString().split("T")[0] : ""}  
                             className={`input w-full h-fit p-2 rounded-xs border-1 border-base-content/20 text-xs ${editMode ? 'cursor-text bg-base-100' : 'cursor-pointer bg-base-300'}`}
-                            onChange={(e) => console.log(e.currentTarget.value)}
+                            onChange={(e) => setTaskData({...taskData, dueDate:e.currentTarget.valueAsDate})}
                             onClick={() => setEditMode(true)}
                         />
                     </div>
@@ -66,16 +87,23 @@ const TaskInfoForm = ({ name, description, priority, dueDate }: taskInfoForm) =>
                     <label className="flex items-center gap-1 text-base-content/80"><Notebook size={13}/>Description</label>
                     <textarea 
                         placeholder="Board Description"
-                        value={description} 
+                        value={taskData.description} 
                         readOnly={!editMode}
                         className={`input w-full h-[70px] px-2 py-2 rounded-xs border-1 border-base-content/20 resize-none text-xs ${editMode ? 'cursor-text bg-base-100' : 'cursor-pointer bg-base-300'}`}
-                        onChange={(e) => e.stopPropagation()}
+                        onChange={(e) => setTaskData({...taskData, description:e.currentTarget.value})}
                         onClick={() => setEditMode(true)}
                     />
                 </div>
+
+                {editMode && (
+                    <div className='flex ml-auto w-fit gap-1'>
+                        <button type='button' onClick={() => setEditMode(false)} className='ml-auto p-1 px-2 text-sm border-1 border-base-content/20 rounded-xs hover:bg-base-200 hover:text-base-content active:bg-base-100 cursor-pointer'>Cancel</button>
+                        <button type='submit' className='ml-auto p-1 px-2 bg-base-100 text-sm border-1 border-base-content/20 rounded-xs hover:bg-primary hover:text-primary-content active:bg-base-100 cursor-pointer'>Save</button>
+                    </div>
+                )}
             </div>
         </form>
-    )
-}
+    );
+};
 
 export default TaskInfoForm

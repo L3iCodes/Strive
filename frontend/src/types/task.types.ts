@@ -1,3 +1,4 @@
+import type { TaskInfoFormProps } from "../components/forms/TaskInfoForm";
 import type { User } from "../store/useAuthStore";
 
 export interface TaskDeletion{
@@ -8,6 +9,11 @@ export interface TaskDeletion{
 export interface CheckList{
     sub_task: string;
     done: boolean;
+}
+
+export interface UpdateTaskVariables {
+    sectionId?: string;
+    taskData: TaskInfoFormProps;
 }
 
 export interface Task{

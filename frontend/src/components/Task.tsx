@@ -29,7 +29,7 @@ const TaskComponent = ({task}: TaskProps) => {
             
             {openTaskMenu && (<TaskMenu sectionId={task.section} taskId={task._id} />)}
             
-            <p className={`${priorityMap[task.priority]?.classname} flex justify-center h-5 px-1 w-10 text-center rounded-tl-xs border-1 border-base-content/10 absolute top-0 left-0`}>
+            <p className={`${priorityMap[task.priority]?.classname} flex justify-center h-5 px-1 w-15 text-center rounded-tl-xs border-1 border-base-content/10 absolute top-0 left-0`}>
                 {task.priority === 'none' ? "" : task.priority}
             </p>
             <h1 className="text-[14px] mt-5 font-medium">{task.task_name}</h1>

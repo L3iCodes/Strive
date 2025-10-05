@@ -44,9 +44,8 @@ export const deleteTask = async (req, res) => {
 
     try{
         const task = await Task.findById(taskId);
-        if (!task) {
-            return res.status(404).json({ message: "Task not found" });
-        }
+        if (!task) return res.status(404).json({ message: "Task not found" });
+        
 
         // Remove task reference from section
         await Section.findByIdAndUpdate(
@@ -68,6 +67,37 @@ export const deleteTask = async (req, res) => {
         res.status(200).json(task)
     }catch(error){
         console.log('Error in deletTask controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};
+
+export const updateTaskInfo = async (req, res) => {
+    const { _id } = req.user;
+    const { taskId, task_name, priority, dueDate, description } = req.body;
+
+    try{
+        const task = await Task.findByIdAndUpdate(
+            taskId,
+            { 
+                task_name,
+                priority,
+                due_date: dueDate,
+                description
+            },
+            { new: true }
+        );
+        if(!task) return res.status(404).json({ message: "Task not found" });
+       
+        //Log into board activity
+        await createActivityService(
+            task.board, 
+            _id, 
+            `Task Updated: [${task.task_name} from [${task.section}]`
+        );
+
+        res.status(200).json(task)
+    }catch(error){
+        console.log('Error in updateTaskInfo controller', error);
         return res.status(500).json({ message: "Internal Server Error"});
     };
 };

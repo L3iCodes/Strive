@@ -5,7 +5,6 @@ import NewTaskForm from "./forms/NewTaskForm";
 import TaskComponent from "./Task";
 import { useSection } from "../hooks/useSection";
 import { useParams } from "react-router-dom";
-import TaskPreview from "./TaskPreview";
 
 interface SectionComponentProps{
     section: Section;
