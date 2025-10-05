@@ -16,8 +16,8 @@ export interface Task{
     description: string;
     section: string;
     board:string;
-    due_date: Date;
-    priority: 'low' | 'medium' | 'high';
+    due_date: Date | undefined;
+    priority: 'none' | 'low' | 'medium' | 'high';
     checklist: CheckList[];
     assignees: User[];
     done:boolean;

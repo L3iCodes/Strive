@@ -13,8 +13,8 @@ export const createTask = async (req, res) => {
             board: boardId,
             section: sectionId,
             checklist: [],
-            due_date: "",
-            priority: 'low',
+            due_date: undefined,
+            priority: 'none',
             assignees: [],
             done: false
         });

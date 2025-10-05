@@ -14,7 +14,7 @@ const TaskSchema = new Schema(
     section: { type: Schema.Types.ObjectId, ref: "Section" },
     checklist: [ChecklistSchema],
     due_date: { type: Date },
-    priority: { type: String, enum: ["low", "medium", "high"], default: "low" },
+    priority: { type: String, enum: ["none","low", "medium", "high"], default: "none" },
     assignees: [{ type: Schema.Types.ObjectId, ref: "User" }],
     done: {type: Boolean, default: false}
   },

@@ -22,7 +22,8 @@ const SectionComponent = ({section}: SectionComponentProps) => {
             <div className="h-full w-[230px] p-2 pt-0 flex shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative">
                 {/* Section Header */}
                 <div className="p-[5px] flex w-full items-center bg-base-300 border-b-1 border-base-content/20 sticky top-0 z-10">
-                    <h2 className="text-[14px] font-medium w-[70%] truncate">{section.name}</h2>
+                    <h2 className="text-[14px] px-1 font-medium max-w-[60%] truncate">{section.name}</h2>
+                    <p className="text-xs ml-2 ">{section.tasks.length}</p>
                     <div className="ml-auto flex gap-1">
                         <Plus onClick={() => {setShowAddTaskTop(s => !s), setShowAddTaskBot(false);}} 
                             size={18} className="cursor-pointer"/>
