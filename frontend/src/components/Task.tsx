@@ -1,4 +1,4 @@
-import { useBoardStore } from "../store/useTaskStore";
+import { useTaskStore } from "../store/useTaskStore";
 import type { Task } from "../types";
 import { TaskMenu } from "./Menu";
 import { useState } from "react";
@@ -14,7 +14,7 @@ const priorityMap: any = {
 };
 
 const TaskComponent = ({task}: TaskProps) => {
-    const { showPreview } = useBoardStore();
+    const { showPreview } = useTaskStore();
     const [openTaskMenu, setOpenTaskMenu] = useState(false);
     
     

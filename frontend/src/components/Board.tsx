@@ -4,6 +4,7 @@ import type { BoardProps, Section } from "../types";
 import SectionComponent from "./Section";
 import NewSectionForm from "./forms/NewSectionForm";
 import TaskPreview from "./TaskPreview";
+import { useTaskStore } from "../store/useTaskStore";
 
 interface BoardComponentProps {
   board: BoardProps;
@@ -11,6 +12,7 @@ interface BoardComponentProps {
 
 const Board = ({board}: BoardComponentProps) => {
     const [sectionList, setSectionList] = useState<SectionItem[]>([])
+    const { closePreview } = useTaskStore();
 
     useEffect(() => {
         setSectionList(
@@ -18,6 +20,10 @@ const Board = ({board}: BoardComponentProps) => {
                 _id: section._id,
                 name: section.name,
             })) || []
+        );
+
+        return(
+            closePreview()
         );
     }, [board]);
 

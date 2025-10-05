@@ -8,7 +8,7 @@ interface BoardStore {
     closePreview: () => void;
 }
 
-export const useBoardStore = create<BoardStore>((set) => ({
+export const useTaskStore = create<BoardStore>((set) => ({
     task: null,
     isPreviewOpen: false,
 
