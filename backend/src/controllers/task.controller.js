@@ -172,7 +172,7 @@ export const deleteSubtask = async (req, res) => {
 export const updateSubtask = async (req, res) => {
     const { _id } = req.user;
     const { taskId, subtaskData } = req.body;
-    console.log('IN BACKEND ', taskId, subtaskData)
+   
     try{
         const task = await Task.findOneAndUpdate(
             { _id: taskId, "checklist._id": subtaskData._id }, // find the task with that checklist item
@@ -193,7 +193,6 @@ export const updateSubtask = async (req, res) => {
             `Subtask Updated: from [${task.task_name}]`
         );
 
-        console.log(task)
         res.status(201).json(task)
     }catch(error){
         console.log('Error in deleteSubtask controller', error);

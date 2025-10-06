@@ -8,7 +8,7 @@ interface BoardHeaderProps{
 
 export const BoardHeader = ({name, collaborators}: BoardHeaderProps) => {
     return (
-        <div className="w-full flex items-center p-1 border-1 border-base-content/10 h-10">
+        <div className="w-full max-w-screen flex items-center p-1 border-1 border-base-content/10 h-10">
             <div className="flex flex-col">
                 <h1 className="font-bold ml-1">{name}</h1>
             </div>

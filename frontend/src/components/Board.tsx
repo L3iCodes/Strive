@@ -36,7 +36,7 @@ const Board = ({board}: BoardComponentProps) => {
     return (
         // Context for section list, used in task component
         <SectionListContext.Provider value={{ sectionList }}> 
-            <div className="w-full h-full flex gap-3 overflow-y-auto">
+            <div className="w-full h-full flex gap-3 overflow-y-auto ">
                 {board?.sections?.map(section => (
                     <SectionComponent key={section._id} section={section} />
                 ))}

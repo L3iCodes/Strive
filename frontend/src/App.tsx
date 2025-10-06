@@ -25,10 +25,10 @@ function App() {
     }, []);
 
     return (
-        <div className="h-screen max-h-screen w-screen max-w-screen flex flex-col md:flex-row bg-base-100 relative" data-theme={theme}>
+        <div className="h-screen max-h-screen max-w-screen flex flex-col md:flex-row bg-base-100 relative" data-theme={theme}>
             <Routers>
                 {isAuthenticated && <Navbar />}
-                <div className="h-full w-full flex flex-col"> {/* Right Side */}
+                <div className="h-full w-full flex flex-col overflow-auto"> {/* Right Side */}
                     {isAuthenticated && <Header />}
                         <div className="w-full h-full p-5 overflow-hidden">
                             {verifyMutation.isPending && (
