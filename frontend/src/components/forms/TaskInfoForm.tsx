@@ -2,7 +2,7 @@ import { Calendar, ChevronDown, Flag, Notebook } from 'lucide-react';
 import { useEffect, useState } from 'react'
 import { useTaskStore } from '../../store/useTaskStore';
 import { useTask } from '../../hooks/useTask';
-import { data, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 export interface TaskInfoFormProps {
     sectionId?: string;
@@ -16,7 +16,7 @@ export interface TaskInfoFormProps {
 const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, dueDate }: TaskInfoFormProps) => {
     const param = useParams();
     const { isPreviewOpen, closePreview } = useTaskStore();
-    const { updateTaskMutation } = useTask(param.id as string);
+    const { updateTaskMutation } = useTask({boardId:param.id});
     const [editMode, setEditMode] = useState(false);
     const [taskData, setTaskData] = useState({task_name, taskId, description, priority, dueDate})
     
@@ -34,9 +34,11 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
         updateTaskMutation.mutate(
             {sectionId, taskData},
             {onSuccess: () => {
-                setEditMode(false);
+                //Add notification
             }}
         );
+
+        setEditMode(false);
     };
     return (
         <form onSubmit={handleTaskUpdate} className="flex flex-col text-xs gap-3">
@@ -97,7 +99,8 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
 
                 {editMode && (
                     <div className='flex ml-auto w-fit gap-1'>
-                        <button type='button' onClick={() => setEditMode(false)} className='ml-auto p-1 px-2 text-sm border-1 border-base-content/20 rounded-xs hover:bg-base-200 hover:text-base-content active:bg-base-100 cursor-pointer'>Cancel</button>
+                        <button type='button' onClick={() => {setEditMode(false),  setTaskData({ task_name, taskId, description, priority, dueDate })}} className='ml-auto p-1 px-2 text-sm border-1 border-base-content/20 rounded-xs hover:bg-base-200 hover:text-base-content active:bg-base-100 cursor-pointer'>Cancel</button>
+                        
                         <button type='submit' className='ml-auto p-1 px-2 bg-base-100 text-sm border-1 border-base-content/20 rounded-xs hover:bg-primary hover:text-primary-content active:bg-base-100 cursor-pointer'>Save</button>
                     </div>
                 )}

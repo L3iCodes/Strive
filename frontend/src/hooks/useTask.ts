@@ -1,8 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addSubTask, createTask, deleteTask, updateTask } from "../apis/task.api";
-import type { BoardProps, TaskDeletion, UpdateTaskVariables, AddSubTaskVariables } from "../types";
+import { addSubTask, createTask, deleteSubtask, deleteTask, updateSubtask, updateTask } from "../apis/task.api";
+import type {  BoardProps,  TaskDeletion,  UpdateTaskVariables,  AddSubTaskVariables, Task, DeleteSubTaskVariables, UpdateSubTaskVariables } from "../types";
 
-export const useTask = (boardId: string) => {
+interface UseTaskVariable {
+    boardId?: string,
+    taskId?: string;
+}
+
+export const useTask = ({boardId, taskId}: UseTaskVariable) => {
     const queryClient = useQueryClient();
 
     const createTaskMutation = useMutation({
@@ -38,7 +43,7 @@ export const useTask = (boardId: string) => {
         mutationFn: ({taskId}: TaskDeletion) => deleteTask(taskId),
         onMutate: ({sectionId, taskId}) => {
             const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
-            console.log(previousBoard)
+            
             queryClient.setQueryData<BoardProps>(['kanban', boardId], (old) => {
                 if(!old) return old;
                 
@@ -125,7 +130,9 @@ export const useTask = (boardId: string) => {
         onMutate: ({sectionId, taskId, subtaskData}) => {
             
             const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
-            
+            const previousTask = queryClient.getQueryData<BoardProps>(['task', taskId]);
+
+            // Update board cache
             queryClient.setQueryData<BoardProps>(['kanban', boardId], (old) => {
                 if(!old) return old;
 
@@ -151,10 +158,20 @@ export const useTask = (boardId: string) => {
                 };
             });
 
-            return{ previousBoard }
+             // Update task cache
+            queryClient.setQueryData<Task>(['task', taskId], (old) => {
+                if(!old) return old;
+
+                return{
+                    ...old,
+                    checklist: [...old.checklist, subtaskData]
+                }
+            });
+
+            return{ previousBoard, previousTask }
         },
         onSuccess: (_data) => {
-            queryClient.invalidateQueries({queryKey: ['task']})
+            queryClient.invalidateQueries({queryKey: ['task', taskId]})
         },
         onError: (error, _variables, context) => {
             console.log(error);
@@ -162,9 +179,90 @@ export const useTask = (boardId: string) => {
             // Revert board data if there is an error
             if(context?.previousBoard){
                 queryClient.setQueryData(['kanban', boardId], context.previousBoard);
+                queryClient.setQueryData(['task', taskId], context.previousTask);
             };
         }
     });
 
-    return { createTaskMutation, deleteTaskMutation, updateTaskMutation, addSubTaskMutation };
+    const deleteSubTaskMutation = useMutation({
+        mutationFn: ({subtaskId, taskId}: DeleteSubTaskVariables) => deleteSubtask({taskId, subtaskId}),
+        onMutate: ({subtaskId, taskId, sectionId}) => {
+            const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
+            const previousTask = queryClient.getQueryData<BoardProps>(['task', taskId]);
+
+             // Update board cache
+            queryClient.setQueryData<BoardProps>(['kanban', boardId], (old) => {
+                if(!old) return old;
+
+                const updatedSections = old.sections.map((section) =>
+                    section._id === sectionId
+                    ? {
+                        ...section,
+                        tasks: section.tasks.map((task) =>
+                            task._id === taskId
+                            ?   {
+                                    ...task,
+                                    checklist: task.checklist.filter(subtask => subtask._id != subtaskId)
+                                }
+                            : task
+                        ),
+                        }
+                    : section
+                );
+
+                return {
+                    ...old,
+                    sections: updatedSections
+                };
+            });
+
+             // Update task cache
+            queryClient.setQueryData<Task>(['task', taskId], (old) => {
+                if(!old) return old;
+
+                return{
+                    ...old,
+                    checklist: old.checklist.filter(subtask => subtask._id != subtaskId)
+                }
+            });
+
+            return{ previousBoard, previousTask }
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({queryKey: ['task', taskId]})
+            console.log(data)
+        },
+        onError: (error, _variables, context) => {
+            console.log(error);
+            
+            // Revert board data if there is an error
+            if(context?.previousBoard){
+                queryClient.setQueryData(['kanban', boardId], context.previousBoard);
+                queryClient.setQueryData(['task', taskId], context.previousTask);
+            };
+        }
+    });
+
+    const updateSubtaskMutation = useMutation({
+        mutationFn: ({taskId, subtaskData}: UpdateSubTaskVariables) => updateSubtask({taskId, subtaskData}),
+        onMutate: () => {
+            
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({queryKey: ['task', taskId]})
+            queryClient.invalidateQueries({queryKey: ['board', boardId]})
+            console.log(data)
+        },
+        onError: (error, _variables, context) => {
+            console.log(error);
+            
+            // // Revert board data if there is an error
+            // if(context?.previousBoard){
+            //     queryClient.setQueryData(['kanban', boardId], context.previousBoard);
+            //     queryClient.setQueryData(['task', taskId], context.previousTask);
+            // };
+        }
+    })
+
+    return { createTaskMutation, deleteTaskMutation, updateTaskMutation, addSubTaskMutation, deleteSubTaskMutation, updateSubtaskMutation };
 };

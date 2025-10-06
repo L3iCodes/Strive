@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateToken } from '../middleware/auth.middleware.js';
-import { addSubtask, createTask, deleteTask, getTask, updateTaskInfo } from '../controllers/task.controller.js';
+import { addSubtask, createTask, deleteSubtask, deleteTask, getTask, updateSubtask, updateTaskInfo } from '../controllers/task.controller.js';
 
 const router = express.Router();
 
@@ -10,5 +10,7 @@ router.post('/update',authenticateToken, updateTaskInfo);
 router.delete('/delete/:taskId',authenticateToken, deleteTask);
 
 router.post('/subtask/add',authenticateToken, addSubtask);
+router.post('/subtask/update',authenticateToken, updateSubtask);
+router.post('/subtask/delete',authenticateToken, deleteSubtask);
 
 export default router;

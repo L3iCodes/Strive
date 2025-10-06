@@ -19,7 +19,7 @@ const KanbanBoard = () => {
     });
     
     return (
-        <div className="h-full flex flex-col gap-2">
+        <div className="h-full flex flex-col gap-2 overflow-hidden">
             {isLoading
                 ? (<BoardHeaderLoading />)
                 : data && (<BoardHeader name={data.name} collaborators={data.collaborators} />)

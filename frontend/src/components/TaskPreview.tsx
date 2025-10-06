@@ -51,8 +51,8 @@ const TaskPreview = () => {
                     <label className="flex items-center gap-1 text-base-content/80 text-sm"><ListTodo size={13}/>Subtasks</label>
                     
                     <div className="flex flex-col gap-1">
-                        {task?.checklist.map((task) => (
-                            <Subtask key={task._id} subtask={task} />
+                        {task?.checklist.map((subtask) => (
+                            <Subtask key={subtask._id} taskId={task._id} sectionId={task.section} subtask={subtask} />
                         ))}
                     </div>
                     

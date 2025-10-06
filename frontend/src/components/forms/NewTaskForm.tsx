@@ -12,7 +12,7 @@ const NewTaskForm = ({sectionId, onClose, position}: NewTaskFormProps) => {
     const params = useParams();
     const inputRef = useRef<HTMLInputElement>(null);
     const [task, setTask] = useState({name: "", desc: ""});
-    const { createTaskMutation } = useTask(params.id as string);
+    const { createTaskMutation } = useTask({boardId:params.id});
 
     useEffect(() => {
         inputRef.current?.focus();

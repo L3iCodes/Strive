@@ -33,7 +33,7 @@ export const BoardMenu = ({ boardId }: BoardMenuProps) => {
 
 export const TaskMenu = ({ sectionId, taskId }: TaskMenuProps) => {
     const param = useParams();
-    const { deleteTaskMutation } = useTask(param.id as string);
+    const { deleteTaskMutation } = useTask({boardId:param.id});
     const [openMoveMenu, setOpenMoveMenu] = useState(false);
     
     return (

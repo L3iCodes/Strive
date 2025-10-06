@@ -132,12 +132,71 @@ export const addSubtask = async (req, res) => {
         await createActivityService(
             task.board, 
             _id, 
-            `Add subtask: [${subtaskData.name} to [${task.task_name}]`
+            `Subtask Added: [${subtaskData.name} to [${task.task_name}]`
         );
 
         res.status(201).json(task)
     }catch(error){
         console.log('Error in addSubtask controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};
+
+export const deleteSubtask = async (req, res) => {
+    const { _id } = req.user;
+    const { taskId, subtaskId } = req.body;
+
+    try{
+        const task = await Task.findByIdAndUpdate(
+            taskId,
+            { $pull: { checklist: { _id: subtaskId} } },
+            { new: true }
+        );
+        if(!task) return res.status(404).json({ message: "Task not found" });
+
+        //Log into board activity
+        await createActivityService(
+            task.board, 
+            _id, 
+            `Subtask deleted: from [${task.task_name}]`
+        );
+
+        res.status(201).json(task)
+    }catch(error){
+        console.log('Error in deleteSubtask controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};
+
+
+export const updateSubtask = async (req, res) => {
+    const { _id } = req.user;
+    const { taskId, subtaskData } = req.body;
+    console.log('IN BACKEND ', taskId, subtaskData)
+    try{
+        const task = await Task.findOneAndUpdate(
+            { _id: taskId, "checklist._id": subtaskData._id }, // find the task with that checklist item
+            {
+                $set: {
+                    "checklist.$.sub_task": subtaskData.sub_task,
+                    "checklist.$.done": subtaskData.done,
+                }
+            },
+            { new: true } // return the updated document
+        );
+        if(!task) return res.status(404).json({ message: "Task not found" });
+
+        //Log into board activity
+        await createActivityService(
+            task.board, 
+            _id, 
+            `Subtask Updated: from [${task.task_name}]`
+        );
+
+        console.log(task)
+        res.status(201).json(task)
+    }catch(error){
+        console.log('Error in deleteSubtask controller', error);
         return res.status(500).json({ message: "Internal Server Error"});
     };
 };

@@ -23,6 +23,18 @@ export interface AddSubTaskVariables {
     subtaskData: CheckList;
 }
 
+export interface DeleteSubTaskVariables {
+    sectionId?: string;
+    taskId: string;
+    subtaskId: string;
+}
+
+export interface UpdateSubTaskVariables {
+    sectionId?: string;
+    taskId: string;
+    subtaskData: CheckList;
+}
+
 export interface Task{
     _id: string;
     task_name: string;

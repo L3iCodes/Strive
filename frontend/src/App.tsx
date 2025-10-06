@@ -25,7 +25,7 @@ function App() {
     }, []);
 
     return (
-        <div className="h-screen max-h-screen flex flex-col md:flex-row bg-base-100 relative" data-theme={theme}>
+        <div className="h-screen max-h-screen w-screen max-w-screen flex flex-col md:flex-row bg-base-100 relative" data-theme={theme}>
             <Routers>
                 {isAuthenticated && <Navbar />}
                 <div className="h-full w-full flex flex-col"> {/* Right Side */}

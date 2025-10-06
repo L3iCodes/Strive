@@ -11,7 +11,7 @@ interface newSubtaskForm {
 
 const NewSubtaskForm = ({sectionId, taskId}: newSubtaskForm) => {
     const param = useParams();
-    const { addSubTaskMutation } = useTask(param.id as string);
+    const { addSubTaskMutation } = useTask({boardId:param.id, taskId});
     const [subtaskData, setSubtaskData] = useState<CheckList>({sub_task: '', done: false})
     
     const handleSubtaskCreation = (e: React.FormEvent<HTMLFormElement>) => {
@@ -23,7 +23,7 @@ const NewSubtaskForm = ({sectionId, taskId}: newSubtaskForm) => {
             }
         });  
     };
-
+    
     return (
         <form onSubmit={handleSubtaskCreation}>
             <div className="flex items-center gap-2">

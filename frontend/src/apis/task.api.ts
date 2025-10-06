@@ -47,3 +47,23 @@ export const addSubTask = async (taskData: any) => {
         throw new Error(error.response?.data?.message || 'An unexpected error occurred');
     };
 };
+
+export const deleteSubtask = async (taskData: any) => {
+    try{
+        const res = await axiosInstance.post(`task/subtask/delete`, taskData);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};
+
+export const updateSubtask = async (taskData: any) => {
+    
+    try{
+        const res = await axiosInstance.post(`task/subtask/update`, taskData);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};
+
