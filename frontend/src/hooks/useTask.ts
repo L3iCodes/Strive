@@ -59,7 +59,7 @@ export const useTask = (boardId: string) => {
 
             return { previousBoard };
         },
-        onSuccess(data) {
+        onSuccess(_data) {
             
         },
         onError: (error, _variables, context) => {
@@ -107,7 +107,7 @@ export const useTask = (boardId: string) => {
 
             return { previousBoard };
         },
-        onSuccess: (data) => {
+        onSuccess: (_data) => {
             
         },
         onError: (error, _variables, context) => {
@@ -125,11 +125,6 @@ export const useTask = (boardId: string) => {
         onMutate: ({sectionId, taskId, subtaskData}) => {
             
             const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
-            
-            const optimisticSubtask = {
-                ...subtaskData,
-                _id: `temp-${Date.now()}`, // Temporary ID
-            };
             
             queryClient.setQueryData<BoardProps>(['kanban', boardId], (old) => {
                 if(!old) return old;
@@ -158,9 +153,8 @@ export const useTask = (boardId: string) => {
 
             return{ previousBoard }
         },
-        onSuccess: (data) => {
+        onSuccess: (_data) => {
             queryClient.invalidateQueries({queryKey: ['task']})
-            console.log(data)
         },
         onError: (error, _variables, context) => {
             console.log(error);

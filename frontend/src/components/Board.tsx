@@ -12,8 +12,16 @@ interface BoardComponentProps {
 
 const Board = ({board}: BoardComponentProps) => {
     const [sectionList, setSectionList] = useState<SectionItem[]>([])
-    const { closePreview } = useTaskStore();
+    const { setPreview, isPreviewOpen, setTask } = useTaskStore();
 
+    // Reset task preview
+    useEffect(() => {
+        setPreview(false),
+        setTask(null);
+    }, [])
+
+
+    // Set section list
     useEffect(() => {
         setSectionList(
             board?.sections?.map((section) => ({
@@ -38,8 +46,11 @@ const Board = ({board}: BoardComponentProps) => {
                     : (<button onClick={() => setOpenNewSection(true)} className="btn w-[230px] btn-dash btn-primary"> New Section</button>)
                 }
             </div>
-
-            <TaskPreview />
+            
+            { isPreviewOpen &&
+                <TaskPreview />
+            }
+            
         </SectionListContext.Provider>
     );
 };

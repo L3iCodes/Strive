@@ -4,8 +4,9 @@ import type { Task } from "../types";
 interface BoardStore {
     taskId: string | null;
     isPreviewOpen: boolean;
-    showPreview: (taskId: string) => void;
-    setTask: (task: string) => void;
+    showPreview: (taskId: string ) => void;
+    setPreview: (state: boolean ) => void;
+    setTask: (task: string | null) => void;
     closePreview: () => void;
 }
 
@@ -15,6 +16,10 @@ export const useTaskStore = create<BoardStore>((set) => ({
 
     setTask: (taskId) => {
         set({taskId})
+    },
+
+    setPreview: (state) => {
+        set({isPreviewOpen: state})
     },
 
     showPreview: (taskId) => {
