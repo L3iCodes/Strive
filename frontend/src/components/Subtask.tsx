@@ -48,12 +48,13 @@ const Subtask = ({taskId, sectionId, subtask}: SubtaskProps) => {
                     };
                 }}
             />
-
-             <div className='ml-auto hover:bg-error hover:text-error-content cursor-pointer p-[2px]'>
-                {editMode && (<X onClick={() => {setEditMode(false), setSubtaskData(subtask)}} size={15} />)}
-            </div>
-
-            <div className='hover:bg-error hover:text-error-content cursor-pointer p-[2px]'>
+            {editMode && (
+                <div className='ml-auto hover:bg-error hover:text-error-content cursor-pointer p-[5px] rounded-xs'>
+                    <X onClick={() => {setEditMode(false), setSubtaskData(subtask)}} size={15} />
+                </div>
+            )}
+            
+            <div className='hover:bg-error hover:text-error-content cursor-pointer p-[5px] rounded-xs'>
                 <Trash onClick={handleDeleteSubtask} size={15} />
             </div>  
         </div>
