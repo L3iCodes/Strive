@@ -7,22 +7,22 @@ import { data, useParams } from 'react-router-dom';
 export interface TaskInfoFormProps {
     sectionId?: string;
     taskId?: string;
-    name?: string;
+    task_name?: string;
     description?: string;
     priority?: 'none' | 'low' | 'medium' | 'high'
     dueDate?: Date | null | undefined;
 };
 
-const TaskInfoForm = ({ sectionId, taskId, name, description, priority, dueDate }: TaskInfoFormProps) => {
+const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, dueDate }: TaskInfoFormProps) => {
     const param = useParams();
     const { isPreviewOpen, closePreview } = useTaskStore();
     const { updateTaskMutation } = useTask(param.id as string);
     const [editMode, setEditMode] = useState(false);
-    const [taskData, setTaskData] = useState({task_name: name, taskId, description, priority, dueDate})
+    const [taskData, setTaskData] = useState({task_name, taskId, description, priority, dueDate})
     
     useEffect(() => {
-        setTaskData({ task_name: name, taskId, description, priority, dueDate });
-    }, [name, description, priority, dueDate]);
+        setTaskData({ task_name, taskId, description, priority, dueDate });
+    }, [task_name, description, priority, dueDate]);
 
     useEffect(() => {
         setEditMode(false);

@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTask, deleteTask, updateTask } from "../apis/task.api";
 import type { BoardProps, TaskDeletion, UpdateTaskVariables } from "../types";
-import type { TaskInfoFormProps } from "../components/forms/TaskInfoForm";
 
 export const useTask = (boardId: string) => {
     const queryClient = useQueryClient();
@@ -78,7 +77,7 @@ export const useTask = (boardId: string) => {
         onMutate: async ({ sectionId, taskData }) => {
             const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
     
-            queryClient.setQueryData<BoardProps>(['kanban', boardId], (old) => {
+            queryClient.setQueryData<BoardProps>(['kanban', boardId], (old):any => {
                 if(!old) return old;
                 
                 const updatedSections = old.sections.map((section) =>
@@ -89,7 +88,7 @@ export const useTask = (boardId: string) => {
                             task._id === taskData.taskId
                             ? {
                                 ...task,
-                                task_name: taskData.name ?? task.task_name,
+                                task_name: taskData.task_name ?? task.task_name,
                                 priority: taskData.priority ?? task.priority,
                                 description: taskData.description ?? task.description,
                                 due_date: taskData.dueDate ?? task.due_date,
