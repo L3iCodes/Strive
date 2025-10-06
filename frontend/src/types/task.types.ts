@@ -7,6 +7,7 @@ export interface TaskDeletion{
 };
 
 export interface CheckList{
+    _id?: string;
     sub_task: string;
     done: boolean;
 }
@@ -14,6 +15,12 @@ export interface CheckList{
 export interface UpdateTaskVariables {
     sectionId?: string;
     taskData: TaskInfoFormProps;
+}
+
+export interface AddSubTaskVariables {
+    sectionId?: string;
+    taskId: string;
+    subtaskData: CheckList;
 }
 
 export interface Task{

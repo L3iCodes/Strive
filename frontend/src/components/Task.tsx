@@ -23,7 +23,7 @@ const TaskComponent = ({task}: TaskProps) => {
             onMouseEnter={() => setOpenTaskMenu(true)}
             onMouseLeave={() => setOpenTaskMenu(false)}
             onMouseOver={() => () => setOpenTaskMenu(true)}
-            onClick={() => showPreview(task)}
+            onClick={() => showPreview(task._id as string)}
             className={`relative w-full h-[80px] shrink-0 flex flex-col gap-1 bg-base-100 rounded-xs border-1 border-base-content/10 p-1 text-xs cursor-pointer transition-all hover:scale-103 active:hover:scale-100 hover:border-2 hover:z-10`}
             >
             

@@ -21,10 +21,6 @@ const Board = ({board}: BoardComponentProps) => {
                 name: section.name,
             })) || []
         );
-
-        return(
-            closePreview()
-        );
     }, [board]);
 
     const [openNewSection, setOpenNewSection] = useState<boolean>(false);

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createTask, deleteTask, updateTask } from "../apis/task.api";
-import type { BoardProps, TaskDeletion, UpdateTaskVariables } from "../types";
+import { addSubTask, createTask, deleteTask, updateTask } from "../apis/task.api";
+import type { BoardProps, TaskDeletion, UpdateTaskVariables, AddSubTaskVariables } from "../types";
 
 export const useTask = (boardId: string) => {
     const queryClient = useQueryClient();
@@ -118,7 +118,59 @@ export const useTask = (boardId: string) => {
                 queryClient.setQueryData(['kanban', boardId], context.previousBoard);
             };
         }
-    })
+    });
 
-    return { createTaskMutation, deleteTaskMutation, updateTaskMutation };
+    const addSubTaskMutation = useMutation({
+        mutationFn: ({subtaskData, taskId}: AddSubTaskVariables) => addSubTask({taskId, subtaskData}),
+        onMutate: ({sectionId, taskId, subtaskData}) => {
+            
+            const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
+            
+            const optimisticSubtask = {
+                ...subtaskData,
+                _id: `temp-${Date.now()}`, // Temporary ID
+            };
+            
+            queryClient.setQueryData<BoardProps>(['kanban', boardId], (old) => {
+                if(!old) return old;
+
+                const updatedSections = old.sections.map((section) =>
+                    section._id === sectionId
+                    ? {
+                        ...section,
+                        tasks: section.tasks.map((task) =>
+                            task._id === taskId
+                            ?   {
+                                    ...task,
+                                    checklist: [...task.checklist, subtaskData]
+                                }
+                            : task
+                        ),
+                        }
+                    : section
+                );
+
+                return {
+                    ...old,
+                    sections: updatedSections
+                };
+            });
+
+            return{ previousBoard }
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({queryKey: ['task']})
+            console.log(data)
+        },
+        onError: (error, _variables, context) => {
+            console.log(error);
+            
+            // Revert board data if there is an error
+            if(context?.previousBoard){
+                queryClient.setQueryData(['kanban', boardId], context.previousBoard);
+            };
+        }
+    });
+
+    return { createTaskMutation, deleteTaskMutation, updateTaskMutation, addSubTaskMutation };
 };

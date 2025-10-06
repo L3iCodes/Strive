@@ -2,6 +2,20 @@ import Task from "../models/task.model.js";
 import Section from "../models/section.model.js";
 import { createActivityService } from "../services/activity.service.js";
 
+export const getTask = async (req, res) => {
+    const { taskId } = req.params;
+
+    try{
+        const task = await Task.findById(taskId);
+        if(!task) return res.status(404).json({ message: "Task not found" });
+
+        res.status(200).json(task)
+    }catch(error){
+        console.log('Error in getTask controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};
+
 export const createTask = async (req, res) => {
     const { _id } = req.user;
     const { boardId, sectionId, name, desc, position } = req.body;
@@ -98,6 +112,32 @@ export const updateTaskInfo = async (req, res) => {
         res.status(200).json(task)
     }catch(error){
         console.log('Error in updateTaskInfo controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};
+
+export const addSubtask = async (req, res) => {
+    const { _id } = req.user;
+    const { taskId, subtaskData } = req.body;
+
+    try{
+        const task = await Task.findByIdAndUpdate(
+            taskId,
+            { $push: { checklist: subtaskData } },
+            { new: true }
+        );
+        if(!task) return res.status(404).json({ message: "Task not found" });
+
+        //Log into board activity
+        await createActivityService(
+            task.board, 
+            _id, 
+            `Add subtask: [${subtaskData.name} to [${task.task_name}]`
+        );
+
+        res.status(201).json(task)
+    }catch(error){
+        console.log('Error in addSubtask controller', error);
         return res.status(500).json({ message: "Internal Server Error"});
     };
 };

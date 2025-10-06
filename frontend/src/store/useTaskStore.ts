@@ -2,23 +2,28 @@ import { create } from "zustand";
 import type { Task } from "../types";
 
 interface BoardStore {
-    task: Task | null;
+    taskId: string | null;
     isPreviewOpen: boolean;
-    showPreview: (task: Task) => void;
+    showPreview: (taskId: string) => void;
+    setTask: (task: string) => void;
     closePreview: () => void;
 }
 
 export const useTaskStore = create<BoardStore>((set) => ({
-    task: null,
+    taskId: null,
     isPreviewOpen: false,
 
-    showPreview: (task) => {
-        set({ task });
+    setTask: (taskId) => {
+        set({taskId})
+    },
+
+    showPreview: (taskId) => {
+        set({ taskId });
         set({ isPreviewOpen: true });
     },
 
     closePreview: () => {
-        set({ task: null });
+        set({ taskId: null });
         set({ isPreviewOpen: false });
     }
 }));    
