@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addSubTask, createTask, deleteSubtask, deleteTask, updateSubtask, updateTask } from "../apis/task.api";
-import type {  BoardProps,  TaskDeletion,  UpdateTaskVariables,  AddSubTaskVariables, Task, DeleteSubTaskVariables, UpdateSubTaskVariables } from "../types";
+import { addSubTask, createTask, deleteSubtask, deleteTask, moveTask, updateSubtask, updateTask } from "../apis/task.api";
+import type {  BoardProps,  TaskDeletion,  UpdateTaskVariables,  AddSubTaskVariables, Task, DeleteSubTaskVariables, UpdateSubTaskVariables, MoveTaskVariables } from "../types";
+import { data } from "react-router-dom";
 
 interface UseTaskVariable {
     boardId?: string,
@@ -124,6 +125,64 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
             };
         }
     });
+
+    const moveTaskMutation = useMutation({
+        mutationFn: ({receiverSectionId, taskData}: MoveTaskVariables) => moveTask({receiverSectionId, taskId:taskData._id}),
+        onMutate: ({receiverSectionId, taskData}) => {
+            const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
+            const previousTask = queryClient.getQueryData<BoardProps>(['task', taskId]);
+            
+            // Update task cache - section field
+            const updatedTask = {...taskData, section: receiverSectionId};
+            queryClient.setQueryData(['task', taskId], updatedTask);
+
+            // Update board cache
+            queryClient.setQueryData<BoardProps>(['kanban', boardId], (old):any => {
+                if(!old) return old;
+
+                const updatedSection = old.sections.map(section => {
+                    // Remove task from original section
+                    if(section._id === taskData.section){
+                        return {
+                            ...section,
+                            tasks: section.tasks.filter(task => task._id !== taskData._id) 
+                        };
+                    };
+
+                    if(section._id === receiverSectionId){
+                        return {
+                            ...section,
+                            tasks: [...section.tasks, updatedTask]
+                        };
+                    };
+
+                    return section;
+                });
+
+                return {
+                    ...old,
+                    sections: updatedSection
+                }
+            });
+
+            return { previousBoard, previousTask };
+        },
+        onSuccess: (_data) => {
+            queryClient.invalidateQueries({queryKey: ['task', taskId]})
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
+  
+        },
+        onError: (error, _variables, context) => {
+            console.log(error);
+            
+            // Revert board data if there is an error
+            if(context?.previousBoard){
+                queryClient.setQueryData(['kanban', boardId], context.previousBoard);
+            };
+        }
+    })
+
+
 
     const addSubTaskMutation = useMutation({
         mutationFn: ({subtaskData, taskId}: AddSubTaskVariables) => addSubTask({taskId, subtaskData}),
@@ -250,8 +309,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({queryKey: ['task', taskId]})
-            queryClient.invalidateQueries({queryKey: ['board', boardId]})
-            console.log(data)
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
         },
         onError: (error, _variables, context) => {
             console.log(error);
@@ -264,5 +322,5 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
         }
     })
 
-    return { createTaskMutation, deleteTaskMutation, updateTaskMutation, addSubTaskMutation, deleteSubTaskMutation, updateSubtaskMutation };
+    return { createTaskMutation, deleteTaskMutation, updateTaskMutation, addSubTaskMutation, deleteSubTaskMutation, updateSubtaskMutation, moveTaskMutation };
 };

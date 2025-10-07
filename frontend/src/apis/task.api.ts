@@ -39,6 +39,16 @@ export const updateTask = async (taskData: any) => {
     };
 };
 
+export const moveTask = async (taskData: any) => {
+    
+    try{
+        const res = await axiosInstance.post(`task/task/move`, taskData);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};
+
 export const addSubTask = async (taskData: any) => {
     try{
         const res = await axiosInstance.post(`task/subtask/add`, taskData);

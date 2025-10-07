@@ -199,3 +199,33 @@ export const updateSubtask = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error"});
     };
 };
+
+export const moveTask = async (req, res) => {
+    const { receiverSectionId, taskId } = req.body;
+
+    try{
+        const task = await Task.findByIdAndUpdate(
+            taskId,
+            { $set: { section: receiverSectionId } },
+        );
+
+        if(!task) return res.status(404).json({ message: "Task not found" });
+
+        // Remove task from original section
+        await Section.findByIdAndUpdate(
+            task.section,
+            { $pull: { tasks: task._id  } }
+        );
+
+        // Move to receiver section
+        await Section.findByIdAndUpdate(
+            receiverSectionId,
+            { $push: { tasks: task._id  } }
+        );
+
+        res.status(201).json({ message: "Succesfully moved task"})
+    }catch(error){
+        console.log('Error in moveTask controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};

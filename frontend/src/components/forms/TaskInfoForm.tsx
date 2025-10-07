@@ -5,6 +5,7 @@ import { useTask } from '../../hooks/useTask';
 import { useParams } from 'react-router-dom';
 
 export interface TaskInfoFormProps {
+    _id?: string;
     sectionId?: string;
     taskId?: string;
     task_name?: string;

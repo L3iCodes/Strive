@@ -17,6 +17,11 @@ export interface UpdateTaskVariables {
     taskData: TaskInfoFormProps;
 }
 
+export interface MoveTaskVariables {
+    receiverSectionId?: string;
+    taskData: Task;
+}
+
 export interface AddSubTaskVariables {
     sectionId?: string;
     taskId: string;
