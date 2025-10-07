@@ -23,10 +23,10 @@ const TaskComponent = ({task}: TaskProps) => {
             onMouseLeave={() => setOpenTaskMenu(false)}
             onMouseOver={() => () => setOpenTaskMenu(true)}
             onClick={() => showPreview(task._id as string)}
-            className={`relative w-full h-[80px] shrink-0 flex flex-col gap-1 bg-base-100 rounded-xs border-1 border-base-content/10 p-1 text-xs cursor-pointer transition-all hover:scale-103 active:hover:scale-100 hover:border-2 hover:z-10`}
+            className={`relative w-full h-[80px] shrink-0 flex flex-col gap-1 bg-base-100 rounded-xs border-1 border-base-content/10 p-1 text-xs cursor-pointer transition-all hover:scale-103 active:hover:scale-100 hover:border-2 hover:z-5`}
             >
             
-            {openTaskMenu && (<TaskMenu sectionId={task.section} taskData={task} />)}
+            {openTaskMenu && (<TaskMenu taskData={task} />)}
             
             <p className={`${priorityMap[task.priority]?.classname} flex justify-center h-5 px-1 w-15 text-center rounded-tl-xs border-1 border-base-content/10 absolute top-0 left-0`}>
                 {task.priority === 'none' ? "" : task.priority}

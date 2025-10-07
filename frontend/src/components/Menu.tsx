@@ -1,4 +1,4 @@
-import { Move, Trash } from "lucide-react"
+import { ChevronLeft, Move, Pen, Trash } from "lucide-react"
 import { useBoard } from "../hooks/useBoard";
 import { useTask } from "../hooks/useTask";
 import { useParams } from "react-router-dom";
@@ -11,8 +11,13 @@ interface BoardMenuProps{
 };
 
 interface TaskMenuProps{
-    sectionId: string;
     taskData: Task;
+};
+
+interface SectionMenu{
+    onDelete: () => void;
+    onEdit: () => void;
+    onCollapse: () => void;
 };
 
 export const BoardMenu = ({ boardId }: BoardMenuProps) => {
@@ -32,7 +37,7 @@ export const BoardMenu = ({ boardId }: BoardMenuProps) => {
 }
 
 
-export const TaskMenu = ({ sectionId, taskData }: TaskMenuProps) => {
+export const TaskMenu = ({ taskData }: TaskMenuProps) => {
     const param = useParams();
     const { deleteTaskMutation, moveTaskMutation } = useTask({boardId:param.id, taskId:taskData._id as string});
     const [openMoveMenu, setOpenMoveMenu] = useState(false);
@@ -84,6 +89,45 @@ export const MoveMenu = ({ sectionId, onMove }: { sectionId: string, onMove:(sec
                     {section.name}
                 </p>)
             ))}    
+        </div>
+    );
+};
+
+export const SectionMenu = ({onCollapse, onEdit, onDelete}: SectionMenu) => {
+    const param = useParams();
+
+    return (
+        <div className="w-[120px] h-fit p-[2px] flex flex-col bg-base-content text-base-300 rounded-xs shadow-md absolute top-8 right-0 border-1 border-accent z-100">
+            <div
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onCollapse();
+                }}
+                className="flex gap-2 items-center p-1 hover:bg-success hover:text-success-content active:bg-success/50 text-xs cursor-pointer">
+                <ChevronLeft size={13} />
+                <p>Collapse</p>
+            </div>
+
+            <div 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit();
+                }}
+                className="flex gap-2 items-center p-1 hover:bg-warning hover:text-warning-content active:bg-warning/50 text-xs cursor-pointer">
+                <Pen size={13} />
+                <p>Edit</p>
+            </div>
+
+            <div 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete();
+                }}
+                className="flex gap-2 items-center p-1 hover:bg-error hover:text-error-content active:bg-error/50 text-xs cursor-pointer">
+                <Trash size={13} />
+                <p>Delete</p>
+            </div>
+
         </div>
     );
 };

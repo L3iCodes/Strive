@@ -14,8 +14,6 @@ export interface TaskInfoFormProps {
     dueDate?: Date | null | undefined;
 };
 
-type Priority = 'none' | 'low' | 'medium' | 'high';
-
 const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, dueDate }: TaskInfoFormProps) => {
     const param = useParams();
     const { isPreviewOpen, closePreview } = useTaskStore();
