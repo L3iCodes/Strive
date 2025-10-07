@@ -68,7 +68,7 @@ export const TaskMenu = ({ sectionId, taskData }: TaskMenuProps) => {
 
 export const MoveMenu = ({ sectionId, onMove }: { sectionId: string, onMove:(sectionId: string)=>void }) => {
     const { sectionList } = useSectionList();
-    console.log(sectionId)
+
     if(sectionList && sectionList?.length < 2) return;
 
     return (

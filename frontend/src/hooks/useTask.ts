@@ -182,8 +182,6 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
         }
     })
 
-
-
     const addSubTaskMutation = useMutation({
         mutationFn: ({subtaskData, taskId}: AddSubTaskVariables) => addSubTask({taskId, subtaskData}),
         onMutate: ({sectionId, taskId, subtaskData}) => {

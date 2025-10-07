@@ -1,5 +1,5 @@
 import { Calendar, ChevronDown, Flag, Notebook } from 'lucide-react';
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTaskStore } from '../../store/useTaskStore';
 import { useTask } from '../../hooks/useTask';
 import { useParams } from 'react-router-dom';
@@ -14,12 +14,16 @@ export interface TaskInfoFormProps {
     dueDate?: Date | null | undefined;
 };
 
+type Priority = 'none' | 'low' | 'medium' | 'high';
+
 const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, dueDate }: TaskInfoFormProps) => {
     const param = useParams();
     const { isPreviewOpen, closePreview } = useTaskStore();
     const { updateTaskMutation } = useTask({boardId:param.id});
     const [editMode, setEditMode] = useState(false);
     const [taskData, setTaskData] = useState({task_name, taskId, description, priority, dueDate})
+    const dropDownRef = useRef<HTMLDetailsElement>(null);
+    const priorityChoice = ['none', 'low', 'medium', 'high'] as const;
     
     useEffect(() => {
         setTaskData({ task_name, taskId, description, priority, dueDate });
@@ -39,6 +43,7 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
             }}
         );
 
+        dropDownRef.current?.removeAttribute("open")
         setEditMode(false);
     };
     return (
@@ -51,23 +56,29 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
                     readOnly={!editMode}
                     className={`input w-full p-2 rounded-xs text-[15px] font-medium ${editMode ? 'cursor-text border-1 border-base-content/20 bg-base-100' : 'border-0 cursor-pointer bg-base-300 !px-0'}`}
                     onChange={(e) => setTaskData({...taskData, task_name:e.currentTarget.value})}
-                    onClick={() => setEditMode(true)}
+                    onClick={() => {setEditMode(true), dropDownRef.current?.removeAttribute("open")}}
                 />
                 
                 <div className="flex gap-2">
                     <div className="flex flex-col gap-1 w-full">
                         <label className="flex items-center gap-1 text-base-content/80"><Flag size={13}/>Priority</label>
                         
-                        <details onClick={() => setEditMode(true)} className="dropdown">
+                        <details ref={dropDownRef} onClick={() => setEditMode(true)} className="dropdown">
                             <summary className={`w-full flex items-start p-2 border-1 border-base-content/20 cursor-pointer bg-base-100 ${editMode ? 'bg-base-100' : 'cursor-pointer bg-base-300'}`}>
                                 <p>{taskData.priority}</p>
                                 <ChevronDown className="ml-auto" size={16} />
                             </summary>
                             <ul className="menu dropdown-content bg-base-100 rounded-box z-1 p-1 shadow-sm w-full text-xs border-1 border-base-content/10">
-                                <li onClick={() => setTaskData({...taskData, priority: "none"})} className="font-medium border-b-1 border-base-content/10"><a className={`${taskData.priority === 'none' && 'hidden'} flex flex-col gap-1 items-start`}>none</a></li>
-                                <li onClick={() => setTaskData({...taskData, priority: "low"})} className="font-medium border-b-1 border-base-content/10"><a className={`${taskData.priority === 'low' && 'hidden'} flex flex-col gap-1 items-start`}>low</a></li>
-                                <li onClick={() => setTaskData({...taskData, priority: "medium"})} className="font-medium border-b-1 border-base-content/10"><a className={`${taskData.priority === 'medium' && 'hidden'} flex flex-col gap-1 items-start`}>medium</a></li>
-                                <li onClick={() => setTaskData({...taskData, priority: "high"})} className="font-medium border-b-1 border-base-content/10"><a className={`${taskData.priority === 'high' && 'hidden'} flex flex-col gap-1 items-start`}>high</a></li>
+                                {priorityChoice.map(choice => (
+                                    <li 
+                                        onClick={() => {setTaskData({...taskData, priority: choice}), dropDownRef.current?.removeAttribute("open");}} 
+                                        className="font-medium border-b-1 border-base-content/10"
+                                        >
+                                            <a className={`${taskData.priority === 'high' && 'hidden'} flex flex-col gap-1 items-start`}>
+                                                {choice}
+                                            </a>
+                                    </li>
+                                ))}
                             </ul>
                         </details>
                     </div>
@@ -81,7 +92,7 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
                             value={taskData.dueDate ? new Date(taskData.dueDate).toISOString().split("T")[0] : ""}  
                             className={`input w-full h-fit p-2 rounded-xs border-1 border-base-content/20 text-xs ${editMode ? 'cursor-text bg-base-100' : 'cursor-pointer bg-base-300'}`}
                             onChange={(e) => setTaskData({...taskData, dueDate:e.currentTarget.valueAsDate})}
-                            onClick={() => setEditMode(true)}
+                            onClick={() => {setEditMode(true), dropDownRef.current?.removeAttribute("open")}}
                         />
                     </div>
                 </div>
@@ -94,7 +105,7 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
                         readOnly={!editMode}
                         className={`input w-full h-[70px] px-2 py-2 rounded-xs border-1 border-base-content/20 resize-none text-xs ${editMode ? 'cursor-text bg-base-100' : 'cursor-pointer bg-base-300'}`}
                         onChange={(e) => setTaskData({...taskData, description:e.currentTarget.value})}
-                        onClick={() => setEditMode(true)}
+                        onClick={() => {setEditMode(true), dropDownRef.current?.removeAttribute("open")}}
                     />
                 </div>
 
