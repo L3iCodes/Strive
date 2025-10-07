@@ -17,3 +17,13 @@ export const deleteSection = async (sectionId: string) => {
         throw new Error(error.response?.data?.message || 'An unexpected error occurred');
     };
 };
+
+export const updateSection = async (sectionData: any) => {
+    
+    try{
+        const res = await axiosInstance.post(`/section/update`, sectionData);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};

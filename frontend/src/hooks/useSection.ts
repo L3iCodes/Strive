@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { BoardProps } from "../types";
-import { createSection, deleteSection } from "../apis/section.api";
+import { createSection, deleteSection, updateSection } from "../apis/section.api";
 
 export const useSection = (boardId: string) => {
     const queryClient = useQueryClient();
@@ -45,8 +45,8 @@ export const useSection = (boardId: string) => {
             return { previousBoard };
             
         },
-        onSuccess: (data, _variables) => {
-           
+        onSuccess: (_data, _variables) => {
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
         },
         onError: (error, _sectionId, context) => {
             console.log(error);
@@ -55,7 +55,43 @@ export const useSection = (boardId: string) => {
                 queryClient.setQueryData(['boards'], context.previousBoard);
             };
         }
+    });
+
+    const updateSectionMutation = useMutation({
+        mutationFn: updateSection,
+        onMutate: (variables) => {
+            const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId])
+
+            queryClient.setQueryData<BoardProps>(['kanban', boardId], (old): any => {
+                if(!old) return old;
+
+                const updatedSection = old.sections.map(section => 
+                    section._id === variables.sectionId
+                        ? {...section, name: variables.sectionName}
+                        : section
+                )
+
+                return{
+                    ...old,
+                    sections: updatedSection
+                };
+            });
+
+            return { previousBoard };
+        },
+        onSuccess: (_data) => {
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
+            
+        },
+        onError: (error, _sectionId, context) => {
+            console.log(error);
+
+            // Revert to previous board data
+            if(context?.previousBoard){
+                queryClient.setQueryData(['boards'], context.previousBoard);
+            };
+        }
     })
 
-    return { createSectionMutation, deleteSectionMutation };
+    return { createSectionMutation, deleteSectionMutation, updateSectionMutation };
 };

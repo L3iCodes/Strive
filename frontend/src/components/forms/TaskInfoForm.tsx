@@ -44,6 +44,7 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
         dropDownRef.current?.removeAttribute("open")
         setEditMode(false);
     };
+    
     return (
         <form onSubmit={handleTaskUpdate} className="flex flex-col text-xs gap-3">
             <div className="flex flex-col gap-5">

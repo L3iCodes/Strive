@@ -1,10 +1,10 @@
 import { ChevronRight, Ellipsis, Plus } from "lucide-react";
 import type { Section } from "../types";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import NewTaskForm from "./forms/NewTaskForm";
 import TaskComponent from "./Task";
 import { useSection } from "../hooks/useSection";
-import { isCookie, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { SectionMenu } from "./Menu";
 
 interface SectionComponentProps{
@@ -13,11 +13,14 @@ interface SectionComponentProps{
 
 const SectionComponent = ({section}: SectionComponentProps) => {
     const param = useParams();
-    const { deleteSectionMutation } = useSection(param.id as string);
+    const { deleteSectionMutation, updateSectionMutation } = useSection(param.id as string);
     const [showAddTaskTop, setShowAddTaskTop] = useState<boolean>(false);
     const [showAddTaskBot, setShowAddTaskBot] = useState<boolean>(false);
     const [openSectionMenu, setOpeSectionMenu] = useState<boolean>(false);
     const [isSectionCollapse, setIsSectionCollapse] = useState<boolean>(false);
+    const [editMode, setEditMode] = useState<boolean>(false);
+    const [sectionName, setSectionName] = useState(section?.name);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     if(isSectionCollapse)
         return(
@@ -35,7 +38,7 @@ const SectionComponent = ({section}: SectionComponentProps) => {
 
                 <p className="text-xs mt-20">{section.tasks.length}</p>
             </div>
-        )
+        );
 
 
     return (
@@ -43,7 +46,29 @@ const SectionComponent = ({section}: SectionComponentProps) => {
             <div className="h-full w-[230px] p-2 pt-0 flex shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative transition-all duration-200">
                 {/* Section Header */}
                 <div className="p-[5px] flex w-full items-center bg-base-300 border-b-1 border-base-content/20 sticky top-0 z-10">
-                    <h2 className="text-[14px] px-1 font-medium max-w-[60%] truncate">{section.name}</h2>
+                    <input 
+                        type="text"
+                        ref={inputRef} 
+                        placeholder="Board Name"
+                        value={sectionName} 
+                        readOnly={!editMode}
+                        className={`input text-[14px] h-fit !p-1 font-medium max-w-[60%] truncate w-full rounded-xs ${editMode ? 'cursor-text border-1 border-base-content/20 bg-base-100' : 'border-0 cursor-pointer bg-base-300 !px-0'}`}
+                        onChange={(e) => setSectionName(e.currentTarget.value)}
+                        onClick={() => setEditMode(true)}
+                        onKeyDown={(e) => {
+                            if(e.key === 'Enter') {
+                                if(sectionName.trim() === ""){
+                                    setSectionName(s => s = 'Section')
+                                }
+                                updateSectionMutation.mutate(
+                                    {sectionId:section._id, sectionName: sectionName},
+                                    { onError: () => setSectionName(section.name)}
+                                );
+                                setEditMode(false);
+                            };
+                        }}
+                    />
+                    
                     <p className="text-xs ml-2 ">{section.tasks.length}</p>
                     <div className="ml-auto flex gap-1">
                         <div className="rounded-xs hover:bg-primary hover:text-primary-content active:bg-base-200">
@@ -56,7 +81,7 @@ const SectionComponent = ({section}: SectionComponentProps) => {
                         {openSectionMenu && (
                             <SectionMenu 
                                 onCollapse={() => setIsSectionCollapse(s => !s)}
-                                onEdit={() => console.log('Edit')}
+                                onEdit={() => {setEditMode(true), setOpeSectionMenu(false), inputRef.current?.focus()}}
                                 onDelete={() => deleteSectionMutation.mutate(section._id)}
                             />
                         )}

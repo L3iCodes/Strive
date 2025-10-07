@@ -168,7 +168,6 @@ export const deleteSubtask = async (req, res) => {
     };
 };
 
-
 export const updateSubtask = async (req, res) => {
     const { _id } = req.user;
     const { taskId, subtaskData } = req.body;

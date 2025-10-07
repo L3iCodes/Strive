@@ -48,3 +48,21 @@ export const deleteSection = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error"});
     }
 };
+
+export const updateSection = async (req, res) => {
+    const { sectionId, sectionName } = req.body;
+    
+    try{
+        const section = await Section.findByIdAndUpdate(
+            sectionId,
+            { $set: { name: sectionName.trim() === "" ? 'Section' : sectionName } },
+            { new: true },
+        );
+        if(!section) return res.status(404).json({ message: "Section not found" });
+        
+        res.status(201).json(section);
+    }catch(error){
+        console.log('Error in deleteSection controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    }
+};
