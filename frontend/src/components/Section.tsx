@@ -45,14 +45,14 @@ const SectionComponent = ({section}: SectionComponentProps) => {
         <>
             <div className="h-full w-[230px] p-2 pt-0 flex shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative transition-all duration-200">
                 {/* Section Header */}
-                <div className="p-[5px] flex w-full items-center bg-base-300 border-b-1 border-base-content/20 sticky top-0 z-10">
+                <div className="py-[5px] flex w-full items-center bg-base-300 border-b-1 border-base-content/20 sticky top-0 z-10">
                     <input 
                         type="text"
                         ref={inputRef} 
                         placeholder="Board Name"
                         value={sectionName} 
                         readOnly={!editMode}
-                        className={`input text-[14px] h-fit !p-1 font-medium max-w-[60%] truncate w-full rounded-xs ${editMode ? 'cursor-text border-1 border-base-content/20 bg-base-100' : 'border-0 cursor-pointer bg-base-300 !px-0'}`}
+                        className={`input text-[14px] h-fit !p-[1px] font-medium max-w-[60%] truncate w-full rounded-xs ${editMode ? 'cursor-text border-1 border-base-content/20 bg-base-100' : 'border-0 cursor-pointer bg-base-300 !px-0'}`}
                         onChange={(e) => setSectionName(e.currentTarget.value)}
                         onClick={() => setEditMode(true)}
                         onKeyDown={(e) => {

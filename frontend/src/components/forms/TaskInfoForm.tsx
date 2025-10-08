@@ -53,7 +53,7 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
                     placeholder="Board Name"
                     value={taskData.task_name} 
                     readOnly={!editMode}
-                    className={`input w-full p-2 rounded-xs text-[15px] font-medium ${editMode ? 'cursor-text border-1 border-base-content/20 bg-base-100' : 'border-0 cursor-pointer bg-base-300 !px-0'}`}
+                    className={`input w-full p-2 rounded-xs text-[15px] font-medium ${editMode ? 'cursor-text border-1 border-base-content/20 bg-base-300' : 'border-0 cursor-pointer bg-base-100 !px-0'}`}
                     onChange={(e) => setTaskData({...taskData, task_name:e.currentTarget.value})}
                     onClick={() => {setEditMode(true), dropDownRef.current?.removeAttribute("open")}}
                 />
@@ -63,7 +63,7 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
                         <label className="flex items-center gap-1 text-base-content/80"><Flag size={13}/>Priority</label>
                         
                         <details ref={dropDownRef} onClick={() => setEditMode(true)} className="dropdown">
-                            <summary className={`w-full flex items-start p-2 border-1 border-base-content/20 cursor-pointer bg-base-100 ${editMode ? 'bg-base-100' : 'cursor-pointer bg-base-300'}`}>
+                            <summary className={`w-full flex items-start p-2 border-1 border-base-content/20 cursor-pointer bg-base-100 ${editMode ? 'bg-base-300' : 'cursor-pointer bg-base-100'}`}>
                                 <p>{taskData.priority}</p>
                                 <ChevronDown className="ml-auto" size={16} />
                             </summary>
@@ -89,7 +89,7 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
                             placeholder="Enter due date" 
                             readOnly={!editMode}
                             value={taskData.dueDate ? new Date(taskData.dueDate).toISOString().split("T")[0] : ""}  
-                            className={`input w-full h-fit p-2 rounded-xs border-1 border-base-content/20 text-xs ${editMode ? 'cursor-text bg-base-100' : 'cursor-pointer bg-base-300'}`}
+                            className={`input w-full h-fit p-2 rounded-xs border-1 border-base-content/20 text-xs ${editMode ? 'cursor-text bg-base-300' : 'cursor-pointer bg-base-100'}`}
                             onChange={(e) => setTaskData({...taskData, dueDate:e.currentTarget.valueAsDate})}
                             onClick={() => {setEditMode(true), dropDownRef.current?.removeAttribute("open")}}
                         />
@@ -102,7 +102,7 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
                         placeholder="Board Description"
                         value={taskData.description} 
                         readOnly={!editMode}
-                        className={`input w-full h-[70px] px-2 py-2 rounded-xs border-1 border-base-content/20 resize-none text-xs ${editMode ? 'cursor-text bg-base-100' : 'cursor-pointer bg-base-300'}`}
+                        className={`input w-full h-[70px] px-2 py-2 rounded-xs border-1 border-base-content/20 resize-none text-xs ${editMode ? 'cursor-text bg-base-300' : 'cursor-pointer bg-base-100'}`}
                         onChange={(e) => setTaskData({...taskData, description:e.currentTarget.value})}
                         onClick={() => {setEditMode(true), dropDownRef.current?.removeAttribute("open")}}
                     />

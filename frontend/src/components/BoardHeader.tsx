@@ -4,9 +4,10 @@ import type { Collaborators } from "../types";
 interface BoardHeaderProps{
     name: string;
     collaborators: Collaborators[];
+    openManage: () => void;
 }
 
-export const BoardHeader = ({name, collaborators}: BoardHeaderProps) => {
+export const BoardHeader = ({name, collaborators, openManage}: BoardHeaderProps) => {
     return (
         <div className="w-full flex items-center p-1 border-1 border-base-content/10 h-10">
             <div className="flex flex-col">
@@ -26,7 +27,7 @@ export const BoardHeader = ({name, collaborators}: BoardHeaderProps) => {
                         )
                     })}
                 </div>
-                <button className="ml-1 btn btn-xs border-base-content/10 btn-primary">Manage Team</button>
+                <button onClick={openManage} className="ml-1 btn btn-xs border-base-content/10 btn-primary">Manage Team</button>
             </div>
             <div className="ml-2 p-1 hover:bg-base-200 rounded-xs border-1 hover:border-base-content/10 border-base-content/0 cursor-pointer">
                 <Ellipsis size={18}/>

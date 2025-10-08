@@ -17,7 +17,7 @@ const TaskPreview = () => {
     });
     
     return (
-        <div className={`h-full pt-[75px] p-5 md:p-5 w-full max-w-md flex flex-col gap-3 fixed top-0 bg-base-300 border-1 border-base-content/20 shadow-xl/55 z-10 
+        <div className={`h-full pt-[75px] p-5 md:p-5 w-full max-w-md flex flex-col gap-3 fixed top-0 bg-base-100 border-1 border-base-content/20 shadow-xl/55 z-10 
                         transition-all duration-400 ease-in-out
                         ${isPreviewOpen ? 'right-0' : '-right-150'}`}
         >
