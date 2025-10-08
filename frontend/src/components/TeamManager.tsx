@@ -1,4 +1,4 @@
-import { ChevronDown, Crown, Ellipsis, ListTodo, Mail, MailX, Plus, UserPlus, UserPlusIcon, Users, Users2, X } from "lucide-react";
+import { ChevronDown, Crown, Mail, MailX, Plus, UserPlus, Users2, X } from "lucide-react";
 import type { Collaborators } from "../types";
 import type { User } from "../store/useAuthStore";
 
@@ -141,7 +141,6 @@ const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeT
                     </div>
                 </div>
             </div>
-
         </div>
     );
 };

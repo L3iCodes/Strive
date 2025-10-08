@@ -1,10 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { BoardProps, Section } from "../types";
+import type { BoardProps } from "../types";
 
 import SectionComponent from "./Section";
 import NewSectionForm from "./forms/NewSectionForm";
-import TaskPreview from "./TaskPreview";
-import { useTaskStore } from "../store/useTaskStore";
 
 interface BoardComponentProps {
   board: BoardProps;
@@ -12,14 +10,6 @@ interface BoardComponentProps {
 
 const Board = ({board}: BoardComponentProps) => {
     const [sectionList, setSectionList] = useState<SectionItem[]>([])
-    const { setPreview, isPreviewOpen, setTask } = useTaskStore();
-
-    // Reset task preview
-    useEffect(() => {
-        setPreview(false),
-        setTask(null);
-    }, [])
-
 
     // Set section list
     useEffect(() => {
@@ -46,10 +36,6 @@ const Board = ({board}: BoardComponentProps) => {
                     : (<button onClick={() => setOpenNewSection(true)} className="btn w-[230px] btn-dash btn-primary"> New Section</button>)
                 }
             </div>
-            
-            { isPreviewOpen &&
-                <TaskPreview />
-            }
             
         </SectionListContext.Provider>
     );

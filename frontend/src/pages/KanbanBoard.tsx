@@ -7,19 +7,30 @@ import { getKanbanBoard } from "../apis/board.api";
 import { BoardHeader, BoardHeaderLoading } from "../components/BoardHeader";
 import Board from "../components/Board";
 import TeamManager from "../components/TeamManager";
+import TaskPreview from "../components/TaskPreview";
 
 // Store
 import type { BoardProps } from "../types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useTaskStore } from "../store/useTaskStore";
 
 const KanbanBoard = () => {
     const param = useParams();
+    const { setPreview, setTask } = useTaskStore();
     const [isTeamManagerOpen, setIsTeamManagerOpen] = useState(false);
     
     const { data, isLoading } = useQuery<BoardProps>({
         queryKey: ['kanban', param.id],   // include the id in the key
         queryFn: () => getKanbanBoard(param.id as string),
     });
+
+    // Reset task preview
+    useEffect(() => {
+        return(() => {
+            setPreview(false),
+            setTask(null);
+        })
+    }, [])
     
     return (
         <div className="h-full flex flex-col gap-2">
@@ -37,7 +48,8 @@ const KanbanBoard = () => {
                 isTeamManagerOpen={isTeamManagerOpen} 
                 closeTeamManager={() => setIsTeamManagerOpen(false)}  
             />
-            
+
+            <TaskPreview />
         </div>
     )
 }
