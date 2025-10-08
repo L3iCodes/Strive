@@ -24,7 +24,7 @@ const SectionComponent = ({section}: SectionComponentProps) => {
 
     if(isSectionCollapse)
         return(
-            <div className="h-full w-[50px] p-2 flex items-center shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative transition-all duration-200">
+            <div className="h-full w-[50px] p-2 flex items-center shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative transition-all duration-200 overflow-hidden">
                 <div
                     onClick={(e) => {
                         e.stopPropagation();
@@ -80,7 +80,7 @@ const SectionComponent = ({section}: SectionComponentProps) => {
                         </div>
                         {openSectionMenu && (
                             <SectionMenu 
-                                onCollapse={() => setIsSectionCollapse(s => !s)}
+                                onCollapse={() => {setIsSectionCollapse(true), setOpeSectionMenu(false)}}
                                 onEdit={() => {setEditMode(true), setOpeSectionMenu(false), inputRef.current?.focus()}}
                                 onDelete={() => deleteSectionMutation.mutate(section._id)}
                             />
