@@ -1,15 +1,17 @@
 import { ChevronDown, Crown, Ellipsis, ListTodo, Mail, MailX, Plus, UserPlus, UserPlusIcon, Users, Users2, X } from "lucide-react";
 import type { Collaborators } from "../types";
+import type { User } from "../store/useAuthStore";
 
 
 interface TeamManagerProps {
     isTeamManagerOpen: boolean;
     boardName: string | undefined;
+    owner: User | undefined;
     collaborators: Collaborators[] | undefined;
     closeTeamManager: () => void;
 }
 
-const TeamManager = ({boardName, collaborators, isTeamManagerOpen, closeTeamManager}: TeamManagerProps) => {
+const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeTeamManager}: TeamManagerProps) => {
     return (
         <div className={`h-full pt-[75px] p-5 md:p-5 w-full max-w-md flex flex-col gap-3 fixed top-0 bg-base-100 border-1 border-base-content/20 shadow-xl/55 z-10 
                         transition-all duration-400 ease-in-out
@@ -91,12 +93,13 @@ const TeamManager = ({boardName, collaborators, isTeamManagerOpen, closeTeamMana
                         
                         {/* Owner */}
                         <div className="p-2 flex items-center bg-base-300 gap-2 rounded-xs">
-                            <div className="w-9 h-9 flex justify-center items-center rounded-full bg-base-100 border-1 border-base-content/20">
-                                <Mail size={16} />
-                            </div>
+                            <img 
+                                src={owner?.avatar || 'https://avatar.iran.liara.run/public'}
+                                className="w-8 h-8 rounded-full bg-base-100 border-2 border-base-content/20 object-cover"
+                            />
                             <div className="flex flex-col">
-                                <h3 className="text-[13px] font-medium ">Jan Wilhelm T. Sy</h3>
-                                <p className="text-xs text-base-content/50">janwilhelmtsy@gmail.com</p>
+                                <h3 className="text-[13px] font-medium ">{owner?.username}</h3>
+                                <p className="text-xs text-base-content/50">{owner?.email}</p>
                             </div>
                             
                             <div className="ml-auto py-1 px-2 flex gap-1 items-center border-1 rounded-xs border-base-content/20 bg-base-100">

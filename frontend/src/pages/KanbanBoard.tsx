@@ -32,6 +32,7 @@ const KanbanBoard = () => {
 
             <TeamManager
                 boardName={data?.name} 
+                owner={data?.owner}
                 collaborators={data?.collaborators}
                 isTeamManagerOpen={isTeamManagerOpen} 
                 closeTeamManager={() => setIsTeamManagerOpen(false)}  
