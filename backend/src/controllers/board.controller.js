@@ -145,12 +145,6 @@ export const createBoard = async (req, res) => {
         // Store "created board" message in activity
         await createActivityService(newBoard._id, _id, "Created board");
 
-
-        // // Sample return data
-        // const populatedBoard = await Board.findById(newBoard._id)
-        //     .populate("sections")
-        //     .populate("activities");
-
         return res.status(201).json(newBoard);
     }catch(error){
         console.log('Error in createBoard controller', error);
@@ -215,12 +209,12 @@ export const deleteBoard = async (req, res) => {
         await Task.deleteMany({ board: board._id });
 
         // Delete board for owner
-        await User.findByIdAndUpdate(board.owner, { $pull: { boards: board._id }});
+        await User.findByIdAndUpdate(board.owner, { $pull: { boards: { _id: board._id } }});
         // Delete board for all collaborators
         if(board.collaborators && board.collaborators.length > 0){
             await Promise.all(
                 board.collaborators.map( async (collaborator) => {
-                    await User.findByIdAndUpdate(collaborator.user._id, {  $pull: { boards: board._id } });
+                    await User.findByIdAndUpdate(collaborator.user._id, {  $pull: { boards: { _id: board._id } } });
                 })
             ) ;
         };

@@ -4,6 +4,11 @@ import { useLocation } from "react-router-dom";
 import { useThemeStore } from "../store/useThemeStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useAuth } from "../hooks/useAuth";
+import InvitationTab from "./InvitationTab";
+
+type ThemeControllerIconProps = {
+  navOpen: boolean;
+};
 
 const navbarContent = [
     {id: "/", name: "Boards", icon: <Kanban size={18}/>},
@@ -41,7 +46,9 @@ const Navbar = () => {
                 >
                     {user?.username}
                 </h3>
-                <Bell className={`ml-auto hover:fill-base-content cursor-pointer ${navOpen ? "opacity-100 w-auto" : "opacity-0 absolute"}`} size={18}/>
+
+                {navOpen && <InvitationTab />}
+                
             </div>
             <div className={`hidden h-fit w-full p-3 md:flex flex-col gap-2 ${navOpen && '!flex'}`}>
                 {navbarContent.map(item => (
@@ -64,10 +71,6 @@ const Navbar = () => {
             </div>
         </div>
     );
-};
-
-type ThemeControllerIconProps = {
-  navOpen: boolean;
 };
 
 const ThemeControllerIcon = ({navOpen}: ThemeControllerIconProps) => {

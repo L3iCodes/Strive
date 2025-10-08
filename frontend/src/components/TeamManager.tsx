@@ -1,6 +1,9 @@
-import { ChevronDown, Crown, Mail, MailX, Plus, UserPlus, Users2, X } from "lucide-react";
+import { Crown, Mail, Users2, X } from "lucide-react";
 import type { Collaborators } from "../types";
 import type { User } from "../store/useAuthStore";
+import InviteMemberForm from "./forms/InviteMemberForm";
+import { CollaboratorCard, PendingCard } from "./CollboratorCard";
+
 
 
 interface TeamManagerProps {
@@ -29,55 +32,26 @@ const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeT
             </div>
 
             <div className="flex flex-col gap-7">
-                <div className="flex flex-col gap-1 p-2 border-1 border-base-content/10">
-                    <div>
-                        <h2 className="text-[14px] font-medium flex items-center gap-2"><UserPlus size={16}/> Invite Team Members</h2>
-                        <p className="text-xs text-base-content/50">Send invitations to collaborate on this board</p>
-                    </div>
-                    
-                    <form>
-                        <div className="flex items-center gap-2 mt-3">
-                            <input 
-                                type="text" 
-                                placeholder="Enter email address" 
-                                required={true}
-                               
-                                
-                                className="input w-full h-fit p-2 rounded-xs border-1 border-base-content/20 bg-base-300/0 text-xs"
-                                onChange={(e) => e.stopPropagation()}
-                            />
-                            <button 
-                                type="submit"
-                                
-                                className="btn h-8 w-8 flex items-center justify-center p-1 bg-base-100 border-1 border-base-content/20 rounded-xs hover:bg-primary hover:text-primary-content active:bg-base-300 cursor-pointer">
-                                    <Plus size={15}/>
-                                </button>
-                        </div>
-                    </form>
-                </div>
+                <InviteMemberForm />
 
                 <div className="flex flex-col gap-1 p-2 border-1 border-base-content/10">
                     <div className="flex items-center gap-2 mb-2">
                         <Mail size={16}/>
                         <h2 className="text-[14px] font-medium ">Pending Invitations</h2>
-                        <p className="text-[13px] w-5 h-5 bg-base-content/10 text-center rounded-xs">{collaborators?.length}</p>
+                        {/* <p className="text-[13px] w-5 h-5 bg-base-content/10 text-center rounded-xs">{collaborators?.length}</p> */}
                     </div>
 
                     {/* Pending Invitation */}
-                    <div className="flex flex-col">
-                        <div className="p-2 flex items-center bg-base-300 gap-2 rounded-xs">
-                            <div className="w-9 h-9 flex justify-center items-center rounded-full bg-base-100 border-1 border-base-content/20">
-                                <Mail size={16} />
-                            </div>
-                            <div className="flex flex-col">
-                                <h3 className="text-[13px] font-medium ">janwilhelmtsy@gmail.com</h3>
-                                <p className="text-xs text-base-content/50">Pending</p>
-                            </div>
-
-                            <div className="ml-auto w-9 h-9 flex justify-center items-center rounded-full hover:bg-error hover:text-error-content active:bg-error/50 transition-all duration-150 cursor-pointer">
-                                <MailX size={16} />
-                            </div>
-                        </div>
+                    <div className="flex flex-col gap-2">
+                        {collaborators
+                            ?.filter(collaborator => collaborator.status === 'pending') // 1. Filter the collaborators array
+                            .map(collaborator => (                                       // 2. Map the filtered array to components
+                                <PendingCard 
+                                    key={collaborator._id || collaborator.user._id}
+                                    collaborator={collaborator}
+                                />
+                            ))
+                        }
                     </div>
                 </div>
 
@@ -85,7 +59,7 @@ const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeT
                     <div className="flex items-center gap-2 mb-2">
                         <Users2 size={16}/>
                         <h2 className="text-[14px] font-medium ">Team Members</h2>
-                        <p className="text-[13px] w-5 h-5 bg-base-content/10 text-center rounded-xs">{collaborators?.length}</p>
+                        {/* <p className="text-[13px] w-5 h-5 bg-base-content/10 text-center rounded-xs">{collaborators?.length}</p> */}
                     </div>
 
                     {/* Pending Invitation */}
@@ -109,35 +83,18 @@ const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeT
                         </div>
 
                         {/* Members */}
-                        <div className="p-2 flex items-center bg-base-300 gap-2 rounded-xs">
-                            <div className="w-9 h-9 flex justify-center items-center rounded-full bg-base-100 border-1 border-base-content/20">
-                                <Mail size={16} />
-                            </div>
-                            <div className="flex flex-col">
-                                <h3 className="text-[13px] font-medium ">Jane Doe</h3>
-                                <p className="text-xs text-base-content/50">janedoe@gmail.com</p>
-                            </div>
-                            
-                            <details className="ml-auto relative">
-                                <summary className={`w-full flex items-start justify-center gap-1 text-xs py-1 px-2 border-1 rounded-xs border-base-content/20 bg-base-100 cursor-pointer`}>
-                                    <p>viewer</p>
-                                    <ChevronDown className="ml-auto" size={16} />
-                                </summary>
-                                <ul className="menu dropdown-content bg-base-100 rounded-box z-1 p-1 shadow-sm w-full text-xs border-1 border-base-content/10 absolute">
-                                    <li 
-                                        // onClick={() => {setTaskData({...taskData, priority: choice}), dropDownRef.current?.removeAttribute("open");}} 
-                                        className="font-medium border-b-1 border-base-content/10"
-                                        ><a className={`flex flex-col gap-1 items-start`}>viewer</a>
-                                    </li>
-
-                                    <li 
-                                        // onClick={() => {setTaskData({...taskData, priority: choice}), dropDownRef.current?.removeAttribute("open");}} 
-                                        className="font-medium border-b-1 border-base-content/10"
-                                        ><a className={`flex flex-col gap-1 items-start`}>editor</a>
-                                    </li>
-                                </ul>
-                            </details>
+                        <div className="flex flex-col">
+                            {collaborators
+                                ?.filter(collaborator => collaborator.status === 'accepted') // 1. Filter the collaborators array
+                                .map(collaborator => (                                       // 2. Map the filtered array to components
+                                    <CollaboratorCard 
+                                        key={collaborator._id || collaborator.user._id}
+                                        collaborator={collaborator}
+                                    />
+                                ))
+                            }
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -146,3 +103,5 @@ const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeT
 };
 
 export default TeamManager
+
+

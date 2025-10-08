@@ -94,8 +94,7 @@ export const MoveMenu = ({ sectionId, onMove }: { sectionId: string, onMove:(sec
 };
 
 export const SectionMenu = ({onCollapse, onEdit, onDelete}: SectionMenu) => {
-    const param = useParams();
-
+ 
     return (
         <div className="w-[120px] h-fit p-[2px] flex flex-col bg-base-content text-base-300 rounded-xs shadow-md absolute top-8 right-0 border-1 border-accent z-100">
             <div

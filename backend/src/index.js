@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.route.js'
 import sectionRoutes from './routes/section.route.js'
 import boardRoutes from './routes/board.route.js'
 import taskRoutes from './routes/task.route.js'
+import collabRoutes from './routes/collab.route.js'
 
 dotenv.config();
 
@@ -29,3 +30,4 @@ app.use('/api/auth', authRoutes);
 app.use('/api/board', boardRoutes);
 app.use('/api/section', sectionRoutes);
 app.use('/api/task', taskRoutes);
+app.use('/api/collab', collabRoutes);

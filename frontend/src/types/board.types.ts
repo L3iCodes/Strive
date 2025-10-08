@@ -1,5 +1,6 @@
 import type { Section } from "./section.types";
 import type { User } from "../store/useAuthStore";
+import type { Collaborators } from "./collab.types";
 
 export interface BoardSummary {
     _id: string; 
@@ -26,12 +27,6 @@ export interface BoardProps{
     lastOpened?: Date | string;
     favorite?: boolean;
     pinned?: boolean;
-};
-
-export interface Collaborators{
-    user: User;
-    role: 'viewer' | 'editor';
-    status: 'pending' | 'accepted';
 };
 
 interface Activities{
