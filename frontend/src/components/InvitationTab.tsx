@@ -3,10 +3,12 @@ import { useState } from 'react'
 import type { InvitationVariables } from '../types';
 import { useQuery } from '@tanstack/react-query';
 import { getInvites } from '../apis/collab.api';
+import { useCollab } from '../hooks/useCollab';
+import { useParams } from 'react-router-dom';
 
 const InvitationTab = () => {
     const [openInvitationTab, setOpenInvitationTab] = useState(false);
-
+    
     const { data: invitations } = useQuery<InvitationVariables[] | undefined>({
         queryKey: ['invites'],
         queryFn: getInvites
@@ -34,24 +36,33 @@ const InvitationTab = () => {
 export default InvitationTab
 
 const InviteCard = ({invitation}: any) => {
+    const param = useParams();
+    const { inviteResponseMutation } = useCollab(param.id as string);
+
     return (
         <div className='p-1 flex items-center gap-2 border-b border-base-content/10'>
             <img 
-                src={invitation.from.avatar || ''}
+                src={invitation?.from.avatar || ''}
                 className='h-7 w-7 object-cover rounded-full border-2 border-base-content/10'
             />
             <div>
-                <h2 className='text-xs font-bold'>{invitation.from.username}</h2>
-                <p className='text-xs '>Has invited you to collaborate in [{invitation.board.name}]</p>
+                <h2 className='text-xs font-bold'>{invitation?.from.username}</h2>
+                <p className='text-xs '>Has invited you to collaborate in [{invitation?.board?.name}]</p>
             </div>
 
             <div className='ml-auto flex gap-1'>
-                <div className='bg-base-300 rounded-full p-1 hover:bg-error hover:text-error-content cursor-pointer active:bg-error-content/50'>
-                    <X size={18}/>
+                <div 
+                    onClick={() => inviteResponseMutation.mutate({ inviteId:invitation._id, action:'reject' })}
+                    className='bg-base-300 rounded-full p-1 hover:bg-error hover:text-error-content cursor-pointer active:bg-error-content/50'
+                    >
+                        <X size={18}/>
                 </div>
 
-                <div className='bg-base-300 rounded-full p-1 hover:bg-success hover:text-success-content cursor-pointer active:bg-success/50'>
-                    <Check size={18}/>
+                <div
+                     onClick={() => inviteResponseMutation.mutate({ inviteId:invitation._id, action:'accept' })}
+                    className='bg-base-300 rounded-full p-1 hover:bg-success hover:text-success-content cursor-pointer active:bg-success/50'
+                    >
+                        <Check size={18}/>
                 </div>
             </div>
         </div>

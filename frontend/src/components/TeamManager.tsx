@@ -63,7 +63,7 @@ const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeT
                     </div>
 
                     {/* Pending Invitation */}
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-1">
                         
                         {/* Owner */}
                         <div className="p-2 flex items-center bg-base-300 gap-2 rounded-xs">
@@ -83,7 +83,7 @@ const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeT
                         </div>
 
                         {/* Members */}
-                        <div className="flex flex-col">
+                        <div className="flex flex-col gap-1">
                             {collaborators
                                 ?.filter(collaborator => collaborator.status === 'accepted') // 1. Filter the collaborators array
                                 .map(collaborator => (                                       // 2. Map the filtered array to components

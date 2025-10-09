@@ -20,3 +20,13 @@ export const inviteUser = async (inviteData: InviteUserVariables) => {
         throw new Error(error.response?.data?.message || 'An unexpected error occurred');
     };
 };
+
+export const inviteResponse = async (inviteData: any) => {
+
+    try{
+        const res = await axiosInstance.post(`collab/response`, inviteData);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};
