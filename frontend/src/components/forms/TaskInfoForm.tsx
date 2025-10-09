@@ -69,7 +69,7 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
                             </summary>
                             <ul className="menu dropdown-content bg-base-100 rounded-box z-1 p-1 shadow-sm w-full text-xs border-1 border-base-content/10">
                                 {priorityChoice.map(choice => (
-                                    <li 
+                                    <li key={choice}
                                         onClick={() => {setTaskData({...taskData, priority: choice}), dropDownRef.current?.removeAttribute("open");}} 
                                         className="font-medium border-b-1 border-base-content/10"
                                         >

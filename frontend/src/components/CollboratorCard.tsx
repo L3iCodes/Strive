@@ -1,11 +1,16 @@
 import { ChevronDown, Mail, MailX } from 'lucide-react'
 import type { Collaborators } from '../types'
+import { useCollab } from '../hooks/useCollab';
+import { useParams } from 'react-router-dom';
 
 interface CollaboratorCardProps {
     collaborator: Collaborators;
 }
 
 export const PendingCard = ({collaborator}: CollaboratorCardProps) => {
+    const param  = useParams();
+    const { inviteResponseMutation } = useCollab(param.id as string);
+
     return (
         <div className="p-2 flex items-center bg-base-300 gap-2 rounded-xs">
             <div className="w-9 h-9 flex justify-center items-center rounded-full bg-base-100 border-1 border-base-content/20">
@@ -16,7 +21,17 @@ export const PendingCard = ({collaborator}: CollaboratorCardProps) => {
                 <p className="text-xs text-base-content/50">Pending</p>
             </div>
             <div className="ml-auto w-9 h-9 flex justify-center items-center rounded-full hover:bg-error hover:text-error-content active:bg-error/50 transition-all duration-150 cursor-pointer">
-                <MailX size={16} />
+                <MailX 
+                    onClick={() => 
+                    inviteResponseMutation.mutate(
+                        { 
+                            inviteId:collaborator.inviteId, 
+                            action:'reject', 
+                            message:'Cancelled an invite',
+                            isSendResponse: false 
+                        })} 
+                    size={16} 
+                />
             </div>
         </div>
     );

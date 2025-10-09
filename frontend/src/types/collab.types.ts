@@ -3,6 +3,7 @@ import type { BoardProps } from "./board.types";
 
 export interface Collaborators{
     _id: string;
+    inviteId: string;
     user: User;
     role: 'viewer' | 'editor';
     status: 'pending' | 'accepted';
@@ -14,7 +15,10 @@ export interface InviteUserVariables {
 };
 
 export interface InvitationVariables {
+    inviteId: string;
     from: User;
     to:  User;
     board:  BoardProps;
+    type: 'message' | 'invite';
+    message: string;
 };

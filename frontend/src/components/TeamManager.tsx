@@ -4,8 +4,6 @@ import type { User } from "../store/useAuthStore";
 import InviteMemberForm from "./forms/InviteMemberForm";
 import { CollaboratorCard, PendingCard } from "./CollboratorCard";
 
-
-
 interface TeamManagerProps {
     isTeamManagerOpen: boolean;
     boardName: string | undefined;

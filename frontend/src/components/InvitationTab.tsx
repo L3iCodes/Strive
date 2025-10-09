@@ -24,7 +24,7 @@ const InvitationTab = () => {
 
                     <div className='flex flex-col gap-2'>
                         {invitations?.map(invitation => (
-                            <InviteCard invitation={invitation} />
+                            <InviteCard key={invitation.inviteId} invitation={invitation} />
                         ))}
                     </div>
                 </div>
@@ -38,33 +38,45 @@ export default InvitationTab
 const InviteCard = ({invitation}: any) => {
     const param = useParams();
     const { inviteResponseMutation } = useCollab(param.id as string);
-
+    console.log(invitation)
     return (
         <div className='p-1 flex items-center gap-2 border-b border-base-content/10'>
             <img 
                 src={invitation?.from.avatar || ''}
                 className='h-7 w-7 object-cover rounded-full border-2 border-base-content/10'
             />
-            <div>
-                <h2 className='text-xs font-bold'>{invitation?.from.username}</h2>
-                <p className='text-xs '>Has invited you to collaborate in [{invitation?.board?.name}]</p>
-            </div>
 
-            <div className='ml-auto flex gap-1'>
-                <div 
-                    onClick={() => inviteResponseMutation.mutate({ inviteId:invitation._id, action:'reject' })}
-                    className='bg-base-300 rounded-full p-1 hover:bg-error hover:text-error-content cursor-pointer active:bg-error-content/50'
-                    >
-                        <X size={18}/>
+            {invitation?.type === 'message' && (
+                <div>
+                    <h2 className='text-xs font-bold'>{invitation?.from.username}</h2>
+                    <p className='text-xs '>{invitation?.message}</p>
                 </div>
+            )}
+            
+            {invitation?.type === 'invite' && ( 
+                <>
+                    <div>
+                        <h2 className='text-xs font-bold'>{invitation?.from.username}</h2>
+                        <p className='text-xs '>Has invited you to collaborate in [{invitation?.board?.name}]</p>
+                    </div>
 
-                <div
-                     onClick={() => inviteResponseMutation.mutate({ inviteId:invitation._id, action:'accept' })}
-                    className='bg-base-300 rounded-full p-1 hover:bg-success hover:text-success-content cursor-pointer active:bg-success/50'
-                    >
-                        <Check size={18}/>
-                </div>
-            </div>
+                    <div className='ml-auto flex gap-1'>
+                        <div 
+                            onClick={() => inviteResponseMutation.mutate({ inviteId:invitation._id, action:'reject' })}
+                            className='bg-base-300 rounded-full p-1 hover:bg-error hover:text-error-content cursor-pointer active:bg-error-content/50'
+                            >
+                                <X size={18}/>
+                        </div>
+
+                        <div
+                            onClick={() => inviteResponseMutation.mutate({ inviteId:invitation._id, action:'accept' })}
+                            className='bg-base-300 rounded-full p-1 hover:bg-success hover:text-success-content cursor-pointer active:bg-success/50'
+                            >
+                                <Check size={18}/>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

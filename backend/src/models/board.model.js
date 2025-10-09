@@ -6,6 +6,7 @@ const BoardSchema = new Schema({
     desc: { type: String },
     owner: { type: Schema.Types.ObjectId, ref: "User" },
     collaborators: [{
+        inviteId: { type: Schema.Types.ObjectId, ref: "Notification" },
         user: { type: Schema.Types.ObjectId, ref: "User" },
         status: { type: String, enum: ['pending', 'accepted'] },
         role: { type: String, enum: ['viewer', 'editor'] }

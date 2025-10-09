@@ -15,11 +15,11 @@ export const BoardHeader = ({name, collaborators, openManage}: BoardHeaderProps)
             </div>
             <div className="flex ml-auto items-center gap-1">
                 <div className="flex gap-1">
-                    {collaborators?.map((field:any) => {
-                        // if(field.status === 'pending') return;
+                    {collaborators?.map((field:any, index:number) => {
+                        if(field.status === 'pending') return;
                         return (<>
-                            <img 
-                                key={field.user?._id}
+                            <img
+                                key={`${field.user?._id}-profile-${index}`}
                                 src={field.user?.avatar}
                                 className="w-5 h-5"
                             />
