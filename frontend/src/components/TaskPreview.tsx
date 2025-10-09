@@ -6,9 +6,15 @@ import Subtask from "./Subtask";
 import { useQuery } from "@tanstack/react-query";
 import { getTask } from "../apis/task.api";
 import type { Task } from "../types";
+import { useAuthStore } from "../store/useAuthStore";
 
 const TaskPreview = () => {
     const { isPreviewOpen, closePreview, taskId } = useTaskStore();
+    const { userRole } = useAuthStore();
+    
+    const canEdit = userRole && ['owner', 'editor'].includes(userRole);
+
+
     
     const { data: task } = useQuery<Task>({
         queryKey: ['task', taskId],
@@ -40,10 +46,12 @@ const TaskPreview = () => {
         
                     </div>
 
-                    <button type='button' className="p-2 w-full flex gap-2 items-center justify-center border-1 border-base-content/10 text-xs rounded-md hover:bg-base-200 active:bg-base-100 cursor-pointer mb-5"
-                    >
-                        <UserPlusIcon size={13}/> Assign to Member
-                    </button>
+                    {canEdit && (
+                        <button type='button' className="p-2 w-full flex gap-2 items-center justify-center border-1 border-base-content/10 text-xs rounded-md hover:bg-base-200 active:bg-base-100 cursor-pointer mb-5"
+                        >
+                            <UserPlusIcon size={13}/> Assign to Member
+                        </button>
+                    )}
                 </div>
                 
                 {/* Subtask list */}
@@ -56,7 +64,9 @@ const TaskPreview = () => {
                         ))}
                     </div>
                     
-                    <NewSubtaskForm taskId={task?._id as string} sectionId={task?.section as string}/>
+                    {canEdit && (
+                        <NewSubtaskForm taskId={task?._id as string} sectionId={task?.section as string}/>
+                    )}
                 </div>
             </div> 
         </div>

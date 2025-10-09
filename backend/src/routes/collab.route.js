@@ -8,5 +8,4 @@ router.get('/getInvite', authenticateToken, getInvites);
 router.post('/invite', authenticateToken, inviteUser);
 router.post('/response', authenticateToken, inviteResponse);
 
-
 export default router;

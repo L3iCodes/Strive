@@ -60,7 +60,7 @@ const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeT
                         {/* <p className="text-[13px] w-5 h-5 bg-base-content/10 text-center rounded-xs">{collaborators?.length}</p> */}
                     </div>
 
-                    {/* Pending Invitation */}
+                    {/* Members */}
                     <div className="flex flex-col gap-1">
                         
                         {/* Owner */}

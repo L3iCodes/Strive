@@ -16,7 +16,7 @@ const NewBoardForm = () => {
     const [boardData, setBoardData] = useState({name: '', desc: '', sections: templateChoice[template].sections})
     const dropDownRef = useRef<HTMLDetailsElement>(null);
     const { createBoardMutation } = useBoard();
-
+    
     useEffect(() => {
         inputRef.current?.focus();
     }, []);

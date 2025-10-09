@@ -3,6 +3,7 @@ import type { BoardProps } from "../types";
 
 import SectionComponent from "./Section";
 import NewSectionForm from "./forms/NewSectionForm";
+import { useAuthStore } from "../store/useAuthStore";
 
 interface BoardComponentProps {
   board: BoardProps;
@@ -10,7 +11,13 @@ interface BoardComponentProps {
 
 const Board = ({board}: BoardComponentProps) => {
     const [sectionList, setSectionList] = useState<SectionItem[]>([])
-
+    const { setUserRole } = useAuthStore();
+    
+    // Set user role
+    useEffect(() => {
+        if(board) setUserRole(board?.owner, board?.collaborators);
+    }, [board])
+    
     // Set section list
     useEffect(() => {
         setSectionList(

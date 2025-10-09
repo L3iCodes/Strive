@@ -6,6 +6,7 @@ import TaskComponent from "./Task";
 import { useSection } from "../hooks/useSection";
 import { useParams } from "react-router-dom";
 import { SectionMenu } from "./Menu";
+import { useAuthStore } from "../store/useAuthStore";
 
 interface SectionComponentProps{
     section: Section;
@@ -13,6 +14,7 @@ interface SectionComponentProps{
 
 const SectionComponent = ({section}: SectionComponentProps) => {
     const param = useParams();
+    const { userRole } = useAuthStore();
     const { deleteSectionMutation, updateSectionMutation } = useSection(param.id as string);
     const [showAddTaskTop, setShowAddTaskTop] = useState<boolean>(false);
     const [showAddTaskBot, setShowAddTaskBot] = useState<boolean>(false);
@@ -21,6 +23,12 @@ const SectionComponent = ({section}: SectionComponentProps) => {
     const [editMode, setEditMode] = useState<boolean>(false);
     const [sectionName, setSectionName] = useState(section?.name);
     const inputRef = useRef<HTMLInputElement>(null);
+    
+    const canEdit = userRole && ['owner', 'editor'].includes(userRole);
+
+    const handleEditMode = () => {
+        if (canEdit) setEditMode(true);
+    };
 
     if(isSectionCollapse)
         return(
@@ -54,7 +62,7 @@ const SectionComponent = ({section}: SectionComponentProps) => {
                         readOnly={!editMode}
                         className={`input text-[14px] h-fit !p-[1px] font-medium max-w-[60%] truncate w-full rounded-xs ${editMode ? 'cursor-text border-1 border-base-content/20 bg-base-100' : 'border-0 cursor-pointer bg-base-300 !px-0'}`}
                         onChange={(e) => setSectionName(e.currentTarget.value)}
-                        onClick={() => setEditMode(true)}
+                        onClick={handleEditMode}
                         onKeyDown={(e) => {
                             if(e.key === 'Enter') {
                                 if(sectionName.trim() === ""){
@@ -70,45 +78,49 @@ const SectionComponent = ({section}: SectionComponentProps) => {
                     />
                     
                     <p className="text-xs ml-2 ">{section.tasks.length}</p>
-                    <div className="ml-auto flex gap-1">
-                        <div className="rounded-xs hover:bg-primary hover:text-primary-content active:bg-base-200">
-                            <Plus onClick={() => {setShowAddTaskTop(s => !s), setShowAddTaskBot(false);}} size={18} className="cursor-pointer"/>
+
+                    {canEdit && (
+                        <div className="ml-auto flex gap-1">
+                            <div className="rounded-xs hover:bg-primary hover:text-primary-content active:bg-base-200">
+                                <Plus onClick={() => {setShowAddTaskTop(s => !s), setShowAddTaskBot(false);}} size={18} className="cursor-pointer"/>
+                            </div>
+                            
+                            <div className={`rounded-xs hover:bg-primary hover:text-primary-content active:bg-base-200 ${openSectionMenu && 'bg-primary text-primary-content'}  `}>
+                                {/* <Ellipsis onClick={() => deleteSectionMutation.mutate(section._id)} size={18} className="cursor-pointer"/> */}
+                                <Ellipsis onClick={() => setOpeSectionMenu(s => !s)} size={18} className="cursor-pointer"/>
+                            </div>
+                            {openSectionMenu && (
+                                <SectionMenu 
+                                    onCollapse={() => {setIsSectionCollapse(true), setOpeSectionMenu(false)}}
+                                    onEdit={() => {setEditMode(true), setOpeSectionMenu(false), inputRef.current?.focus()}}
+                                    onDelete={() => deleteSectionMutation.mutate(section._id)}
+                                />
+                            )}
                         </div>
-                        <div className={`rounded-xs hover:bg-primary hover:text-primary-content active:bg-base-200 ${openSectionMenu && 'bg-primary text-primary-content'}  `}>
-                            {/* <Ellipsis onClick={() => deleteSectionMutation.mutate(section._id)} size={18} className="cursor-pointer"/> */}
-                            <Ellipsis onClick={() => setOpeSectionMenu(s => !s)} size={18} className="cursor-pointer"/>
-                        </div>
-                        {openSectionMenu && (
-                            <SectionMenu 
-                                onCollapse={() => {setIsSectionCollapse(true), setOpeSectionMenu(false)}}
-                                onEdit={() => {setEditMode(true), setOpeSectionMenu(false), inputRef.current?.focus()}}
-                                onDelete={() => deleteSectionMutation.mutate(section._id)}
-                            />
-                        )}
-                    </div>
+                    )}
+                    
                 </div>
                 
                 <div onClick = {() => setOpeSectionMenu(false)} className="w-full h-full flex flex-col gap-2">
                     {/* Show new task form on top */}
-                    {showAddTaskTop && (<NewTaskForm onClose={() => setShowAddTaskTop(false)} sectionId={section._id as string} position="top"/>)}
+                    {showAddTaskTop && canEdit && (<NewTaskForm onClose={() => setShowAddTaskTop(false)} sectionId={section._id as string} position="top"/>)}
 
                     {section.tasks?.map(task => (
                         <TaskComponent key={task._id} task={task} />
                     ))}
                     
                     {/* Section Body */}
-                    {showAddTaskBot
-                        ?   (<NewTaskForm onClose={() => {setShowAddTaskBot(false)}} sectionId={section._id as string} position="bot"/>)
-                        :   (
-                                <button 
-                                    onClick={() => {setShowAddTaskBot(true), setShowAddTaskTop(false)}}
-                                    className="w-full p-[5px] flex items-center gap-2 text-xs cursor-pointer hover:bg-primary hover:text-primary-content rounded-xs"
-                                    >
-                                        <Plus size={15}/>
-                                        Add Task
-                                </button>
-                            )
-                    }
+                    {canEdit && (
+                        showAddTaskBot 
+                            ? <NewTaskForm onClose={() => setShowAddTaskBot(false)} sectionId={section._id as string} position="bot"/>
+                            : <button
+                                onClick={() => {setShowAddTaskBot(true); setShowAddTaskTop(false)}}
+                                className="w-full p-[5px] flex items-center gap-2 text-xs cursor-pointer hover:bg-primary hover:text-primary-content rounded-xs"
+                            >
+                                <Plus size={15}/>
+                                Add Task
+                            </button>
+                        )}
                 </div>
                 
             </div>
