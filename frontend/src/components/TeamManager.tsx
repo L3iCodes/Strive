@@ -1,6 +1,6 @@
 import { Crown, Mail, Users2, X } from "lucide-react";
 import type { Collaborators } from "../types";
-import type { User } from "../store/useAuthStore";
+import { useAuthStore, type User } from "../store/useAuthStore";
 import InviteMemberForm from "./forms/InviteMemberForm";
 import { CollaboratorCard, PendingCard } from "./CollboratorCard";
 
@@ -13,6 +13,8 @@ interface TeamManagerProps {
 }
 
 const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeTeamManager}: TeamManagerProps) => {
+    const { userRole } = useAuthStore();
+
     return (
         <div className={`h-full pt-[75px] p-5 md:p-5 w-full max-w-md flex flex-col gap-3 fixed top-0 bg-base-100 border-1 border-base-content/20 shadow-xl/55 z-10 
                         transition-all duration-400 ease-in-out
@@ -28,10 +30,12 @@ const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeT
                     <X onClick={closeTeamManager} className=" transition-all hover:scale-103 cursor-pointer" />
                 </div>
             </div>
-
+            
             <div className="flex flex-col gap-7">
-                <InviteMemberForm />
-
+                {userRole !== 'viewer' && (
+                    <InviteMemberForm />
+                )}
+            
                 <div className="flex flex-col gap-1 p-2 border-1 border-base-content/10">
                     <div className="flex items-center gap-2 mb-2">
                         <Mail size={16}/>

@@ -14,8 +14,6 @@ const TaskPreview = () => {
     
     const canEdit = userRole && ['owner', 'editor'].includes(userRole);
 
-
-    
     const { data: task } = useQuery<Task>({
         queryKey: ['task', taskId],
         queryFn: () => getTask(taskId as string),
