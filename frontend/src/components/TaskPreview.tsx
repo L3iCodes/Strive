@@ -6,7 +6,7 @@ import Subtask from "./Subtask";
 
 import { useAuthStore } from "../store/useAuthStore";
 import CollabSearch from "./CollabSearch";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTask } from "../hooks/useTask";
 import { useParams } from "react-router-dom";
 import { CollaboratorAssignedCard } from "./CollboratorCard";
@@ -19,6 +19,12 @@ const TaskPreview = () => {
     const { userRole } = useAuthStore();
     const [ isAssigneeOpen, setIsAssigneeOpen ] = useState(false);
     
+    useEffect(() => {
+        // Closes assignee search
+        setIsAssigneeOpen(false)
+        
+    },[taskId, task])
+
     const canEdit = userRole && ['owner', 'editor'].includes(userRole);
 
     return (

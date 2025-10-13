@@ -1,7 +1,7 @@
 import { axiosInstance } from "../lib/axios";
 
 export const getTask = async (taskId: string) => {
-    console.log('IN GETTASK API', taskId)
+
     try{
         const res = await axiosInstance.get(`task/${taskId}`);
         return res.data;

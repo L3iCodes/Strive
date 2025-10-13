@@ -235,7 +235,6 @@ export const assignTask = async (req, res) => {
     const { taskId, assigneeId } = req.body;
 
     try{
-        console.log(_id, taskId, assigneeId)
         const task = await Task.findByIdAndUpdate(
             taskId,
             { $push: { assignees: assigneeId } } 

@@ -329,29 +329,29 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
 
     const assignTaskMutation = useMutation({
         mutationFn: assignTask,
-        onMutate: (variables) => {
-            console.log('IN MUTATE', variables)
+        onMutate: (_variables) => {
+           
         },
         onSuccess: (data) => {
             console.log(data)
             queryClient.invalidateQueries({queryKey: ['task', taskId]})
             queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
         },
-        onError: (error, _variables, context) => {
+        onError: (error, _variables, _context) => {
             console.log(error);
         }
     });
 
     const removeAssigneekMutation = useMutation({
         mutationFn: removeAssignee,
-        onMutate: (variables) => {
-            console.log(variables)
+        onMutate: (_variables) => {
+            
         },
         onSuccess: (data) => {
             queryClient.invalidateQueries({queryKey: ['task', taskId]})
             queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
         },
-        onError: (error, _variables, context) => {
+        onError: (error, _variables, _context) => {
             console.log(error);
         }
     })
