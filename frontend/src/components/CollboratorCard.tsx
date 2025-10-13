@@ -3,6 +3,7 @@ import type { Collaborators } from '../types'
 import { useCollab } from '../hooks/useCollab';
 import { useParams } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
+import { useRef } from 'react';
 
 interface CollaboratorCardProps {
     collaborator: Collaborators;
@@ -42,7 +43,11 @@ export const PendingCard = ({collaborator}: CollaboratorCardProps) => {
 };
 
 export const CollaboratorCard = ({collaborator}: CollaboratorCardProps) => {
+    const param = useParams();
+    const dropDownRef = useRef<HTMLDetailsElement>(null);
     const { userRole } = useAuthStore();
+    const { updateRoleMutation } = useCollab(param.id as string);
+    const roles = ['viewer', 'editor'];
 
     return (
          <div className="p-2 flex items-center bg-base-300 gap-2 rounded-xs">
@@ -56,23 +61,25 @@ export const CollaboratorCard = ({collaborator}: CollaboratorCardProps) => {
             </div>
             
             {userRole !== 'viewer' && (
-                <details className="ml-auto relative">
+                <details ref={dropDownRef} className="ml-auto relative">
                     <summary className={`w-full flex items-start justify-center gap-1 text-xs py-1 px-2 border-1 rounded-xs border-base-content/20 bg-base-100 cursor-pointer`}>
                         <p>{collaborator.role}</p>
                         <ChevronDown className="ml-auto" size={16} />
                     </summary>
                     <ul className="menu dropdown-content bg-base-100 rounded-box z-1 p-1 shadow-sm w-full text-xs border-1 border-base-content/10 absolute">
-                        <li 
-                            // onClick={() => {setTaskData({...taskData, priority: choice}), dropDownRef.current?.removeAttribute("open");}} 
-                            className="font-medium border-b-1 border-base-content/10"
-                            ><a className={`flex flex-col gap-1 items-start`}>viewer</a>
-                        </li>
-
-                        <li 
-                            // onClick={() => {setTaskData({...taskData, priority: choice}), dropDownRef.current?.removeAttribute("open");}} 
-                            className="font-medium border-b-1 border-base-content/10"
-                            ><a className={`flex flex-col gap-1 items-start`}>editor</a>
-                        </li>
+                        {roles.map(role => {
+                            if(collaborator.role !== role) 
+                                return (
+                                    <li 
+                                        onClick={() => {
+                                            updateRoleMutation.mutate({boardId:param.id, collaboratorId:collaborator.user, role});
+                                            dropDownRef.current?.removeAttribute("open");
+                                        }} 
+                                        className="font-medium border-b-1 border-base-content/10"
+                                        ><a className={`flex flex-col gap-1 items-start`}>{role}</a>
+                                    </li>
+                                )
+                        })}
                     </ul>
                 </details>
             )}

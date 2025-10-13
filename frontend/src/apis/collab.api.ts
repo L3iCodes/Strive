@@ -30,3 +30,13 @@ export const inviteResponse = async (inviteData: any) => {
         throw new Error(error.response?.data?.message || 'An unexpected error occurred');
     };
 };
+
+export const updateRole = async (userRoleData: any) => {
+
+    try{
+        const res = await axiosInstance.post(`collab/updateRole`, userRoleData);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};

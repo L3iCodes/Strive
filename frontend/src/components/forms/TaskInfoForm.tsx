@@ -17,7 +17,7 @@ export interface TaskInfoFormProps {
 
 const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, dueDate }: TaskInfoFormProps) => {
     const param = useParams();
-    const { isPreviewOpen, closePreview } = useTaskStore();
+    const { isPreviewOpen } = useTaskStore();
     const { updateTaskMutation } = useTask({boardId:param.id});
     const [editMode, setEditMode] = useState(false);
     const [taskData, setTaskData] = useState({task_name, taskId, description, priority, dueDate})

@@ -154,3 +154,38 @@ export const deleteNotification = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error"});
     };
 };
+
+export const updateRole = async (req, res) => {
+    const { _id } = req.user;
+    const { boardId, collaboratorId, role } = req.body;
+
+    try{
+        console.log(_id, boardId, collaboratorId, role)
+        //Find and update the board & collaborator
+        const board = await Board.findOneAndUpdate(
+            {
+                _id: boardId,
+                'collaborators.user': collaboratorId,
+            },
+            {
+                $set: { 'collaborators.$.role': role } 
+            }
+        )
+        if(!board) return res.status(404).json({message: "Board does not exists"});
+
+
+        // // Send notification for permission change
+        // await Notification.create({
+        //     from: _id,
+        //     to: collaboratorId,
+        //     board: boardId,
+        //     type: 'message',
+        //     message: `Has changed your in [${board.name}] permission to ${role} `,
+        // });
+
+        return res.status(201).json({ message: 'Collaborator role updated' });
+    }catch(error){
+        console.log('Error in editPermission controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+}
