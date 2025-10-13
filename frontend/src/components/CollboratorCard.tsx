@@ -1,12 +1,16 @@
-import { ChevronDown, Mail, MailX } from 'lucide-react'
+import { ChevronDown, Mail, MailX, UserMinus } from 'lucide-react'
 import type { Collaborators } from '../types'
 import { useCollab } from '../hooks/useCollab';
 import { useParams } from 'react-router-dom';
-import { useAuthStore } from '../store/useAuthStore';
+import { useAuthStore, type User } from '../store/useAuthStore';
 import { useRef } from 'react';
 
 interface CollaboratorCardProps {
     collaborator: Collaborators;
+}
+
+interface CollaboratorSearchCardProps {
+    collaborator: User;
 }
 
 export const PendingCard = ({collaborator}: CollaboratorCardProps) => {
@@ -71,6 +75,7 @@ export const CollaboratorCard = ({collaborator}: CollaboratorCardProps) => {
                             if(collaborator.role !== role) 
                                 return (
                                     <li 
+                                        key={role}
                                         onClick={() => {
                                             updateRoleMutation.mutate({boardId:param.id, collaboratorId:collaborator.user, role});
                                             dropDownRef.current?.removeAttribute("open");
@@ -83,6 +88,20 @@ export const CollaboratorCard = ({collaborator}: CollaboratorCardProps) => {
                     </ul>
                 </details>
             )}
+        </div>
+    )
+};
+
+export const CollaboratorSearchCard = ({collaborator}: CollaboratorSearchCardProps) => {
+    return(
+        <div className=" w-full flex items-center gap-2 bg-base-200 p-2 rounded-xs ring-1 ring-base-content/10">
+            <img 
+                src={collaborator.avatar || 'https://avatar.iran.liara.run/public'}
+                className="w-5 h-5 rounded-full bg-base-100 border-2 border-base-content/20 object-cover"
+            />
+
+            <h1 className="font-medium">{collaborator.username}</h1>
+            <UserMinus size={25} className="text-base-content/50 ml-auto p-1 rounded-full cursor-pointer hover:text-error-content hover:bg-error active:bg-error/80  "/>
         </div>
     )
 };

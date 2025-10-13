@@ -4,12 +4,12 @@ import type { BoardProps } from "../types";
 import SectionComponent from "./Section";
 import NewSectionForm from "./forms/NewSectionForm";
 import { useAuthStore } from "../store/useAuthStore";
+import { useParams } from "react-router-dom";
+import { useBoard } from "../hooks/useBoard";
 
-interface BoardComponentProps {
-  board: BoardProps;
-}
-
-const Board = ({board}: BoardComponentProps) => {
+const Board = () => {
+    const param = useParams();
+    const { kanban:board } = useBoard(param.id as string);
     const [sectionList, setSectionList] = useState<SectionItem[]>([])
     const { setUserRole } = useAuthStore();
     

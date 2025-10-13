@@ -10,20 +10,16 @@ import TeamManager from "../components/TeamManager";
 import TaskPreview from "../components/TaskPreview";
 
 // Store
-import type { BoardProps } from "../types";
 import { useEffect, useState } from "react";
 import { useTaskStore } from "../store/useTaskStore";
+import { useBoard } from "../hooks/useBoard";
 
 const KanbanBoard = () => {
     const param = useParams();
+    const { kanban:board, isKanbanLoading } = useBoard(param.id as string);
     const { setPreview, setTask } = useTaskStore();
     const [isTeamManagerOpen, setIsTeamManagerOpen] = useState(false);
     
-    const { data, isLoading } = useQuery<BoardProps>({
-        queryKey: ['kanban', param.id],   // include the id in the key
-        queryFn: () => getKanbanBoard(param.id as string),
-    });
-
     // Reset task preview
     useEffect(() => {
         return(() => {
@@ -34,17 +30,17 @@ const KanbanBoard = () => {
     
     return (
         <div className="h-full flex flex-col gap-2">
-            {isLoading
+            {isKanbanLoading
                 ? (<BoardHeaderLoading />)
-                : data && (<BoardHeader name={data.name} collaborators={data.collaborators} openManage={() => setIsTeamManagerOpen(s => !s)} />)
+                : board && (<BoardHeader name={board.name} collaborators={board.collaborators} openManage={() => setIsTeamManagerOpen(s => !s)} />)
             }
 
-            <Board board={data!} />
+            <Board/>
 
             <TeamManager
-                boardName={data?.name} 
-                owner={data?.owner}
-                collaborators={data?.collaborators}
+                boardName={board?.name} 
+                owner={board?.owner}
+                collaborators={board?.collaborators}
                 isTeamManagerOpen={isTeamManagerOpen} 
                 closeTeamManager={() => setIsTeamManagerOpen(false)}  
             />

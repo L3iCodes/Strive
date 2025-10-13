@@ -17,13 +17,14 @@ export const BoardHeader = ({name, collaborators, openManage}: BoardHeaderProps)
                 <div className="flex gap-1">
                     {collaborators?.map((field:any, index:number) => {
                         if(field.status === 'pending') return;
-                        return (<>
-                            <img
-                                key={`${field.user?._id}-profile-${index}`}
-                                src={field.user?.avatar}
-                                className="w-5 h-5"
-                            />
-                        </>    
+                        return (
+                            <div key={field.user?._id || index}> {/* Use the user's ID as the key, fall back to index */}
+                                <img
+                                    // Remove the key from the img element
+                                    src={field.user?.avatar}
+                                    className="w-5 h-5"
+                                />
+                            </div>
                         )
                     })}
                 </div>

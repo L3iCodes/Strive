@@ -160,7 +160,6 @@ export const updateRole = async (req, res) => {
     const { boardId, collaboratorId, role } = req.body;
 
     try{
-        console.log(_id, boardId, collaboratorId, role)
         //Find and update the board & collaborator
         const board = await Board.findOneAndUpdate(
             {
@@ -173,15 +172,14 @@ export const updateRole = async (req, res) => {
         )
         if(!board) return res.status(404).json({message: "Board does not exists"});
 
-
-        // // Send notification for permission change
-        // await Notification.create({
-        //     from: _id,
-        //     to: collaboratorId,
-        //     board: boardId,
-        //     type: 'message',
-        //     message: `Has changed your in [${board.name}] permission to ${role} `,
-        // });
+        // Send notification for permission change
+        await Notification.create({
+            from: _id,
+            to: collaboratorId,
+            board: boardId,
+            type: 'message',
+            message: `Has changed your permission in [${board.name}] to ${role} `,
+        });
 
         return res.status(201).json({ message: 'Collaborator role updated' });
     }catch(error){

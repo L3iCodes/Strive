@@ -6,7 +6,7 @@ export const getTask = async (req, res) => {
     const { taskId } = req.params;
 
     try{
-        const task = await Task.findById(taskId);
+        const task = await Task.findById(taskId).populate('assignees', '_id username email');
         if(!task) return res.status(404).json({ message: "Task not found" });
 
         res.status(200).json(task)

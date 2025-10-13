@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient, useQuery} from "@tanstack/react-query";
-import { createBoard, deleteBoard, getBoards } from "../apis/board.api";
+import { createBoard, deleteBoard, getBoards, getKanbanBoard } from "../apis/board.api";
 import { useState } from "react";
-import type { BoardSummary } from "../types";
+import type { BoardSummary, BoardProps } from "../types";
 import { useAuthStore } from "../store/useAuthStore";
 
-export const useBoard = () => {
+
+export const useBoard = (boardId?: string) => {
     const queryClient = useQueryClient();
     const { user } = useAuthStore();
     const [filteredBoards, setFilterBoard] = useState<BoardSummary[]>([]);
@@ -12,6 +13,12 @@ export const useBoard = () => {
     const { data:boardList, isLoading:isBoardLoading } = useQuery<BoardSummary[]>({
         queryKey: ["boards"],
         queryFn: getBoards,
+    });
+
+    const { data:kanban , isLoading:isKanbanLoading } = useQuery<BoardProps>({
+        queryKey: ['kanban', boardId],   // include the id in the key
+        queryFn: () => getKanbanBoard(boardId as string),
+        enabled: !!boardId,
     });
 
     const createBoardMutation = useMutation({
@@ -76,5 +83,16 @@ export const useBoard = () => {
             setFilterBoard(filtered);
         };
 
-    return({createBoardMutation, boardList, isBoardLoading, deleteBoardMutation, filter, filteredBoards});
+    return(
+        {
+            createBoardMutation, 
+            boardList, 
+            isBoardLoading, 
+            deleteBoardMutation, 
+            filter, 
+            filteredBoards,
+
+            kanban,
+            isKanbanLoading,
+        });
 };

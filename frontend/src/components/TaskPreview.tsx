@@ -1,4 +1,4 @@
-import { Ellipsis, ListTodo, UserPlusIcon, Users, X } from "lucide-react";
+import { Ellipsis, ListTodo, UserMinus, UserPlusIcon, Users, X } from "lucide-react";
 import { useTaskStore } from "../store/useTaskStore"
 import NewSubtaskForm from "./forms/NewSubtaskForm";
 import TaskInfoForm from "./forms/TaskInfoForm";
@@ -7,10 +7,14 @@ import { useQuery } from "@tanstack/react-query";
 import { getTask } from "../apis/task.api";
 import type { Task } from "../types";
 import { useAuthStore } from "../store/useAuthStore";
+import CollabSearch from "./CollabSearch";
+import { useState } from "react";
+import { CollaboratorSearchCard } from "./CollboratorCard";
 
 const TaskPreview = () => {
     const { isPreviewOpen, closePreview, taskId } = useTaskStore();
     const { userRole } = useAuthStore();
+    const [ isAssigneeOpen, setIsAssigneeOpen ] = useState(false);
     
     const canEdit = userRole && ['owner', 'editor'].includes(userRole);
 
@@ -39,16 +43,29 @@ const TaskPreview = () => {
                 {/* Assignee function */}
                 <div className="flex flex-col gap-2 border-b-1 border-base-content/20">
                     <label className="flex items-center gap-1 text-base-content/80"><Users size={13}/>Assignees</label>
-                    <div className="h-20 p-2 flex flex-col items-center">
-                        {task && task?.assignees.length < 1 && (<h1 className="mx-auto my-auto text-sm text-base-content/50">No one assigned to this task</h1>)}
-        
+                    <div className="max-h-20 flex flex-col gap-1 items-center">
+                        {task && task?.assignees.length < 1 && (<h1 className="mx-auto my-auto text-sm text-base-content/50">No one is assigned to this task</h1>)}
+                      
+                        {/* Assigned user list */}
+                        {task?.assignees.map(collaborator => (
+                            <CollaboratorSearchCard collaborator={collaborator}/>
+                        ))}
                     </div>
-
+                    
                     {canEdit && (
-                        <button type='button' className="p-2 w-full flex gap-2 items-center justify-center border-1 border-base-content/10 text-xs rounded-md hover:bg-base-200 active:bg-base-100 cursor-pointer mb-5"
-                        >
-                            <UserPlusIcon size={13}/> Assign to Member
-                        </button>
+                        <div className="w-full relative">
+                            <button 
+                                onClick={() => setIsAssigneeOpen(s => !s)}
+                                type='button' 
+                                className="p-2 w-full flex gap-2 items-center justify-center border-1 border-base-content/10 text-xs rounded-md hover:bg-base-200 active:bg-base-100 cursor-pointer mb-5"
+                            >
+                                <UserPlusIcon size={13}/> Assign to Member
+                            </button>
+
+                            {isAssigneeOpen && (
+                                <CollabSearch assignees={task?.assignees}/>
+                            )}
+                        </div>
                     )}
                 </div>
                 

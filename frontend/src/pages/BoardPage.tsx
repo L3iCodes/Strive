@@ -1,6 +1,5 @@
 // Hooks
 import { useEffect, useMemo, useState } from "react"
-import { useBoardStore } from "../store/useBoardStore"
 
 // Components
 import Card from "../components/Card"
@@ -16,7 +15,6 @@ type TabState = 'recent' | 'personal' | 'shared'
 
 
 const BoardPage = () => {
-    const param = useParams();
     const { isBoardLoading, boardList, filter, filteredBoards } = useBoard();
     const [tab, setTab] = useState<TabState>('recent');
     const [isCard, setIsCard] = useState<boolean>(true);
