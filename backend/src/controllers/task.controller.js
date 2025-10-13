@@ -1,12 +1,13 @@
 import Task from "../models/task.model.js";
 import Section from "../models/section.model.js";
+import Notification from "../models/notification.model.js"
 import { createActivityService } from "../services/activity.service.js";
 
 export const getTask = async (req, res) => {
     const { taskId } = req.params;
 
     try{
-        const task = await Task.findById(taskId).populate('assignees', '_id username email');
+        const task = await Task.findById(taskId).populate('assignees');
         if(!task) return res.status(404).json({ message: "Task not found" });
 
         res.status(200).json(task)
@@ -225,6 +226,61 @@ export const moveTask = async (req, res) => {
         res.status(201).json({ message: "Succesfully moved task"})
     }catch(error){
         console.log('Error in moveTask controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};
+
+export const assignTask = async (req, res) => {
+    const { _id } = req.user;
+    const { taskId, assigneeId } = req.body;
+
+    try{
+        console.log(_id, taskId, assigneeId)
+        const task = await Task.findByIdAndUpdate(
+            taskId,
+            { $push: { assignees: assigneeId } } 
+        );
+        if(!task) return res.status(404).json({ message: "Task not found" });
+
+        console.log(task)
+        // Send notification for permission change
+        await Notification.create({
+            from: _id,
+            to: assigneeId,
+            board: task.board,
+            type: 'message',
+            message: `Has assigned a task to you`,
+        });
+
+        res.status(201).json({ message: "Succesfully assigned task"})
+    }catch(error){
+        console.log('Error in assignTask controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};
+
+export const removeAssignee = async (req, res) => {
+    const { taskId, assigneeId } = req.body;
+
+    try{
+        const task = await Task.findByIdAndUpdate(
+            taskId,
+            { $pull: { assignees: assigneeId } } 
+        );
+        if(!task) return res.status(404).json({ message: "Task not found" });
+
+        // // Send notification for permission change
+        // await Notification.create({
+        //     from: _id,
+        //     to: assigneeId,
+        //     board: task.board,
+        //     type: 'message',
+        //     message: `Has assigned a task to you`,
+        // });
+
+        res.status(201).json({ message: "Succesfully removed assignee"})
+    }catch(error){
+        console.log('Error in removeAssignee controller', error);
         return res.status(500).json({ message: "Internal Server Error"});
     };
 };

@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addSubTask, createTask, deleteSubtask, deleteTask, moveTask, updateSubtask, updateTask } from "../apis/task.api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { addSubTask, assignTask, createTask, deleteSubtask, deleteTask, getTask, moveTask, removeAssignee, updateSubtask, updateTask } from "../apis/task.api";
 import type {  BoardProps,  TaskDeletion,  UpdateTaskVariables,  AddSubTaskVariables, Task, DeleteSubTaskVariables, UpdateSubTaskVariables, MoveTaskVariables } from "../types";
-import { data } from "react-router-dom";
+import { useTaskStore } from "../store/useTaskStore";
 
 interface UseTaskVariable {
     boardId?: string,
@@ -10,6 +10,13 @@ interface UseTaskVariable {
 
 export const useTask = ({boardId, taskId}: UseTaskVariable) => {
     const queryClient = useQueryClient();
+    const { isPreviewOpen } = useTaskStore();
+
+    const { data: task } = useQuery<Task>({
+        queryKey: ['task', taskId],
+        queryFn: () => getTask(taskId as string),
+        enabled: !!taskId && isPreviewOpen,
+    });
 
     const createTaskMutation = useMutation({
         mutationFn: createTask,
@@ -320,5 +327,48 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
         }
     })
 
-    return { createTaskMutation, deleteTaskMutation, updateTaskMutation, addSubTaskMutation, deleteSubTaskMutation, updateSubtaskMutation, moveTaskMutation };
+    const assignTaskMutation = useMutation({
+        mutationFn: assignTask,
+        onMutate: (variables) => {
+            console.log('IN MUTATE', variables)
+        },
+        onSuccess: (data) => {
+            console.log(data)
+            queryClient.invalidateQueries({queryKey: ['task', taskId]})
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
+        },
+        onError: (error, _variables, context) => {
+            console.log(error);
+        }
+    });
+
+    const removeAssigneekMutation = useMutation({
+        mutationFn: removeAssignee,
+        onMutate: (variables) => {
+            console.log(variables)
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({queryKey: ['task', taskId]})
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
+        },
+        onError: (error, _variables, context) => {
+            console.log(error);
+        }
+    })
+
+    return { 
+            task,
+
+            createTaskMutation, 
+            deleteTaskMutation, 
+            updateTaskMutation, 
+            addSubTaskMutation, 
+            
+            deleteSubTaskMutation, 
+            updateSubtaskMutation, 
+            moveTaskMutation, 
+
+            assignTaskMutation,
+            removeAssigneekMutation,
+        };
 };

@@ -3,27 +3,24 @@ import { useTaskStore } from "../store/useTaskStore"
 import NewSubtaskForm from "./forms/NewSubtaskForm";
 import TaskInfoForm from "./forms/TaskInfoForm";
 import Subtask from "./Subtask";
-import { useQuery } from "@tanstack/react-query";
-import { getTask } from "../apis/task.api";
-import type { Task } from "../types";
+
 import { useAuthStore } from "../store/useAuthStore";
 import CollabSearch from "./CollabSearch";
 import { useState } from "react";
-import { CollaboratorSearchCard } from "./CollboratorCard";
+import { useTask } from "../hooks/useTask";
+import { useParams } from "react-router-dom";
+import { CollaboratorAssignedCard } from "./CollboratorCard";
+
 
 const TaskPreview = () => {
+    const param = useParams();
     const { isPreviewOpen, closePreview, taskId } = useTaskStore();
+    const { task } = useTask({ boardId:param.id, taskId:taskId as string });
     const { userRole } = useAuthStore();
     const [ isAssigneeOpen, setIsAssigneeOpen ] = useState(false);
     
     const canEdit = userRole && ['owner', 'editor'].includes(userRole);
 
-    const { data: task } = useQuery<Task>({
-        queryKey: ['task', taskId],
-        queryFn: () => getTask(taskId as string),
-        enabled: !!taskId && isPreviewOpen,
-    });
-    
     return (
         <div className={`h-full pt-[75px] p-5 md:p-5 w-full max-w-md flex flex-col gap-3 fixed top-0 bg-base-100 border-1 border-base-content/20 shadow-xl/55 z-10 
                         transition-all duration-400 ease-in-out
@@ -48,7 +45,7 @@ const TaskPreview = () => {
                       
                         {/* Assigned user list */}
                         {task?.assignees.map(collaborator => (
-                            <CollaboratorSearchCard collaborator={collaborator}/>
+                            <CollaboratorAssignedCard taskId={task._id as string} collaborator={collaborator}/>
                         ))}
                     </div>
                     
@@ -63,7 +60,7 @@ const TaskPreview = () => {
                             </button>
 
                             {isAssigneeOpen && (
-                                <CollabSearch assignees={task?.assignees}/>
+                                <CollabSearch taskId={task?._id as string} assignees={task?.assignees}/>
                             )}
                         </div>
                     )}

@@ -1,6 +1,7 @@
 import { axiosInstance } from "../lib/axios";
 
 export const getTask = async (taskId: string) => {
+    console.log('IN GETTASK API', taskId)
     try{
         const res = await axiosInstance.get(`task/${taskId}`);
         return res.data;
@@ -77,3 +78,22 @@ export const updateSubtask = async (taskData: any) => {
     };
 };
 
+export const assignTask = async (taskData: any) => {
+    
+    try{
+        const res = await axiosInstance.post(`task/assignTask`, taskData);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};
+
+export const removeAssignee = async (taskData: any) => {
+    
+    try{
+        const res = await axiosInstance.post(`task/removeAssignee`, taskData);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};
