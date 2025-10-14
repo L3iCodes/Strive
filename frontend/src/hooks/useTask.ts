@@ -235,6 +235,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
             return{ previousBoard, previousTask }
         },
         onSuccess: (_data) => {
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
             queryClient.invalidateQueries({queryKey: ['task', taskId]})
         },
         onError: (error, _variables, context) => {
@@ -292,9 +293,9 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
 
             return{ previousBoard, previousTask }
         },
-        onSuccess: (data) => {
+        onSuccess: (_data) => {
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
             queryClient.invalidateQueries({queryKey: ['task', taskId]})
-            console.log(data)
         },
         onError: (error, _variables, context) => {
             console.log(error);
@@ -312,11 +313,11 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
         onMutate: () => {
             
         },
-        onSuccess: (data) => {
+        onSuccess: (_data) => {
             queryClient.invalidateQueries({queryKey: ['task', taskId]})
             queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
         },
-        onError: (error, _variables, context) => {
+        onError: (error, _variables, _context) => {
             console.log(error);
             
             // // Revert board data if there is an error
@@ -331,9 +332,9 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
         mutationFn: assignTask,
         onMutate: ({ user }: assignTaskVariables) => {
 
-            // const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
+            const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
             const previousTask = queryClient.getQueryData<BoardProps>(['task', taskId]);
-
+            
             // Update task cache
             queryClient.setQueryData<Task>(['task', taskId], (old: any) => {
                 if(!old) return old;
@@ -344,7 +345,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
                 };
             });
            
-            return { previousTask }
+            return { previousBoard, previousTask }
         },
         onSuccess: (_data) => {
             queryClient.invalidateQueries({queryKey: ['task', taskId]})
@@ -355,7 +356,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
 
             // Revert board data if there is an error
             if(context?.previousTask){
-                // queryClient.setQueryData(['kanban', boardId], context.previousBoard);
+                queryClient.setQueryData(['kanban', boardId], context.previousBoard);
                 queryClient.setQueryData(['task', taskId], context.previousTask);
             };
         }
@@ -365,8 +366,10 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
         mutationFn: removeAssignee,
          onMutate: ({ user }: assignTaskVariables) => {
 
-            // const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
+            const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
             const previousTask = queryClient.getQueryData<BoardProps>(['task', taskId]);
+
+            
 
             // Update task cache
             queryClient.setQueryData<Task>(['task', taskId], (old) => {
@@ -378,7 +381,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
                 };
             });
            
-            return { previousTask }
+            return { previousBoard, previousTask }
         },
         onSuccess: (_data) => {
             queryClient.invalidateQueries({queryKey: ['task', taskId]})
@@ -389,7 +392,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
 
             // Revert board data if there is an error
             if(context?.previousTask){
-                // queryClient.setQueryData(['kanban', boardId], context.previousBoard);
+                queryClient.setQueryData(['kanban', boardId], context.previousBoard);
                 queryClient.setQueryData(['task', taskId], context.previousTask);
             };
         }

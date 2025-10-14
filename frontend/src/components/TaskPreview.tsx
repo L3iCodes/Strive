@@ -47,7 +47,7 @@ const TaskPreview = () => {
                 <div className="flex flex-col gap-2 border-b-1 border-base-content/20">
                     <label className="flex items-center gap-1 text-base-content/80"><Users size={13}/>Assignees</label>
                     <div className="max-h-20 flex flex-col gap-1 items-center">
-                        {task && task?.assignees.length < 1 && (<h1 className="mx-auto my-auto text-sm text-base-content/50">No one is assigned to this task</h1>)}
+                        {task && task?.assignees.length < 1 && (<h1 className="mx-auto my-auto text-sm text-base-content/50 mb-4">No one is assigned to this task</h1>)}
                       
                         {/* Assigned user list */}
                         {task?.assignees.map(collaborator => (

@@ -98,6 +98,7 @@ interface CollaboratorAssignedCardProps {
 export const CollaboratorAssignedCard = ({taskId, collaborator}: CollaboratorAssignedCardProps) => {
     const param = useParams();
     const { removeAssigneekMutation } = useTask({ boardId:param.id, taskId:taskId })
+    const { userRole } = useAuthStore();
 
     return(
         <div className=" w-full flex items-center gap-2 bg-base-200 p-2 rounded-xs ring-1 ring-base-content/10">
@@ -107,11 +108,14 @@ export const CollaboratorAssignedCard = ({taskId, collaborator}: CollaboratorAss
             />
 
             <h1 className="font-medium">{collaborator.username}</h1>
-            <UserMinus 
-                onClick={() => removeAssigneekMutation.mutate({taskId:taskId, assigneeId:collaborator._id as string, user:collaborator})}
-                size={25} 
-                className="text-base-content/50 ml-auto p-1 rounded-full cursor-pointer hover:text-error-content hover:bg-error active:bg-error/80 "
-            />
+            
+            {userRole !== 'viewer' && (
+                <UserMinus 
+                    onClick={() => removeAssigneekMutation.mutate({taskId:taskId, assigneeId:collaborator._id as string, user:collaborator})}
+                    size={25} 
+                    className="text-base-content/50 ml-auto p-1 rounded-full cursor-pointer hover:text-error-content hover:bg-error active:bg-error/80 "
+                />
+            )}
         </div>
     )
 };
