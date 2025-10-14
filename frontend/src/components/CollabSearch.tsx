@@ -61,7 +61,7 @@ const CollabSearch = ({ assignees, taskId }:CollabSearchProps) => {
                         })
                         .map(collaborator => (
                             <div 
-                                onClick={() => assignTaskMutation.mutate({taskId:taskId, assigneeId:collaborator.user._id})}
+                                onClick={() => assignTaskMutation.mutate({taskId:taskId, assigneeId:collaborator.user._id as string, user:collaborator.user})}
                                 key={collaborator.user._id} 
                                 className="w-full flex gap-2 cursor-pointer border-1 border-base-content/0 hover:bg-base-300 hover:border-base-content/10 p-1"
                             >

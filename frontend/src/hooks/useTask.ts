@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addSubTask, assignTask, createTask, deleteSubtask, deleteTask, getTask, moveTask, removeAssignee, updateSubtask, updateTask } from "../apis/task.api";
-import type {  BoardProps,  TaskDeletion,  UpdateTaskVariables,  AddSubTaskVariables, Task, DeleteSubTaskVariables, UpdateSubTaskVariables, MoveTaskVariables } from "../types";
+import type {  BoardProps,  TaskDeletion,  UpdateTaskVariables,  AddSubTaskVariables, Task, DeleteSubTaskVariables, UpdateSubTaskVariables, MoveTaskVariables, assignTaskVariables } from "../types";
 import { useTaskStore } from "../store/useTaskStore";
 
 interface UseTaskVariable {
@@ -329,32 +329,71 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
 
     const assignTaskMutation = useMutation({
         mutationFn: assignTask,
-        onMutate: (_variables) => {
+        onMutate: ({ user }: assignTaskVariables) => {
+
+            // const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
+            const previousTask = queryClient.getQueryData<BoardProps>(['task', taskId]);
+
+            // Update task cache
+            queryClient.setQueryData<Task>(['task', taskId], (old: any) => {
+                if(!old) return old;
+
+                return {
+                    ...old,
+                    assignees: [...old.assignees, user]
+                };
+            });
            
+            return { previousTask }
         },
-        onSuccess: (data) => {
-            console.log(data)
+        onSuccess: (_data) => {
             queryClient.invalidateQueries({queryKey: ['task', taskId]})
             queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
         },
-        onError: (error, _variables, _context) => {
+        onError: (error, _variables, context) => {
             console.log(error);
+
+            // Revert board data if there is an error
+            if(context?.previousTask){
+                // queryClient.setQueryData(['kanban', boardId], context.previousBoard);
+                queryClient.setQueryData(['task', taskId], context.previousTask);
+            };
         }
     });
 
     const removeAssigneekMutation = useMutation({
         mutationFn: removeAssignee,
-        onMutate: (_variables) => {
-            
+         onMutate: ({ user }: assignTaskVariables) => {
+
+            // const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
+            const previousTask = queryClient.getQueryData<BoardProps>(['task', taskId]);
+
+            // Update task cache
+            queryClient.setQueryData<Task>(['task', taskId], (old) => {
+                if(!old) return old;
+
+                return {
+                    ...old,
+                    assignees: old.assignees.filter(assignee => assignee._id !== user?._id) // Remove assigned user
+                };
+            });
+           
+            return { previousTask }
         },
-        onSuccess: (data) => {
+        onSuccess: (_data) => {
             queryClient.invalidateQueries({queryKey: ['task', taskId]})
             queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
         },
-        onError: (error, _variables, _context) => {
-            console.log(error);
+        onError: (error, _variables, context) => {
+             console.log(error);
+
+            // Revert board data if there is an error
+            if(context?.previousTask){
+                // queryClient.setQueryData(['kanban', boardId], context.previousBoard);
+                queryClient.setQueryData(['task', taskId], context.previousTask);
+            };
         }
-    })
+    });
 
     return { 
             task,

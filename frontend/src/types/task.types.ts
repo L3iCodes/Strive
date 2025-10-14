@@ -40,6 +40,12 @@ export interface UpdateSubTaskVariables {
     subtaskData: CheckList;
 }
 
+export interface assignTaskVariables {
+    taskId: string;
+    assigneeId: string;
+    user?: User;
+};
+
 export interface Task{
     _id: string;
     task_name: string;

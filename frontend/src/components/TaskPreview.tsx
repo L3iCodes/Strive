@@ -1,4 +1,4 @@
-import { Ellipsis, ListTodo, UserMinus, UserPlusIcon, Users, X } from "lucide-react";
+import { Ellipsis, ListTodo, UserPlusIcon, Users, X } from "lucide-react";
 import { useTaskStore } from "../store/useTaskStore"
 import NewSubtaskForm from "./forms/NewSubtaskForm";
 import TaskInfoForm from "./forms/TaskInfoForm";

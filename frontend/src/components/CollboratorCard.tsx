@@ -108,7 +108,7 @@ export const CollaboratorAssignedCard = ({taskId, collaborator}: CollaboratorAss
 
             <h1 className="font-medium">{collaborator.username}</h1>
             <UserMinus 
-                onClick={() => removeAssigneekMutation.mutate({taskId:taskId, assigneeId:collaborator._id})}
+                onClick={() => removeAssigneekMutation.mutate({taskId:taskId, assigneeId:collaborator._id as string, user:collaborator})}
                 size={25} 
                 className="text-base-content/50 ml-auto p-1 rounded-full cursor-pointer hover:text-error-content hover:bg-error active:bg-error/80 "
             />
