@@ -37,12 +37,13 @@ const Card = ({board}: CardProps) => {
 
             <div className="w-full flex mt-2 items-center gap-2 h-5">
                 <p className="text-xs">Team</p>
-                <div className="w-full flex gap-1 relative justify-end">
-                    {board.collaborators.map((collaborator) => (
+                <div className="h-[25px] w-full flex gap-1 relative">
+                    {board.collaborators.map((collaborator, index) => (
                         <img 
                             key={collaborator._id}
                             src={collaborator.avatar}
-                            className="w-6 h-6 object-cover border-1 border-primary rounded-2xl "
+                            className={`w-6 h-6 object-cover border-1 border-primary rounded-2xl absolute`}
+                            style={{ right: `${index * 13}px` }}
                         />
                     ))}
                 </div>

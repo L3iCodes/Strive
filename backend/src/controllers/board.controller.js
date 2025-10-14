@@ -35,11 +35,16 @@ export const getBoardList = async (req, res) => {
                     as: "sectionsData"
                 }
             },
+            {
+                $addFields: {
+                    collaboratorUserIds: "$board.collaborators.user"
+                }
+            },
             // Lookup collaborator avatars
             {
                 $lookup: {
                     from: "users",
-                    localField: "board.collaborators",
+                    localField: "collaboratorUserIds", 
                     foreignField: "_id",
                     as: "collaborators"
                 }
@@ -55,7 +60,8 @@ export const getBoardList = async (req, res) => {
                         $map: {
                             input: "$collaborators",
                             as: "c",
-                            in: { _id: "$$c._id", avatar: "$$c.avatar" }
+                            // The 'collaborators' array now holds the full User documents, so map their fields
+                            in: { _id: "$$c._id", avatar: "$$c.avatar" } 
                         }
                     },
                     lastOpened: "$boards.lastOpened",

@@ -19,10 +19,10 @@ const InvitationTab = () => {
             <Bell onClick={() => setOpenInvitationTab(s => !s)} className={` hover:fill-base-content cursor-pointer `} size={18}/>
 
             {openInvitationTab && (
-                <div className='w-[400px] p-2 flex flex-col gap-2 bg-base-100 border-1 border-base-content/10 shadow-2xl left-0 top-8 absolute'>
-                    <h2 className='text-sm font-medium p-1 border-b-1 border-base-content/10'>Invites</h2>
+                <div className='w-[400px] max-h-[500px] p-2 flex flex-col gap-2 bg-base-100 border-1 border-base-content/10 shadow-2xl left-0 top-8 absolute'>
+                    <h2 className='text-sm font-medium p-1 border-b-1 border-base-content/10'>Notification</h2>
 
-                    <div className='flex flex-col gap-2'>
+                    <div className='flex flex-col gap-2 overflow-auto'>
                         {invitations?.map(invitation => (
                             <InviteCard key={invitation.inviteId} invitation={invitation} />
                         ))}

@@ -14,7 +14,7 @@ export const BoardHeader = ({name, collaborators, openManage}: BoardHeaderProps)
                 <h1 className="font-bold ml-1">{name}</h1>
             </div>
             <div className="flex ml-auto items-center gap-1">
-                <div className="flex gap-1">
+                <div className="w-[200px] h-[20px] flex gap-1 relative">
                     {collaborators?.map((field:any, index:number) => {
                         if(field.status === 'pending') return;
                         return (
@@ -22,7 +22,8 @@ export const BoardHeader = ({name, collaborators, openManage}: BoardHeaderProps)
                                 <img
                                     // Remove the key from the img element
                                     src={field.user?.avatar}
-                                    className="w-5 h-5"
+                                    className={`w-5 h-5 absolute rounded-full border-1 border-base-300`}
+                                    style={{ right: `${index * 5}px` }}
                                 />
                             </div>
                         )

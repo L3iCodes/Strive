@@ -34,6 +34,18 @@ const TaskComponent = ({task}: TaskProps) => {
                 {task.priority === 'none' ? "" : task.priority}
             </p>
             <h1 className="text-[14px] mt-5 font-medium">{task.task_name}</h1>
+
+            <div className="h-5 mt-auto flex relative"> 
+                {task.assignees.map((assignee, index) => (
+                    <img
+                        key={assignee._id}
+                        src={assignee.avatar || ''}
+                        className={`w-5 h-5 absolute rounded-full border-1 border-base-300 top-1/2 -translate-y-1/2`}
+                        style={{ left: `${index * 10}px` }}
+                    />
+                ))}
+
+            </div>
         </div>
     );
 };
