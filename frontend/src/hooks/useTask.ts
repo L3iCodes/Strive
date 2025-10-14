@@ -369,8 +369,6 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
             const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
             const previousTask = queryClient.getQueryData<BoardProps>(['task', taskId]);
 
-            
-
             // Update task cache
             queryClient.setQueryData<Task>(['task', taskId], (old) => {
                 if(!old) return old;

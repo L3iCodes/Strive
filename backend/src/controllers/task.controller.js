@@ -237,11 +237,11 @@ export const assignTask = async (req, res) => {
     try{
         const task = await Task.findByIdAndUpdate(
             taskId,
-            { $push: { assignees: assigneeId } } 
+            { $push: { assignees: assigneeId } },
+            { new: true },
         );
         if(!task) return res.status(404).json({ message: "Task not found" });
 
-        console.log(task)
         // Send notification for permission change
         await Notification.create({
             from: _id,
@@ -264,7 +264,8 @@ export const removeAssignee = async (req, res) => {
     try{
         const task = await Task.findByIdAndUpdate(
             taskId,
-            { $pull: { assignees: assigneeId } } 
+            { $pull: { assignees: assigneeId } },
+            { new: true }, 
         );
         if(!task) return res.status(404).json({ message: "Task not found" });
 

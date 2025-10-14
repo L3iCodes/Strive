@@ -41,7 +41,14 @@ const TaskPreview = () => {
             </div>
             
             <div className="p-2 flex flex-col text-xs gap-5">
-                < TaskInfoForm sectionId={task?.section as string} taskId={task?._id} task_name={task?.task_name} description={task?.description} priority={task?.priority} dueDate={task?.due_date}/>
+                < TaskInfoForm 
+                    key={task?._id}
+                    sectionId={task?.section as string} 
+                    taskId={task?._id} task_name={task?.task_name} 
+                    description={task?.description} 
+                    priority={task?.priority} 
+                    dueDate={task?.due_date}
+                />
 
                 {/* Assignee function */}
                 <div className="flex flex-col gap-2 border-b-1 border-base-content/20">
@@ -51,7 +58,7 @@ const TaskPreview = () => {
                       
                         {/* Assigned user list */}
                         {task?.assignees.map(collaborator => (
-                            <CollaboratorAssignedCard taskId={task._id as string} collaborator={collaborator}/>
+                            <CollaboratorAssignedCard key={collaborator._id} taskId={task._id as string} collaborator={collaborator}/>
                         ))}
                     </div>
                     

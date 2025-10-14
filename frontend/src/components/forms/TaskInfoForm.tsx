@@ -20,7 +20,13 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
     const { isPreviewOpen } = useTaskStore();
     const { updateTaskMutation } = useTask({boardId:param.id});
     const [editMode, setEditMode] = useState(false);
-    const [taskData, setTaskData] = useState({task_name, taskId, description, priority, dueDate})
+    const [taskData, setTaskData] = useState(() => ({
+        task_name: task_name ?? '',
+        taskId,
+        description: description ?? '',
+        priority, // Priority is an enum, usually fine
+        dueDate,
+    }));
     const dropDownRef = useRef<HTMLDetailsElement>(null);
     const priorityChoice = ['none', 'low', 'medium', 'high'] as const;
     const { userRole } = useAuthStore();
@@ -30,10 +36,6 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
     const handleEditMode = () => {
         if (canEdit) setEditMode(true);
     };
-
-    useEffect(() => {
-        setTaskData({ task_name, taskId, description, priority, dueDate });
-    }, [task_name, description, priority, dueDate]);
 
     useEffect(() => {
         setEditMode(false);
@@ -121,7 +123,22 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
 
                 {editMode && (
                     <div className='flex ml-auto w-fit gap-1'>
-                        <button type='button' onClick={() => {handleEditMode(),  setTaskData({ task_name, taskId, description, priority, dueDate })}} className='ml-auto p-1 px-2 text-sm border-1 border-base-content/20 rounded-xs hover:bg-base-200 hover:text-base-content active:bg-base-100 cursor-pointer'>Cancel</button>
+                        <button 
+                            type='button' 
+                            className='ml-auto p-1 px-2 text-sm border-1 border-base-content/20 rounded-xs hover:bg-base-200 hover:text-base-content active:bg-base-100 cursor-pointer'
+                            onClick={() => {
+                            handleEditMode();
+                                setTaskData({ 
+                                    task_name: task_name ?? '', 
+                                    taskId, 
+                                    description: description ?? '', 
+                                    priority, 
+                                    dueDate
+                                });
+                            }}
+                        >
+                            Cancel
+                        </button>
                         
                         <button type='submit' className='ml-auto p-1 px-2 bg-base-100 text-sm border-1 border-base-content/20 rounded-xs hover:bg-primary hover:text-primary-content active:bg-base-100 cursor-pointer'>Save</button>
                     </div>
