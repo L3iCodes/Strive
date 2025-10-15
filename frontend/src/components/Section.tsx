@@ -11,6 +11,7 @@ import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-
 import { CSS } from '@dnd-kit/utilities'
 import { useSort } from "../hooks/useSort";
 import type { UniqueIdentifier } from "@dnd-kit/core";
+import EmptyDropZone from "./EmptyDropZone";
 
 interface SectionComponentProps{
     section: Section;
@@ -60,7 +61,7 @@ const SectionComponent = ({ section, id }: SectionComponentProps) => {
             <div 
                 ref={setNodeRef} {...attributes} {...listeners}
                 style={dragStyle}
-                className="h-full w-[230px] p-2 pt-0 flex shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative transition-all duration-200">
+                className="h-full w-[230px] p-2 pt-0 flex shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative transition-all duration-200 hover:cursor-grab active:cursor-grabbing">
                 {/* Section Header */}
                 <div className="py-[5px] flex w-full items-center bg-base-300 border-b-1 border-base-content/20 sticky top-0 z-10">
                     <input 
@@ -115,9 +116,16 @@ const SectionComponent = ({ section, id }: SectionComponentProps) => {
                     {showAddTaskTop && canEdit && (<NewTaskForm onClose={() => setShowAddTaskTop(false)} sectionId={section._id as string} position="top"/>)}
 
                     <SortableContext items={(section.tasks).map(task => `task-${task._id}`)} strategy={verticalListSortingStrategy}>
-                        {section.tasks?.map(task => (
-                            <TaskComponent key={task._id} id={`task-${task._id}`} task={task} />
-                        ))}
+                        {section.tasks.length > 0
+                            ?   (
+                                    section.tasks?.map(task => (
+                                        <TaskComponent key={task._id} id={`task-${task._id}`} task={task} />
+                                    ))
+                                )
+                            : <EmptyDropZone sectionId={section._id} />
+                        }
+                        
+                        
                     </SortableContext>
                     
                     {/* Section Body */}

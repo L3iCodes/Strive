@@ -9,6 +9,7 @@ export const useSort = (id: UniqueIdentifier) => {
         transition,
         transform: CSS.Transform.toString(transform),
         opacity: isDragging ? 0.5 : 1,
+        zIndex: isDragging ? 9999 : 1
     };
 
     return(

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { closestCorners, DndContext} from '@dnd-kit/core'
+import { closestCorners, DndContext, DragOverlay} from '@dnd-kit/core'
 import { horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable'
 
 import SectionComponent from "./Section";
@@ -9,14 +9,16 @@ import { useParams } from "react-router-dom";
 import { useBoard } from "../hooks/useBoard";
 import { useDrag } from "../hooks/useDrag";
 
+import TaskComponent from "./Task";
+
 const Board = () => {
     const param = useParams();
     const { kanban:board } = useBoard(param.id as string);
-    const { sensors, handleDragStart } = useDrag();
+    const { sensors, handleDragStart, activeDragItem, activeDragId } = useDrag();
     const { setUserRole } = useAuthStore();
     const [sectionList, setSectionList] = useState<SectionItem[]>([])
     const [openNewSection, setOpenNewSection] = useState<boolean>(false);
-    
+
     // Set user role
     useEffect(() => {
         if(board) setUserRole(board?.owner, board?.collaborators);
@@ -46,6 +48,13 @@ const Board = () => {
                             />
                         ))}
                     </SortableContext>
+
+                    {/* Handles task card overlay  */}
+                    <DragOverlay>
+                        {activeDragId && activeDragId.startsWith('task-') && activeDragItem && (
+                            <TaskComponent task={activeDragItem} id={activeDragId} />
+                        )}
+                    </DragOverlay>
                 </DndContext>
 
                 {openNewSection 
