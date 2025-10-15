@@ -7,15 +7,21 @@ import { useSection } from "../hooks/useSection";
 import { useParams } from "react-router-dom";
 import { SectionMenu } from "./Menu";
 import { useAuthStore } from "../store/useAuthStore";
+import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from '@dnd-kit/utilities'
+import { useSort } from "../hooks/useSort";
+import type { UniqueIdentifier } from "@dnd-kit/core";
 
 interface SectionComponentProps{
     section: Section;
+    id: UniqueIdentifier;
 }
 
-const SectionComponent = ({section}: SectionComponentProps) => {
+const SectionComponent = ({ section, id }: SectionComponentProps) => {
     const param = useParams();
     const { userRole } = useAuthStore();
     const { deleteSectionMutation, updateSectionMutation } = useSection(param.id as string);
+    const { setNodeRef, attributes, listeners, dragStyle } = useSort(id);
     const [showAddTaskTop, setShowAddTaskTop] = useState<boolean>(false);
     const [showAddTaskBot, setShowAddTaskBot] = useState<boolean>(false);
     const [openSectionMenu, setOpeSectionMenu] = useState<boolean>(false);
@@ -51,7 +57,10 @@ const SectionComponent = ({section}: SectionComponentProps) => {
 
     return (
         <>
-            <div className="h-full w-[230px] p-2 pt-0 flex shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative transition-all duration-200">
+            <div 
+                ref={setNodeRef} {...attributes} {...listeners}
+                style={dragStyle}
+                className="h-full w-[230px] p-2 pt-0 flex shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative transition-all duration-200">
                 {/* Section Header */}
                 <div className="py-[5px] flex w-full items-center bg-base-300 border-b-1 border-base-content/20 sticky top-0 z-10">
                     <input 
@@ -105,9 +114,11 @@ const SectionComponent = ({section}: SectionComponentProps) => {
                     {/* Show new task form on top */}
                     {showAddTaskTop && canEdit && (<NewTaskForm onClose={() => setShowAddTaskTop(false)} sectionId={section._id as string} position="top"/>)}
 
-                    {section.tasks?.map(task => (
-                        <TaskComponent key={task._id} task={task} />
-                    ))}
+                    <SortableContext items={(section.tasks).map(task => `task-${task._id}`)} strategy={verticalListSortingStrategy}>
+                        {section.tasks?.map(task => (
+                            <TaskComponent key={task._id} id={`task-${task._id}`} task={task} />
+                        ))}
+                    </SortableContext>
                     
                     {/* Section Body */}
                     {canEdit && (

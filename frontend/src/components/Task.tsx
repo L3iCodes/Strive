@@ -1,11 +1,14 @@
+import type { UniqueIdentifier } from "@dnd-kit/core";
 import { useAuthStore } from "../store/useAuthStore";
 import { useTaskStore } from "../store/useTaskStore";
 import type { Task } from "../types";
 import { TaskMenu } from "./Menu";
 import { useState } from "react";
+import { useSort } from "../hooks/useSort";
 
 interface TaskProps{
     task: Task;
+    id: UniqueIdentifier
 };
 
 const priorityMap: any = {
@@ -14,13 +17,16 @@ const priorityMap: any = {
   high: { classname: "bg-error/30 text-error" },
 };
 
-const TaskComponent = ({task}: TaskProps) => {
+const TaskComponent = ({ task, id }: TaskProps) => {
     const { showPreview } = useTaskStore();
+    const { setNodeRef, attributes, listeners, dragStyle } = useSort(id);
     const [openTaskMenu, setOpenTaskMenu] = useState(false);
     const { userRole } = useAuthStore(); 
 
     return (
         <div 
+            ref={setNodeRef} {...listeners} {...attributes}
+            style={dragStyle}
             onMouseEnter={() => setOpenTaskMenu(true)}
             onMouseLeave={() => setOpenTaskMenu(false)}
             onMouseOver={() => () => setOpenTaskMenu(true)}

@@ -1,17 +1,21 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { BoardProps } from "../types";
+import { closestCorners, DndContext} from '@dnd-kit/core'
+import { horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable'
 
 import SectionComponent from "./Section";
 import NewSectionForm from "./forms/NewSectionForm";
 import { useAuthStore } from "../store/useAuthStore";
 import { useParams } from "react-router-dom";
 import { useBoard } from "../hooks/useBoard";
+import { useDrag } from "../hooks/useDrag";
 
 const Board = () => {
     const param = useParams();
     const { kanban:board } = useBoard(param.id as string);
-    const [sectionList, setSectionList] = useState<SectionItem[]>([])
+    const { sensors, handleDragStart } = useDrag();
     const { setUserRole } = useAuthStore();
+    const [sectionList, setSectionList] = useState<SectionItem[]>([])
+    const [openNewSection, setOpenNewSection] = useState<boolean>(false);
     
     // Set user role
     useEffect(() => {
@@ -28,15 +32,21 @@ const Board = () => {
         );
     }, [board]);
 
-    const [openNewSection, setOpenNewSection] = useState<boolean>(false);
-
     return (
         // Context for section list, used in task component
         <SectionListContext.Provider value={{ sectionList }}> 
             <div className="w-full h-full flex gap-3 overflow-y-auto ">
-                {board?.sections?.map(section => (
-                    <SectionComponent key={section._id} section={section} />
-                ))}
+                <DndContext sensors={sensors} onDragStart={handleDragStart} collisionDetection={closestCorners}>
+                    <SortableContext items={(board?.sections || []).map(section => `section-${section._id}`)} strategy={horizontalListSortingStrategy} >
+                        {board?.sections?.map(section => (
+                            <SectionComponent 
+                                key={section._id} 
+                                section={section} 
+                                id={`section-${section._id}`}
+                            />
+                        ))}
+                    </SortableContext>
+                </DndContext>
 
                 {openNewSection 
                     ? (<NewSectionForm onClose={() => setOpenNewSection(false)}/>)
