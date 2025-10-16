@@ -19,6 +19,15 @@ export const useBoard = (boardId?: string) => {
         queryKey: ['kanban', boardId],   // include the id in the key
         queryFn: () => getKanbanBoard(boardId as string),
         enabled: !!boardId,
+        
+        // CRITICAL: Prevent automatic refetches during drag operations
+        refetchOnWindowFocus: false,  // Don't refetch when window regains focus
+        refetchOnMount: false,         // Don't refetch when component remounts
+        refetchOnReconnect: false,     // Don't refetch on network reconnect
+        staleTime: 5 * 60 * 1000,      // Consider data fresh for 5 minutes
+        
+        // Optional: Keep data in cache longer
+        gcTime: 10 * 60 * 1000,   
     });
 
     const createBoardMutation = useMutation({

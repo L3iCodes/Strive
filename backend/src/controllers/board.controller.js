@@ -6,6 +6,7 @@ import { createSectionService } from "../services/section.service.js";
 import Section from "../models/section.model.js";
 import Task from "../models/task.model.js";
 import Activity from "../models/activity.model.js";
+import { findBoardAndPopulate } from "../services/board.service.js";
 
 export const getBoardList = async (req, res) => {
     const { _id } = req.user;
@@ -162,36 +163,9 @@ export const getKanbanBoard = async (req, res) => {
     const { id } = req.params;
     
     try{
-        const board = await Board.findById(id)
-            .populate('owner', '_id username avatar email')
-            .populate({
-                path: "collaborators.user",
-                model: "User", 
-                select: "username avatar email"
-            })
+        const board = await findBoardAndPopulate(id);
+        if (!board) return res.status(404).json({ message: "Error fetching updated board" });
 
-            // Populate the sections (and tasks for each sections)
-            .populate({
-                path: 'sections',
-                options: { sort: { createdAt: 1 } },
-                populate: {
-                    path: 'tasks',
-                    populate: {
-                        path: 'assignees',
-                        select: '_id username email avatar'
-                    }      
-                }
-            })
-
-            // Populate the activity log
-            .populate({
-                path: 'activities',
-                populate: {
-                    path: 'user',
-                    select: ('_id username email avatar')
-                }
-            });
-        
         res.status(200).json({board});
     }catch(error){
         console.log('Error in getKanbanBoard controller', error);
@@ -201,7 +175,6 @@ export const getKanbanBoard = async (req, res) => {
 
 export const deleteBoard = async (req, res) => {
     const { boardId } = req.params;
-    console.log('Deleting Board: ', boardId);
 
     try{
         const board = await Board.findById(boardId);

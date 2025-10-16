@@ -7,8 +7,7 @@ import { useSection } from "../hooks/useSection";
 import { useParams } from "react-router-dom";
 import { SectionMenu } from "./Menu";
 import { useAuthStore } from "../store/useAuthStore";
-import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { CSS } from '@dnd-kit/utilities'
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useSort } from "../hooks/useSort";
 import type { UniqueIdentifier } from "@dnd-kit/core";
 import EmptyDropZone from "./EmptyDropZone";
@@ -16,9 +15,10 @@ import EmptyDropZone from "./EmptyDropZone";
 interface SectionComponentProps{
     section: Section;
     id: UniqueIdentifier;
+    className?: string;
 }
 
-const SectionComponent = ({ section, id }: SectionComponentProps) => {
+const SectionComponent = ({ section, id, className }: SectionComponentProps) => {
     const param = useParams();
     const { userRole } = useAuthStore();
     const { deleteSectionMutation, updateSectionMutation } = useSection(param.id as string);
@@ -61,7 +61,7 @@ const SectionComponent = ({ section, id }: SectionComponentProps) => {
             <div 
                 ref={setNodeRef} {...attributes} {...listeners}
                 style={dragStyle}
-                className="h-full w-[230px] p-2 pt-0 flex shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative transition-all duration-200 hover:cursor-grab active:cursor-grabbing">
+                className={`${className} h-full w-[230px] p-2 pt-0 flex shrink-0 flex-col gap-2 rounded-xs border-1 border-base-content/10 bg-base-300 overflow-y-auto relative transition-all duration-200 hover:cursor-grab active:cursor-grabbing`}>
                 {/* Section Header */}
                 <div className="py-[5px] flex w-full items-center bg-base-300 border-b-1 border-base-content/20 sticky top-0 z-10">
                     <input 

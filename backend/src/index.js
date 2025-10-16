@@ -9,6 +9,7 @@ import sectionRoutes from './routes/section.route.js'
 import boardRoutes from './routes/board.route.js'
 import taskRoutes from './routes/task.route.js'
 import collabRoutes from './routes/collab.route.js'
+import dragDropRoutes from './routes/dragDrop.route.js'
 
 dotenv.config();
 
@@ -31,3 +32,4 @@ app.use('/api/board', boardRoutes);
 app.use('/api/section', sectionRoutes);
 app.use('/api/task', taskRoutes);
 app.use('/api/collab', collabRoutes);
+app.use('/api/dragDrop', dragDropRoutes);

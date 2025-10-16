@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { closestCorners, DndContext, DragOverlay} from '@dnd-kit/core'
-import { horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable'
+import { horizontalListSortingStrategy, rectSwappingStrategy, SortableContext } from '@dnd-kit/sortable'
 
 import SectionComponent from "./Section";
 import NewSectionForm from "./forms/NewSectionForm";
@@ -10,11 +10,12 @@ import { useBoard } from "../hooks/useBoard";
 import { useDrag } from "../hooks/useDrag";
 
 import TaskComponent from "./Task";
+import type { Section, Task } from "../types";
 
 const Board = () => {
     const param = useParams();
     const { kanban:board } = useBoard(param.id as string);
-    const { sensors, handleDragStart, activeDragItem, activeDragId } = useDrag();
+    const { sensors, handleDragStart, handleDragEnd, activeDragItem, activeDragId } = useDrag();
     const { setUserRole } = useAuthStore();
     const [sectionList, setSectionList] = useState<SectionItem[]>([])
     const [openNewSection, setOpenNewSection] = useState<boolean>(false);
@@ -38,8 +39,8 @@ const Board = () => {
         // Context for section list, used in task component
         <SectionListContext.Provider value={{ sectionList }}> 
             <div className="w-full h-full flex gap-3 overflow-y-auto ">
-                <DndContext sensors={sensors} onDragStart={handleDragStart} collisionDetection={closestCorners}>
-                    <SortableContext items={(board?.sections || []).map(section => `section-${section._id}`)} strategy={horizontalListSortingStrategy} >
+                <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+                    <SortableContext items={(board?.sections || []).map(section => `section-${section._id}`)} strategy={rectSwappingStrategy} >
                         {board?.sections?.map(section => (
                             <SectionComponent 
                                 key={section._id} 
@@ -52,7 +53,11 @@ const Board = () => {
                     {/* Handles task card overlay  */}
                     <DragOverlay>
                         {activeDragId && activeDragId.startsWith('task-') && activeDragItem && (
-                            <TaskComponent task={activeDragItem} id={activeDragId} />
+                            <TaskComponent task={activeDragItem as Task} id={activeDragId} className="!border-primary" />
+                        )}
+
+                        {activeDragId && activeDragId.startsWith('section-') && activeDragItem && (
+                            <SectionComponent section={activeDragItem as Section} id={activeDragId} className="!border-primary"/>
                         )}
                     </DragOverlay>
                 </DndContext>
