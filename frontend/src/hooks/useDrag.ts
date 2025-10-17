@@ -11,7 +11,7 @@ export const useDrag = () => {
     const [activeDragId, setActiveDragId] = useState<string>();
     const [activeDragItem, setActiveDragItem] = useState<Task | Section | null>(null)     
     const { kanban: board } = useBoard(param.id);
-    const { sectionReorderMutation } = useDragAPI(param.id as string);
+    const { sectionReorderMutation, dragTaskMutation } = useDragAPI(param.id as string);
     
     const sensors = useSensors(
         useSensor(MouseSensor, {
@@ -76,6 +76,71 @@ export const useDrag = () => {
                 sectionReorderMutation.mutate({ boardId:param.id as string, newSectionOrder });
             }
         };
+
+        // Task reordering
+        if(activeId.startsWith('task') && overId?.startsWith('task') || overId?.startsWith('empty-placeholder-')){
+            let sourceSectionIndex = -1;
+            let targetSectionIndex = -1;
+
+            // Find the source section
+            board?.sections.forEach((section, index) => {
+                if(section.tasks.some(task => `task-${task._id}` === activeId)) sourceSectionIndex = index;
+            });
+
+            // Find the target section
+            if (overId.startsWith('empty-placeholder-')) {
+                const targetSectionId = overId.replace('empty-placeholder-', '');
+                targetSectionIndex = board?.sections.findIndex(section => section._id.toString() === targetSectionId) ?? -1;
+            }else{
+                 board?.sections.forEach((section, index) => {
+                    if(section.tasks.some(task => `task-${task._id}` === overId)) targetSectionIndex = index;
+                });
+            }
+
+            if (sourceSectionIndex === -1 || targetSectionIndex === -1) return;
+
+            // Get the sections info
+            const sourceSection = [...board?.sections[sourceSectionIndex].tasks ?? []];
+            const targetSection = [...board?.sections[targetSectionIndex].tasks ?? []];
+
+            // Find index of active and over task
+            const activeTask = sourceSection.findIndex(task => `task-${task._id}` === activeId);
+            const overTask = (sourceSection === targetSection
+                ? sourceSection
+                : targetSection
+            ).findIndex(task => `task-${task._id}` === overId);
+
+            // Remove from the task from the source
+            const [movedTask] = sourceSection.splice(activeTask, 1);
+            
+            // Reorder within the same section
+            if(sourceSectionIndex === targetSectionIndex){
+                sourceSection.splice(overTask, 0, movedTask)
+
+                dragTaskMutation.mutate({
+                    taskId: movedTask._id,  
+                    sourceSectionId: board?.sections[sourceSectionIndex]._id as string,
+                    targetSectionId: board?.sections[targetSectionIndex]._id as string, 
+                    taskOrder: sourceSection
+                });
+            }else{
+                if (overId.startsWith('empty-placeholder')) {
+                    targetSection.unshift(movedTask);
+                }else{
+                    let overTask = targetSection.findIndex(task => `task-${task._id}` === overId);
+                    targetSection.splice(overTask, 0, movedTask);
+                }
+
+                dragTaskMutation.mutate({
+                    taskId: movedTask._id, 
+                    sourceSectionId: board?.sections[sourceSectionIndex]._id as string, 
+                    targetSectionId: board?.sections[targetSectionIndex]._id as string, 
+                    taskOrder: targetSection
+                });
+            } 
+
+            
+        }
     };
 
     return(
