@@ -3,6 +3,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import type { BoardSummary } from "../types";
 import { useState } from "react";
 import { BoardMenu } from "./Menu";
+import { useBoard } from "../hooks/useBoard";
 
 interface CardProps {
   board: BoardSummary;
@@ -12,12 +13,16 @@ const Card = ({board}: CardProps) => {
     const navigate = useNavigate();
     const { user } = useAuthStore()
     const [openMenu, setOpenMenu] = useState(false);
+    const { updateLastOpenedMutation } = useBoard();
 
     return (
         <div 
             onMouseEnter={() => setOpenMenu(true)}
             onMouseLeave={() => setOpenMenu(false)}
-            onClick={() => navigate(`/board/${board._id}`)} 
+            onClick={() => {
+                updateLastOpenedMutation.mutate({boardId: board._id})
+                navigate(`/board/${board._id}`);
+            }} 
             className="relative w-full h-[200px] flex p-2 item flex-col border-[1.5px] border-base-content/10 rounded-xs cursor-pointer hover:bg-base-300/30 active:bg-base-300"
         >
             {openMenu && (<BoardMenu boardId={board._id} />)}

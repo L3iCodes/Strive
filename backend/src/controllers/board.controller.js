@@ -256,3 +256,27 @@ export const deleteBoard = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error"});
     };
 };
+
+export const updateLastOpened = async (req, res) => {
+    const { _id } = req.user;
+    const { boardId } = req.body;
+     
+    try{
+        const user = await User.findOneAndUpdate(
+            {
+                _id: _id,
+                'boards._id': boardId
+            },
+            {
+                $set: {'boards.$.lastOpened': Date.now()}
+            },
+            { new: true }
+        );
+        if(!user) return res.status(404).json({message: "User does not exists"});
+
+        return res.status(200).json({ message: "Last opened updated successfully" })
+    }catch(error){
+        console.log('Error in deleteBoard controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+}
