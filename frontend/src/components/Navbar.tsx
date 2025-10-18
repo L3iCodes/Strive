@@ -1,6 +1,6 @@
-import { ChevronLeft, Kanban, User, Settings, Menu, Bell } from "lucide-react"
+import { ChevronLeft, Kanban, User, Settings, Menu } from "lucide-react"
 import { useRef, useState } from "react"
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useThemeStore } from "../store/useThemeStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useAuth } from "../hooks/useAuth";
@@ -17,6 +17,7 @@ const navbarContent = [
 ];
 
 const Navbar = () => {
+    const navigate = useNavigate();
     const [navOpen, setNavOpen] = useState<boolean>(false);
     const { logoutMutation } = useAuth();
     const { user } = useAuthStore();
@@ -52,14 +53,18 @@ const Navbar = () => {
             </div>
             <div className={`hidden h-fit w-full p-3 md:flex flex-col gap-2 ${navOpen && '!flex'}`}>
                 {navbarContent.map(item => (
-                    <div key={item.id} className={`w-full p-2 flex items-center gap-3 rounded-xs text-xs font-medium cursor-pointer hover:bg-base-300/60 active:bg-base-300 ${pathName === item.id && ('bg-base-300 border-1 border-base-content/10')}`}>
-                        {item.icon}
-                        <h3
-                            className={`transition-all duration-300 overflow-hidden 
-                                    ${navOpen ? "opacity-100 w-auto" : "opacity-0 hidden"}`}
+                    <div 
+                        onClick={() => navigate(item.id)}
+                        key={item.id} 
+                        className={`w-full p-2 flex items-center gap-3 rounded-xs text-xs font-medium cursor-pointer hover:bg-base-300/60 active:bg-base-300 ${pathName === item.id && ('bg-base-300 border-1 border-base-content/10')}`}
                         >
-                            {item.name}
-                        </h3>
+                            {item.icon}
+                            <h3
+                                className={`transition-all duration-300 overflow-hidden 
+                                        ${navOpen ? "opacity-100 w-auto" : "opacity-0 hidden"}`}
+                            >
+                                {item.name}
+                            </h3>
                     </div>
                 ))}
             </div>

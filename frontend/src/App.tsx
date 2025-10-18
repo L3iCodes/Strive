@@ -1,5 +1,7 @@
 // Dependencies
 import { BrowserRouter as Routers, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "./hooks/useAuth";
+import { useEffect } from "react";
 
 // Components
 import Navbar from "./components/Navbar";
@@ -11,9 +13,8 @@ import { useAuthStore } from "./store/useAuthStore";
 import BoardPage from "./pages/BoardPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
-import { useAuth } from "./hooks/useAuth";
-import { useEffect } from "react";
 import KanbanBoard from "./pages/KanbanBoard";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
     const { theme } = useThemeStore()
@@ -42,6 +43,7 @@ function App() {
                                 <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
                                 <Route path="/signup" element={!isAuthenticated ? <SignupPage /> : <Navigate to="/" />} />
                                 <Route path="/board/:id" element={isAuthenticated ? <KanbanBoard /> : <Navigate to="/login" />} />
+                                <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />} />
                             </Routes>
                         </div>
                     </div>
