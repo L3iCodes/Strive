@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { closestCorners, DndContext, DragOverlay} from '@dnd-kit/core'
-import { horizontalListSortingStrategy, rectSwappingStrategy, SortableContext } from '@dnd-kit/sortable'
+import { horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable'
 
 import SectionComponent from "./Section";
 import NewSectionForm from "./forms/NewSectionForm";
@@ -40,7 +40,7 @@ const Board = () => {
         <SectionListContext.Provider value={{ sectionList }}> 
             <div className="w-full h-full flex gap-3 overflow-y-auto ">
                 <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
-                    <SortableContext items={(board?.sections || []).map(section => `section-${section._id}`)} strategy={rectSwappingStrategy} >
+                    <SortableContext items={(board?.sections || []).map(section => `section-${section._id}`)} strategy={horizontalListSortingStrategy} >
                         {board?.sections?.map(section => (
                             <SectionComponent 
                                 key={section._id} 

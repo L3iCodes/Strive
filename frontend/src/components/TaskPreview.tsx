@@ -28,11 +28,11 @@ const TaskPreview = () => {
     const canEdit = userRole && ['owner', 'editor'].includes(userRole);
 
     return (
-        <div className={`h-full pt-[75px] p-5 md:p-5 w-full max-w-md flex flex-col gap-3 fixed top-0 bg-base-100 border-1 border-base-content/20 shadow-xl/55 z-10 
+        <div className={`h-full pt-[75px] p-5 md:p-5 w-full max-w-md flex flex-col gap-3 fixed top-0 bg-base-100 border-1 border-base-content/20 shadow-xl/55 z-10 overflow-y-auto
                         transition-all duration-400 ease-in-out
                         ${isPreviewOpen ? 'right-0' : '-right-150'}`}
         >
-            <div className="w-full h-fit p-2 flex border-b-1 items-center border-base-content/20">
+            <div className="w-full h-fit p-2 flex border-b-1 items-center border-base-content/20 top-0 bg-base-100 z-100">
                 <h1 className="font-black">Task Details</h1>
                 <div className="ml-auto flex gap-2">
                     <Ellipsis className="transition-all hover:scale-103 cursor-pointer" />
@@ -48,6 +48,7 @@ const TaskPreview = () => {
                     description={task?.description} 
                     priority={task?.priority} 
                     dueDate={task?.due_date}
+                    done={task?.done}
                 />
 
                 {/* Assignee function */}
@@ -80,8 +81,17 @@ const TaskPreview = () => {
                 </div>
                 
                 {/* Subtask list */}
-                <div className="flex flex-col gap-2">
-                    <label className="flex items-center gap-1 text-base-content/80 text-sm"><ListTodo size={13}/>Subtasks</label>
+                <div className="flex flex-col gap-2 overflow-y-auto">
+                    <div className="flex w-full">
+                        <label className="flex items-center gap-1 text-base-content/80 text-sm"><ListTodo size={13}/>Subtasks</label>
+
+                        {task && task?.checklist.length > 0 && (
+                            <label className="ml-auto flex items-center gap-1 text-base-content/50 text-xs">
+                                {task.checklist.filter(subtask => subtask.done).length}/{task.checklist.length} completed
+                            </label>
+                        )}
+                        
+                    </div>
                     
                     <div className="flex flex-col gap-1">
                         {task?.checklist.map((subtask) => (

@@ -43,7 +43,7 @@ const Subtask = ({taskId, sectionId, subtask}: SubtaskProps) => {
                 type="text" 
                 value={subtaskData.sub_task}
                 placeholder="Enter Task Name" 
-                className={`w-full px-2 py-1 rounded-xs border-1 ${editMode ? 'bg-base-100 border-base-content/10' : 'border-base-content/0 cursor-pointer'}`}
+                className={`w-full px-2 py-1 rounded-xs border-1 ${editMode ? 'bg-base-100 border-base-content/10' : 'border-base-content/0 cursor-pointer'} ${subtaskData.done && 'line-through'}`}
                 readOnly={!editMode}
                 onClick={() => handleEditMode()}
                 onChange={(e)=> setSubtaskData({...subtaskData, sub_task: e.currentTarget.value})}

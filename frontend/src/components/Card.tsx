@@ -39,6 +39,7 @@ const Card = ({board}: CardProps) => {
                 <p className="text-xs">Team</p>
                 <div className="h-[25px] w-full flex gap-1 relative">
                     {board.collaborators.map((collaborator, index) => (
+                        collaborator.status !== 'pending' &&
                         <img 
                             key={collaborator._id}
                             src={collaborator.avatar}

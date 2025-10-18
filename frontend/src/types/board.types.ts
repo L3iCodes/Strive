@@ -10,6 +10,7 @@ export interface BoardSummary {
     collaborators: {
         _id: string;
         avatar: string;
+        status: string;
     }[];
     totalTasks: number;
     doneTasks: number;

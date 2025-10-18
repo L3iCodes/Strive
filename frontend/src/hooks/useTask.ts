@@ -89,7 +89,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
         mutationFn: ({taskData}: UpdateTaskVariables) => updateTask(taskData),
         onMutate: async ({ sectionId, taskData }) => {
             const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
-    
+
             queryClient.setQueryData<BoardProps>(['kanban', boardId], (old):any => {
                 if(!old) return old;
                 
@@ -105,6 +105,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
                                 priority: taskData.priority ?? task.priority,
                                 description: taskData.description ?? task.description,
                                 due_date: taskData.dueDate ?? task.due_date,
+                                done: taskData.done ?? task.done,
                                 }
                             : task
                         ),
@@ -121,7 +122,8 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
             return { previousBoard };
         },
         onSuccess: (_data) => {
-            
+            queryClient.invalidateQueries({queryKey: ['task', taskId]})
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]});
         },
         onError: (error, _variables, context) => {
             console.log(error);

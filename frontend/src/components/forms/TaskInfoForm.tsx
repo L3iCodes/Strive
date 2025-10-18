@@ -13,9 +13,10 @@ export interface TaskInfoFormProps {
     description?: string;
     priority?: 'none' | 'low' | 'medium' | 'high'
     dueDate?: Date | null | undefined;
+    done?: boolean;
 };
 
-const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, dueDate }: TaskInfoFormProps) => {
+const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, dueDate, done }: TaskInfoFormProps) => {
     const param = useParams();
     const { isPreviewOpen } = useTaskStore();
     const { updateTaskMutation } = useTask({boardId:param.id});
@@ -26,6 +27,7 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
         description: description ?? '',
         priority, // Priority is an enum, usually fine
         dueDate,
+        done,
     }));
     const dropDownRef = useRef<HTMLDetailsElement>(null);
     const priorityChoice = ['none', 'low', 'medium', 'high'] as const;
@@ -56,7 +58,21 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
     };
     
     return (
-        <form onSubmit={handleTaskUpdate} className="flex flex-col text-xs gap-3">
+        <form onSubmit={handleTaskUpdate} className="flex flex-col text-xs gap-2">
+            <div className='flex gap-2 ml-auto'>
+                <input 
+                    type="checkbox" 
+                    disabled={userRole === 'viewer'}
+                    checked={taskData.done} 
+                    onChange={(e) => {
+                        setTaskData({ ...taskData, done: e.currentTarget.checked });
+                        updateTaskMutation.mutate({sectionId, taskData:{...taskData, done:e.currentTarget.checked}})
+                        
+                    }}
+                />
+                <p>Mark as complete</p>
+            </div>
+            
             <div className="flex flex-col gap-5">
                 <input 
                     type="text" 
@@ -133,7 +149,8 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
                                     taskId, 
                                     description: description ?? '', 
                                     priority, 
-                                    dueDate
+                                    dueDate,
+                                    done,
                                 });
                             }}
                         >

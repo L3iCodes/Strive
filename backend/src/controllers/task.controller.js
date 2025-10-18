@@ -88,7 +88,8 @@ export const deleteTask = async (req, res) => {
 
 export const updateTaskInfo = async (req, res) => {
     const { _id } = req.user;
-    const { taskId, task_name, priority, dueDate, description } = req.body;
+    const { taskId, task_name, priority, dueDate, description, done } = req.body;
+    console.log(done)
 
     try{
         const task = await Task.findByIdAndUpdate(
@@ -97,7 +98,8 @@ export const updateTaskInfo = async (req, res) => {
                 task_name,
                 priority,
                 due_date: dueDate,
-                description
+                description,
+                done,
             },
             { new: true }
         );

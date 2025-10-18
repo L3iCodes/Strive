@@ -13,11 +13,13 @@ export const getBoardList = async (req, res) => {
 
     try{
         const result = await User.aggregate([
-            // Find the user
-            { $match: { _id } },
-            // Unwind boards array
+            // 1. Find the user
+            { $match: { _id: _id } },
+            
+            // 2. Unwind the boards array to work with one board at a time
             { $unwind: "$boards" },
-            // Lookup board details
+            
+            // 3. Lookup Board details (The core Board Document)
             {
                 $lookup: {
                     from: "boards",
@@ -27,7 +29,8 @@ export const getBoardList = async (req, res) => {
                 }
             },
             { $unwind: "$board" },
-            // **ADD THIS: Lookup sections with tasks**
+            
+            // 4. Lookup Sections (Fetching the array of Section IDs from the Board)
             {
                 $lookup: {
                     from: "sections",
@@ -36,74 +39,117 @@ export const getBoardList = async (req, res) => {
                     as: "sectionsData"
                 }
             },
+            
+            // 5. Unwind Sections to process all tasks across all sections
+            { $unwind: { path: "$sectionsData", preserveNullAndEmptyArrays: true } },
+            
+            // 6. Lookup ALL Tasks belonging to the current Section
             {
-                $addFields: {
-                    collaboratorUserIds: "$board.collaborators.user"
+                $lookup: {
+                    from: "tasks", // Assuming your task collection is 'tasks'
+                    localField: "sectionsData.tasks",
+                    foreignField: "_id",
+                    as: "sectionTasks" // Array of actual Task documents
                 }
             },
-            // Lookup collaborator avatars
+            
+            // 7. Unwind the Tasks array to calculate checklist metrics
+            { $unwind: { path: "$sectionTasks", preserveNullAndEmptyArrays: true } },
+            
+            
+            // 8. Group by Board ID to consolidate the counts across all tasks/sections
+            {
+                $group: {
+                    _id: "$board._id",
+                    name: { $first: "$board.name" },
+                    desc: { $first: "$board.desc" },
+                    owner: { $first: "$board.owner" },
+                    collaboratorsArray: { $first: "$board.collaborators" }, // Store collaborators array
+                    lastOpened: { $first: "$boards.lastOpened" },
+                    
+                    // Total Tasks: Count the number of actual Task documents processed
+                    totalTasks: { 
+                        $sum: { $cond: [{ $ifNull: ["$sectionTasks._id", false] }, 1, 0] } 
+                    },
+                    
+                    // Done Tasks: Sum the calculated completed items from the $addFields stage
+                    doneTasks: { 
+                        $sum: {
+                            $cond: [
+                                { $eq: ["$sectionTasks.done", true] }, // Check if the task's 'done' field is true
+                                1, // If true, count 1
+                                0  // If false or missing, count 0
+                            ]
+                        }
+                    }
+                }
+            },
+            
+            // 9. Lookup Collaborator Avatars (Using the stored collaboratorsArray from $group)
             {
                 $lookup: {
                     from: "users",
-                    localField: "collaboratorUserIds", 
+                    localField: "collaboratorsArray.user", 
                     foreignField: "_id",
-                    as: "collaborators"
+                    as: "collaboratorUsers"
                 }
             },
-            // Project fields
+
+            // 10. Add computed field to merge collaborator metadata with user data
+            {
+                $addFields: {
+                    collaborators: {
+                        $map: {
+                            input: "$collaboratorsArray",
+                            as: "collab",
+                            in: {
+                                $mergeObjects: [
+                                    // Get the user data
+                                    {
+                                        $arrayElemAt: [
+                                            {
+                                                $filter: {
+                                                    input: "$collaboratorUsers",
+                                                    as: "user",
+                                                    cond: { $eq: ["$$user._id", "$$collab.user"] }
+                                                }
+                                            },
+                                            0
+                                        ]
+                                    },
+                                    // Add the status and role from collaboratorsArray
+                                    {
+                                        status: "$$collab.status",
+                                        role: "$$collab.role",
+                                        inviteId: "$$collab.inviteId"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+
+            // 11. Final Projection (Structuring the final output)
             {
                 $project: {
-                    _id: "$board._id",
-                    name: "$board.name",
-                    desc: "$board.desc",
-                    owner: "$board.owner",
+                    _id: 1,
+                    name: 1,
+                    desc: 1,
+                    owner: 1,
+                    lastOpened: 1,
+                    totalTasks: 1,
+                    doneTasks: 1,
                     collaborators: {
                         $map: {
                             input: "$collaborators",
                             as: "c",
-                            // The 'collaborators' array now holds the full User documents, so map their fields
-                            in: { _id: "$$c._id", avatar: "$$c.avatar" } 
-                        }
-                    },
-                    lastOpened: "$boards.lastOpened",
-                    // total tasks - now using sectionsData
-                    totalTasks: {
-                        $sum: {
-                            $map: {
-                                input: "$sectionsData",
-                                as: "section",
-                                in: { $size: { $ifNull: ["$$section.tasks", []] } }
-                            }
-                        }
-                    },
-                    // done subtasks
-                    doneTasks: {
-                        $sum: {
-                            $map: {
-                                input: "$sectionsData",
-                                as: "section",
-                                in: {
-                                    $sum: {
-                                        $map: {
-                                            input: { $ifNull: ["$$section.tasks", []] },
-                                            as: "task",
-                                            in: {
-                                                $size: {
-                                                    $ifNull: [
-                                                        {
-                                                            $filter: {
-                                                                input: "$$task.checklist",
-                                                                as: "item",
-                                                                cond: { $eq: ["$$item.done", true] }
-                                                            }
-                                                        },
-                                                        []
-                                                    ]
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                            in: { 
+                                _id: "$$c._id", 
+                                avatar: "$$c.avatar",
+                                status: "$$c.status",      // Now included
+                                role: "$$c.role",          // Now included
+                                inviteId: "$$c.inviteId"   // Optional: if you need it
                             }
                         }
                     }

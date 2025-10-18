@@ -48,9 +48,7 @@ const SectionComponent = ({ section, id, className }: SectionComponentProps) => 
                     className=" flex gap-2 items-center p-1 hover:bg-primary hover:text-primary-content active:bg-primary/50 text-xs cursor-pointer border-1 border-base-content/10">
                     <ChevronRight size={18} />
                 </div>
-
                 <h2 className="text-[14px] px-1 font-medium truncate rotate-90 mt-15">{section.name}</h2>
-
                 <p className="text-xs mt-20">{section.tasks.length}</p>
             </div>
         );
@@ -86,7 +84,6 @@ const SectionComponent = ({ section, id, className }: SectionComponentProps) => 
                             };
                         }}
                     />
-                    
                     <p className="text-xs ml-2 ">{section.tasks.length}</p>
 
                     {canEdit && (
@@ -108,7 +105,6 @@ const SectionComponent = ({ section, id, className }: SectionComponentProps) => 
                             )}
                         </div>
                     )}
-                    
                 </div>
                 
                 <div onClick = {() => setOpeSectionMenu(false)} className="w-full h-full flex flex-col gap-2">
@@ -124,8 +120,6 @@ const SectionComponent = ({ section, id, className }: SectionComponentProps) => 
                                 )
                             : <EmptyDropZone sectionId={section._id} />
                         }
-                        
-                        
                     </SortableContext>
                     
                     {/* Section Body */}
@@ -141,7 +135,6 @@ const SectionComponent = ({ section, id, className }: SectionComponentProps) => 
                             </button>
                         )}
                 </div>
-                
             </div>
         </>
     );

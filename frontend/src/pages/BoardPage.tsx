@@ -32,8 +32,6 @@ const BoardPage = () => {
         [filteredBoards]
     );
 
-    console.log(boardList)
-
     return (
         <div className="h-full flex flex-col gap-2">
             <Modal isModalOpen={isModalOpen} onClose={() => setIsModalOpen(s => !s)}> 
