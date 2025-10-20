@@ -38,7 +38,7 @@ const Navbar = () => {
             </div>
             <div className={`hidden w-full p-3 md:flex items-center gap-2 ${navOpen ? '!flex' : 'justify-center'}`}>
                 <img 
-                    src={'https://avatar.iran.liara.run/public'}
+                    src={user?.avatar || 'https://avatar.iran.liara.run/public'}
                     className="w-6 h-6 object-cover border-1 border-primary rounded-2xl "
                 />
                 <h3
