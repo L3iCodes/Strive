@@ -8,6 +8,7 @@ export const getInvites = async (req, res) => {
     try{
         // Get board invites
         const invites = await Notification.find({ to: _id })
+            .sort({ createdAt: -1 })
             .populate('from', 'username email avatar') // Populate the 'from' field, selecting only 'username' and 'email' fields
             .populate('to', 'username email avatar')
             .populate('board', 'name')   

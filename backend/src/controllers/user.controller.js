@@ -7,7 +7,6 @@ export const changePassword = async (req, res) => {
     const { oldPassword, newPassword } = req.body;
 
     try{
-        console.log(_id, oldPassword, newPassword)
         const user = await User.findById( _id );
         if(!user) return res.status(409).json({message: "User does not exists"});
         if(!await bcrypt.compare(oldPassword, user.password)) return res.status(409).json({message: "Old password does not match"});

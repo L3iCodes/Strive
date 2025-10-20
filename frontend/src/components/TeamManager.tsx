@@ -80,7 +80,7 @@ const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeT
                             
                             <div className="ml-auto py-1 px-2 flex gap-1 items-center border-1 rounded-xs border-base-content/20 bg-base-100">
                                 <Crown size={14} />
-                                <p className="text-xs  ">Owner</p>
+                                <p className="text-xs ">Owner</p>
                             </div>
                         </div>
 
@@ -88,15 +88,18 @@ const TeamManager = ({boardName, owner, collaborators, isTeamManagerOpen, closeT
                         <div className="flex flex-col gap-1">
                             {collaborators
                                 ?.filter(collaborator => collaborator.status === 'accepted') // 1. Filter the collaborators array
-                                .map(collaborator => (                                       // 2. Map the filtered array to components
-                                    <CollaboratorCard 
-                                        key={collaborator._id || collaborator.user._id}
-                                        collaborator={collaborator}
-                                    />
-                                ))
+                                .map(collaborator => {
+                                    if(collaborator.role === 'owner') return;
+
+                                    return(
+                                        <CollaboratorCard 
+                                            key={collaborator._id || collaborator.user._id}
+                                            collaborator={collaborator}
+                                        />
+                                    )
+                                })
                             }
                         </div>
-
                     </div>
                 </div>
             </div>

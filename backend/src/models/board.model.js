@@ -9,7 +9,7 @@ const BoardSchema = new Schema({
         inviteId: { type: Schema.Types.ObjectId, ref: "Notification" },
         user: { type: Schema.Types.ObjectId, ref: "User" },
         status: { type: String, enum: ['pending', 'accepted'] },
-        role: { type: String, enum: ['viewer', 'editor'] }
+        role: { type: String, enum: ['viewer', 'editor', 'owner'] }
     }],
     sections: [{ type: Schema.Types.ObjectId, ref: "Section" }],
     activities: [{ type : Schema.Types.ObjectId, ref: "Activity" }]

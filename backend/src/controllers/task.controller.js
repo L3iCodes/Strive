@@ -89,7 +89,6 @@ export const deleteTask = async (req, res) => {
 export const updateTaskInfo = async (req, res) => {
     const { _id } = req.user;
     const { taskId, task_name, priority, dueDate, description, done } = req.body;
-    console.log(done)
 
     try{
         const task = await Task.findByIdAndUpdate(

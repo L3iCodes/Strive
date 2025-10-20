@@ -172,7 +172,13 @@ export const createBoard = async (req, res) => {
             name,
             desc,
             owner: _id,
-            collaborators: [],
+            collaborators: [
+                {
+                    user: _id,
+                    status: 'accepted',
+                    role: 'owner',
+                }
+            ],
             sections: [],
             activities: [],
         });

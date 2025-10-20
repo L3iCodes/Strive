@@ -63,7 +63,9 @@ export const CollaboratorCard = ({collaborator}: CollaboratorCardProps) => {
                 <p className="text-xs text-base-content/50">{collaborator.user.email}</p>
             </div>
             
-            {userRole !== 'viewer' && (
+
+
+            {(userRole !== 'viewer') && (
                 <details ref={dropDownRef} className="ml-auto relative">
                     <summary className={`w-full flex items-start justify-center gap-1 text-xs py-1 px-2 border-1 rounded-xs border-base-content/20 bg-base-100 cursor-pointer`}>
                         <p>{collaborator.role}</p>

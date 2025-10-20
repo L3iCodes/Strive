@@ -5,7 +5,7 @@ export interface Collaborators{
     _id: string;
     inviteId: string;
     user: User;
-    role: 'viewer' | 'editor';
+    role: 'viewer' | 'editor' | 'owner';
     status: 'pending' | 'accepted';
 };
 
