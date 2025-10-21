@@ -202,7 +202,7 @@ export const createBoard = async (req, res) => {
         };
 
         // Store "created board" message in activity
-        await createActivityService(newBoard._id, _id, "Created board");
+        // await createActivityService(newBoard._id, _id, "Created board");
 
         return res.status(201).json(newBoard);
     }catch(error){

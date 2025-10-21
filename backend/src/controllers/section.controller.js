@@ -11,7 +11,7 @@ export const createSection = async (req, res) => {
     try{
         const newSection = await createSectionService(boardId, sectionName)
         // Log into board
-        await createActivityService(boardId, _id, `Created Section: [${newSection.name}]`)
+        // await createActivityService(boardId, _id, `Created Section: [${newSection.name}]`)
 
         res.status(201).json(newSection);
     }catch(error){
@@ -40,7 +40,7 @@ export const deleteSection = async (req, res) => {
             { new: true }
         );
 
-        await createActivityService(section.board, _id, `Deleted Section: [${section.name}]`)
+        // await createActivityService(section.board, _id, `Deleted Section: [${section.name}]`)
 
         res.status(201).json(section);
     }catch(error){

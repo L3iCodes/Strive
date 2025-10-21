@@ -35,7 +35,7 @@ export const createTask = async (req, res) => {
         });
 
         // Log into board
-        await createActivityService(boardId, _id, `Created Task: [${task.name}]`)
+        // await createActivityService(boardId, _id, `Created Task: [${task.name}]`)
 
         // Push into section
         await Section.findByIdAndUpdate(
@@ -72,11 +72,11 @@ export const deleteTask = async (req, res) => {
         await Task.findByIdAndDelete(task._id);
 
         // Log into board activity
-        await createActivityService(
-            task.board, 
-            _id, 
-            `Deleted Task: [${task.task_name} from [${task.section}]`
-        );
+        // await createActivityService(
+        //     task.board, 
+        //     _id, 
+        //     `Deleted Task: [${task.task_name} from [${task.section}]`
+        // );
 
         
         res.status(200).json(task)
@@ -105,11 +105,11 @@ export const updateTaskInfo = async (req, res) => {
         if(!task) return res.status(404).json({ message: "Task not found" });
        
         //Log into board activity
-        await createActivityService(
-            task.board, 
-            _id, 
-            `Task Updated: [${task.task_name} from [${task.section}]`
-        );
+        // await createActivityService(
+        //     task.board, 
+        //     _id, 
+        //     `Task Updated: [${task.task_name} from [${task.section}]`
+        // );
 
         res.status(200).json(task)
     }catch(error){
@@ -131,11 +131,11 @@ export const addSubtask = async (req, res) => {
         if(!task) return res.status(404).json({ message: "Task not found" });
 
         //Log into board activity
-        await createActivityService(
-            task.board, 
-            _id, 
-            `Subtask Added: [${subtaskData.name} to [${task.task_name}]`
-        );
+        // await createActivityService(
+        //     task.board, 
+        //     _id, 
+        //     `Subtask Added: [${subtaskData.name} to [${task.task_name}]`
+        // );
 
         res.status(201).json(task)
     }catch(error){
@@ -157,11 +157,11 @@ export const deleteSubtask = async (req, res) => {
         if(!task) return res.status(404).json({ message: "Task not found" });
 
         //Log into board activity
-        await createActivityService(
-            task.board, 
-            _id, 
-            `Subtask deleted: from [${task.task_name}]`
-        );
+        // await createActivityService(
+        //     task.board, 
+        //     _id, 
+        //     `Subtask deleted: from [${task.task_name}]`
+        // );
 
         res.status(201).json(task)
     }catch(error){
@@ -188,11 +188,11 @@ export const updateSubtask = async (req, res) => {
         if(!task) return res.status(404).json({ message: "Task not found" });
 
         //Log into board activity
-        await createActivityService(
-            task.board, 
-            _id, 
-            `Subtask Updated: from [${task.task_name}]`
-        );
+        // await createActivityService(
+        //     task.board, 
+        //     _id, 
+        //     `Subtask Updated: from [${task.task_name}]`
+        // );
 
         res.status(201).json(task)
     }catch(error){
