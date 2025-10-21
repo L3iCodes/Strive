@@ -11,14 +11,40 @@ import { useDrag } from "../hooks/useDrag";
 
 import TaskComponent from "./Task";
 import type { Section, Task } from "../types";
+import { useSocket } from "../hooks/useSocket";
 
 const Board = () => {
     const param = useParams();
-    const { kanban:board } = useBoard(param.id as string);
+    const boardId = param.id as string;
+    const { kanban:board } = useBoard(boardId);
     const { sensors, handleDragStart, handleDragEnd, activeDragItem, activeDragId } = useDrag();
     const { setUserRole } = useAuthStore();
+    const { socket } = useSocket();
+
     const [sectionList, setSectionList] = useState<SectionItem[]>([])
     const [openNewSection, setOpenNewSection] = useState<boolean>(false);
+
+    // Join Board Room
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleConnect = () => {
+            socket.emit('JOIN_BOARD', boardId);
+            console.log(`Joined board ${boardId}`);
+        };
+
+        // If already connected, join immediately
+        if (socket.connected) {
+            handleConnect();
+        } else {
+            socket.on('connect', handleConnect);
+        }
+
+        return () => {
+            socket.emit('LEAVE_BOARD', boardId);
+            socket.off('connect', handleConnect);
+        };
+    }, [socket, boardId]);
 
     // Set user role
     useEffect(() => {

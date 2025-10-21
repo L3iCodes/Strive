@@ -16,6 +16,9 @@ import SignupPage from "./pages/SignupPage";
 import KanbanBoard from "./pages/KanbanBoard";
 import ProfilePage from "./pages/ProfilePage";
 
+// Hooks & Context
+import { SocketContextProvider } from "./hooks/useSocket";
+
 function App() {
     const { theme } = useThemeStore()
     const { isAuthenticated } = useAuthStore();
@@ -38,13 +41,15 @@ function App() {
                                     <p>Connecting to Server. Please Wait</p>
                                 </div>
                             )}
-                            <Routes>
-                                <Route path="/" element={isAuthenticated ? <BoardPage /> : <Navigate to="/login" />} />
-                                <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
-                                <Route path="/signup" element={!isAuthenticated ? <SignupPage /> : <Navigate to="/" />} />
-                                <Route path="/board/:id" element={isAuthenticated ? <KanbanBoard /> : <Navigate to="/login" />} />
-                                <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />} />
-                            </Routes>
+                            <SocketContextProvider>
+                                <Routes>
+                                    <Route path="/" element={isAuthenticated ? <BoardPage /> : <Navigate to="/login" />} />
+                                    <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
+                                    <Route path="/signup" element={!isAuthenticated ? <SignupPage /> : <Navigate to="/" />} />
+                                    <Route path="/board/:id" element={isAuthenticated ? <KanbanBoard /> : <Navigate to="/login" />} />
+                                    <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />} />
+                                </Routes>
+                            </SocketContextProvider>
                         </div>
                     </div>
             </Routers>

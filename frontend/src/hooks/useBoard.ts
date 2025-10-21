@@ -4,7 +4,6 @@ import { useState } from "react";
 import type { BoardSummary, BoardProps } from "../types";
 import { useAuthStore } from "../store/useAuthStore";
 
-
 export const useBoard = (boardId?: string) => {
     const queryClient = useQueryClient();
     const { user } = useAuthStore();

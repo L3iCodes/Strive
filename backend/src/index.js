@@ -11,11 +11,11 @@ import taskRoutes from './routes/task.route.js'
 import collabRoutes from './routes/collab.route.js'
 import dragDropRoutes from './routes/dragDrop.route.js'
 import userRoutes from './routes/user.route.js'
+import { app, server } from './lib/socket.js'
 
 dotenv.config();
 
-const app = express();
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
     console.log("Listening at PORT: ", process.env.PORT);
     connectDB();
 });

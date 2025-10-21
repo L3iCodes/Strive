@@ -1,9 +1,29 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { BoardProps } from "../types";
 import { createSection, deleteSection, updateSection } from "../apis/section.api";
+import { useSocket } from "./useSocket";
+import { useEffect } from "react";
 
 export const useSection = (boardId: string) => {
+    const { socket } = useSocket();
     const queryClient = useQueryClient();
+
+    // Listen for board update from other users
+    useEffect(() => {
+        if(!socket || !boardId) return;
+
+        const handleBoardUpdate = (payload: { board: BoardProps }) => {
+            console.log(payload.board)
+            queryClient.setQueryData<BoardProps>(['kanban', boardId], payload.board);
+        };
+
+        socket.on('UPDATE_BOARD', handleBoardUpdate);
+
+        return () => {
+            socket.off('UPDATE_BOARD', handleBoardUpdate);
+        };
+
+    }, [socket, boardId, queryClient]);
 
     const createSectionMutation = useMutation({
         mutationFn: createSection,
@@ -12,10 +32,15 @@ export const useSection = (boardId: string) => {
             queryClient.setQueryData<BoardProps>(['kanban', boardId], (old: BoardProps | undefined) => {
                 if (!old) return old;
                 
-                return { 
+                const updatedBoard = {
                     ...old, 
-                    sections: [...old.sections, data] // Append new section at the end
-                };
+                    sections: [...old.sections, data]
+                }
+
+                // 🎯 EMIT 1: After successful DB write, broadcast the new board state
+                socket?.emit('UPDATE_BOARD', { board: updatedBoard, boardId: boardId });
+
+                return updatedBoard;
             });
         },
         
