@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { BoardProps, Section, Task } from "../types";
 import { dragTask, reorderSection } from "../apis/dragDrop.api";
+import { useSocket } from "./useSocket";
 
 interface dragDropVariables {
     boardId: string;
@@ -17,6 +18,7 @@ interface dragTaskVariables {
 
 export const useDragAPI = (boardId: string) => {
     const queryClient = useQueryClient();
+    const { socket } = useSocket();
 
     const sectionReorderMutation = useMutation({
         mutationFn: ({boardId, newSectionOrder}: dragDropVariables) => reorderSection({boardId, newSectionOrder}),
@@ -35,6 +37,7 @@ export const useDragAPI = (boardId: string) => {
                 }
             });
 
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             return ({ previousBoard });
         },
         onSuccess: (_updatedBoard) => {
@@ -86,6 +89,7 @@ export const useDragAPI = (boardId: string) => {
                 };
             });
 
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             return { previousBoard }
         },
         onSuccess: (_data) => {

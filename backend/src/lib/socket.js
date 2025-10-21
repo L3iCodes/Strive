@@ -22,18 +22,22 @@ io.on("connection", (socket) => {
     socket.on('JOIN_BOARD', (boardId) => {
         socket.join(boardId);
         console.log(`User: ${socket.id} JOINED-${boardId}`)
-
-        if (typeof callback === 'function') {
-            callback({ status: 'ok' });
-        }
     })
 
     socket.on('UPDATE_BOARD', async (payload) => {
-        const { boardId } = payload;
-        const board = await findBoardAndPopulate(boardId);
-        console.log('Getting board', board)
-        socket.to(boardId).emit('UPDATE_BOARD', { board });
-        console.log("UPDATING BOARD BY ", socket.id)
+        try {
+            const { boardId, board } = payload;
+
+            // Send the socketId with the update
+            
+            io.to(boardId).emit('UPDATE_BOARD', { 
+                board, 
+                socketId: socket.id 
+            });
+            console.log("UPDATING BOARD BY ", socket.id);
+        } catch (error) {
+            console.error('Error updating board:', error);
+        }
     })
 
     socket.on('LEAVE_BOARD', (boardId) => {

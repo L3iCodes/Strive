@@ -10,8 +10,9 @@ import { useBoard } from "../hooks/useBoard";
 import { useDrag } from "../hooks/useDrag";
 
 import TaskComponent from "./Task";
-import type { Section, Task } from "../types";
+import type { BoardProps, Section, Task } from "../types";
 import { useSocket } from "../hooks/useSocket";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Board = () => {
     const param = useParams();
@@ -20,6 +21,7 @@ const Board = () => {
     const { sensors, handleDragStart, handleDragEnd, activeDragItem, activeDragId } = useDrag();
     const { setUserRole } = useAuthStore();
     const { socket } = useSocket();
+    const queryClient = useQueryClient();
 
     const [sectionList, setSectionList] = useState<SectionItem[]>([])
     const [openNewSection, setOpenNewSection] = useState<boolean>(false);
@@ -45,6 +47,32 @@ const Board = () => {
             socket.off('connect', handleConnect);
         };
     }, [socket, boardId]);
+
+    useEffect(() => {
+        if(!socket || !boardId) return;
+       
+        const handleBoardUpdate = (payload: { board: BoardProps; socketId: string }) => {
+            // console.log('Board update received:', payload);
+            
+            if (payload.socketId === socket.id) {
+                console.log('Ignoring own update');
+                return;
+            }
+           
+            console.log('Updating board from socket');
+            
+            // Force deep clone to ensure new reference
+            queryClient.setQueryData(['kanban', boardId], payload.board);
+            // queryClient.invalidateQueries({ queryKey: ['kanban', boardId] });
+            console.log('QUERY DATA', queryClient.getQueryData(['kanban', boardId]))
+        };
+       
+        socket.on('UPDATE_BOARD', handleBoardUpdate);
+       
+        return () => {
+            socket.off('UPDATE_BOARD', handleBoardUpdate);
+        };
+    }, [socket, boardId, queryClient]);
 
     // Set user role
     useEffect(() => {

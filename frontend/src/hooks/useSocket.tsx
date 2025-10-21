@@ -23,7 +23,7 @@ export const SocketContextProvider = ({ children }: SocketContextProviderProps) 
         const newSocket = io(BACKEND_URL);
         setSocket(newSocket);
         
-        if(!isConnected) newSocket.on('connect', () => setIsConnected(true));
+        newSocket.on('connect', () => setIsConnected(true));
         newSocket.on('disconnect', () => setIsConnected(false));
         
         // Clean up the connection on unmount

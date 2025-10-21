@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addSubTask, assignTask, createTask, deleteSubtask, deleteTask, getTask, moveTask, removeAssignee, updateSubtask, updateTask } from "../apis/task.api";
 import type {  BoardProps,  TaskDeletion,  UpdateTaskVariables,  AddSubTaskVariables, Task, DeleteSubTaskVariables, UpdateSubTaskVariables, MoveTaskVariables, assignTaskVariables } from "../types";
 import { useTaskStore } from "../store/useTaskStore";
+import { useSocket } from "./useSocket";
 
 interface UseTaskVariable {
     boardId?: string,
@@ -11,6 +12,7 @@ interface UseTaskVariable {
 export const useTask = ({boardId, taskId}: UseTaskVariable) => {
     const queryClient = useQueryClient();
     const { isPreviewOpen } = useTaskStore();
+    const { socket } = useSocket();
 
     const { data: task } = useQuery<Task>({
         queryKey: ['task', taskId],
@@ -39,6 +41,8 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
                 
                 return { ...old, sections: updatedSections };
             });
+
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
         },
         onError: (error) => {
             console.log(error);
@@ -70,6 +74,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
                 }
             });
 
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             return { previousBoard };
         },
         onSuccess(_data) {
@@ -119,6 +124,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
                 }
             });
 
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             return { previousBoard };
         },
         onSuccess: (_data) => {
@@ -174,6 +180,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
                 }
             });
 
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             return { previousBoard, previousTask };
         },
         onSuccess: (_data) => {
@@ -234,6 +241,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
                 }
             });
 
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             return{ previousBoard, previousTask }
         },
         onSuccess: (_data) => {
