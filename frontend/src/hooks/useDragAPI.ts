@@ -47,6 +47,7 @@ export const useDragAPI = (boardId: string) => {
         onError: (error, _variables, context) => {
             console.log(error);
             
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             if(context && context.previousBoard){
                 queryClient.setQueryData(['kanban', boardId], context.previousBoard)
             }
@@ -97,7 +98,8 @@ export const useDragAPI = (boardId: string) => {
         },
         onError: (error, _variables, context) => {
             console.log(error);
-            
+
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             if(context && context.previousBoard){
                 queryClient.setQueryData(['kanban', boardId], context.previousBoard)
             }

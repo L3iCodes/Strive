@@ -10,15 +10,58 @@ import { useEffect, useState } from "react";
 import { useTask } from "../hooks/useTask";
 import { useParams } from "react-router-dom";
 import { CollaboratorAssignedCard } from "./CollboratorCard";
+import { useSocket } from "../hooks/useSocket";
+import { useQueryClient } from "@tanstack/react-query";
+import type { Task } from "../types";
 
 
 const TaskPreview = () => {
-    const param = useParams();
+    const queryClient = useQueryClient();
+    const { id:boardId } = useParams();
     const { isPreviewOpen, closePreview, taskId } = useTaskStore();
-    const { task } = useTask({ boardId:param.id, taskId:taskId as string });
     const { userRole } = useAuthStore();
+    const { socket } = useSocket();
+    const { task } = useTask({ boardId:boardId, taskId:taskId as string });
     const [ isAssigneeOpen, setIsAssigneeOpen ] = useState(false);
     
+    useEffect(() => {
+        if (!socket || !taskId) return;
+
+        const handleConnect = () => {
+            socket.emit('JOIN_TASK', taskId);
+        };
+
+        // If already connected, join immediately
+        if (socket.connected) {
+            handleConnect();
+        } else {
+            socket.on('connect', handleConnect);
+        }
+
+        return () => {
+            socket.emit('LEAVE_TASK', taskId);
+            socket.off('connect', handleConnect);
+        };
+    }, [taskId, socket]);
+
+    useEffect(() => {
+        if(!socket || !taskId) return;
+        
+        const handleTaskUpdate = (payload: { task: Task; socketId: string }) => {
+            if (payload.socketId === socket.id) {
+                return;
+            }
+            // Force deep clone to ensure new reference
+            queryClient.setQueryData(['task', taskId], payload.task);
+        };
+        
+        socket.on('UPDATE_TASK', handleTaskUpdate);
+        
+        return () => {
+            socket.off('UPDATE_TASK', handleTaskUpdate);
+        };
+    }, [socket, taskId, queryClient]);
+
     useEffect(() => {
         // Closes assignee search
         setIsAssigneeOpen(false)
@@ -42,7 +85,6 @@ const TaskPreview = () => {
             
             <div className="p-2 flex flex-col text-xs gap-5">
                 < TaskInfoForm 
-                    key={task?._id}
                     sectionId={task?.section as string} 
                     taskId={task?._id} task_name={task?.task_name} 
                     description={task?.description} 

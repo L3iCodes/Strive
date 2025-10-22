@@ -1,6 +1,6 @@
 import { ChevronRight, Ellipsis, Plus } from "lucide-react";
 import type { Section } from "../types";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NewTaskForm from "./forms/NewTaskForm";
 import TaskComponent from "./Task";
 import { useSection } from "../hooks/useSection";
@@ -19,20 +19,23 @@ interface SectionComponentProps{
 }
 
 const SectionComponent = ({ section, id, className }: SectionComponentProps) => {
-    const param = useParams();
+    const { id:boardId } = useParams();
     const { userRole } = useAuthStore();
-    const { deleteSectionMutation, updateSectionMutation } = useSection(param.id as string);
+    const { deleteSectionMutation, updateSectionMutation } = useSection(boardId as string);
     const { setNodeRef, attributes, listeners, dragStyle } = useSort(id);
-    const [showAddTaskTop, setShowAddTaskTop] = useState<boolean>(false);
-    const [showAddTaskBot, setShowAddTaskBot] = useState<boolean>(false);
-    const [openSectionMenu, setOpeSectionMenu] = useState<boolean>(false);
-    const [isSectionCollapse, setIsSectionCollapse] = useState<boolean>(false);
+    const [showAddTaskTop, setShowAddTaskTop] = useState(false);
+    const [showAddTaskBot, setShowAddTaskBot] = useState(false);
+    const [openSectionMenu, setOpeSectionMenu] = useState(false);
+    const [isSectionCollapse, setIsSectionCollapse] = useState(false);
     const [editMode, setEditMode] = useState<boolean>(false);
     const [sectionName, setSectionName] = useState(section?.name);
     const inputRef = useRef<HTMLInputElement>(null);
-    
     const canEdit = userRole && ['owner', 'editor'].includes(userRole);
 
+    useEffect(() => {
+        setSectionName(section.name);
+    }, [section]);
+    
     const handleEditMode = () => {
         if (canEdit) setEditMode(true);
     };

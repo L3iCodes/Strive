@@ -1,17 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { inviteResponse, inviteUser, updateRole } from "../apis/collab.api";
+import { useSocket } from "./useSocket";
 
 export const useCollab = (boardId: string) => {
     const queryClient = useQueryClient();
+    const { socket } = useSocket();
 
     const inviteUserMutation = useMutation({
         mutationFn: inviteUser,
-        onMutate: (variables) => {
-            console.log(variables)
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
-            console.log(data)
+        onSuccess: async () => {
+            await queryClient.refetchQueries({queryKey: ['kanban', boardId]});
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
         },
         onError: (error) => {
             console.log(error)
@@ -20,14 +19,12 @@ export const useCollab = (boardId: string) => {
 
     const inviteResponseMutation = useMutation({
         mutationFn: inviteResponse,
-        onMutate: (variables) => {
-            console.log(variables)
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({queryKey: ['kanban', boardId]});
+        onSuccess: async () => {
+            await queryClient.refetchQueries({queryKey: ['kanban', boardId]});
             queryClient.invalidateQueries({queryKey: ['invites']});
             queryClient.invalidateQueries({queryKey: ['boards']});
-            console.log(data)
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
+            
         },
         onError: (error) => {
             console.log(error)
@@ -36,14 +33,11 @@ export const useCollab = (boardId: string) => {
 
     const updateRoleMutation = useMutation({
         mutationFn: updateRole,
-        onMutate: (variables) => {
-            console.log(variables)
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({queryKey: ['kanban', boardId]});
+        onSuccess: async () => {
+            await queryClient.refetchQueries({queryKey: ['kanban', boardId]});
             queryClient.invalidateQueries({queryKey: ['invites']});
             queryClient.invalidateQueries({queryKey: ['boards']});
-            console.log(data)
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
         },
         onError: (error) => {
             console.log(error)

@@ -29,6 +29,7 @@ export const useSection = (boardId: string) => {
             console.log(error);
             // Refetch if there's an error
             queryClient.invalidateQueries({queryKey: ['kanban', boardId]});
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
         }
     });
 
@@ -59,7 +60,9 @@ export const useSection = (boardId: string) => {
         },
         onError: (error, _sectionId, context) => {
             console.log(error);
+
             // Revert to previous board data
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             if(context?.previousBoard){
                 queryClient.setQueryData(['boards'], context.previousBoard);
             };
@@ -99,6 +102,7 @@ export const useSection = (boardId: string) => {
             console.log(error);
 
             // Revert to previous board data
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             if(context?.previousBoard){
                 queryClient.setQueryData(['boards'], context.previousBoard);
             };

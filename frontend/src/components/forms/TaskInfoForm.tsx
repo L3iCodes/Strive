@@ -19,25 +19,28 @@ export interface TaskInfoFormProps {
 const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, dueDate, done }: TaskInfoFormProps) => {
     const param = useParams();
     const { isPreviewOpen } = useTaskStore();
-    const { updateTaskMutation } = useTask({boardId:param.id});
+    const { updateTaskMutation } = useTask({boardId:param.id, taskId:taskId as string});
     const [editMode, setEditMode] = useState(false);
-    const [taskData, setTaskData] = useState(() => ({
-        task_name: task_name ?? '',
-        taskId,
-        description: description ?? '',
-        priority, // Priority is an enum, usually fine
-        dueDate,
-        done,
-    }));
+    const [taskData, setTaskData] = useState<TaskInfoFormProps>({})
     const dropDownRef = useRef<HTMLDetailsElement>(null);
     const priorityChoice = ['none', 'low', 'medium', 'high'] as const;
     const { userRole } = useAuthStore();
-
     const canEdit = userRole && ['owner', 'editor'].includes(userRole);
 
     const handleEditMode = () => {
         if (canEdit) setEditMode(true);
     };
+
+    useEffect(() => {
+        setTaskData({
+            task_name: task_name ?? '',
+            taskId,
+            description: description ?? '',
+            priority,
+            dueDate,
+            done,
+        });
+    }, [task_name, taskId, description, priority, dueDate, done]);
 
     useEffect(() => {
         setEditMode(false);
@@ -96,13 +99,17 @@ const TaskInfoForm = ({ sectionId, taskId, task_name, description, priority, due
                             {editMode && (
                                 <ul className={`menu dropdown-content bg-base-100 rounded-box z-1 p-1 shadow-sm w-full text-xs border-1 border-base-content/10`}>
                                     {priorityChoice.map(choice => (
-                                        <li key={choice}
-                                            onClick={() => {setTaskData({...taskData, priority: choice}), dropDownRef.current?.removeAttribute("open");}} 
+                                        <li 
+                                            key={choice}
+                                            onClick={() => {
+                                                setTaskData({...taskData, priority: choice});
+                                                dropDownRef.current?.removeAttribute("open");
+                                            }}
                                             className="font-medium border-b-1 border-base-content/10"
-                                            >
-                                                <a className={`${taskData.priority === 'high' && 'hidden'} flex flex-col gap-1 items-start`}>
-                                                    {choice}
-                                                </a>
+                                        >
+                                            <a className={`flex flex-col gap-1 items-start ${taskData.priority === choice ? 'bg-base-200 font-bold' : ''}`}>
+                                                {choice}
+                                            </a>
                                         </li>
                                     ))}
                                 </ul>

@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useTask } from '../hooks/useTask';
 import type { CheckList } from '../types'
 import { Trash, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 
 interface SubtaskProps {
@@ -12,11 +12,15 @@ interface SubtaskProps {
 }
 
 const Subtask = ({taskId, sectionId, subtask}: SubtaskProps) => {
-    const req = useParams();
-    const { deleteSubTaskMutation, updateSubtaskMutation } = useTask({boardId:req.id, taskId:taskId});
+    const { id:boardId } = useParams();
+    const { deleteSubTaskMutation, updateSubtaskMutation } = useTask({boardId:boardId, taskId:taskId});
     const [editMode, setEditMode] = useState(false)
     const [subtaskData, setSubtaskData] = useState(subtask)
     const { userRole } = useAuthStore();
+
+    useEffect(() => {
+        setSubtaskData(subtask)
+    }, [subtask])
     
     const canEdit = userRole && ['owner', 'editor'].includes(userRole);
     const handleEditMode = () => {

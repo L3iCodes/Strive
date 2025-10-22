@@ -16,9 +16,10 @@ interface TaskProps{
 
 const TaskComponent = ({ task, id, className }: TaskProps) => {
     const { showPreview } = useTaskStore();
+    const { userRole } = useAuthStore(); 
     const { setNodeRef, attributes, listeners, dragStyle } = useSort(id);
     const [openTaskMenu, setOpenTaskMenu] = useState(false);
-    const { userRole } = useAuthStore(); 
+    
 
     return (
         <>

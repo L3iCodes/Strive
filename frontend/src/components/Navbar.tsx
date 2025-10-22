@@ -18,10 +18,10 @@ const navbarContent = [
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const [navOpen, setNavOpen] = useState<boolean>(false);
-    const { logoutMutation } = useAuth();
-    const { user } = useAuthStore();
     const location = useLocation();
+    const { user } = useAuthStore();
+    const [navOpen, setNavOpen] = useState(false);
+    const { logoutMutation } = useAuth();
     const pathName = location.pathname;
 
     return (

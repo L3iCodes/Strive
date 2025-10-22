@@ -19,9 +19,9 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
     console.log("A user has connected - ", socket.id);
 
+    // BOARD REALTIME UPDATES
     socket.on('JOIN_BOARD', (boardId) => {
         socket.join(boardId);
-        console.log(`User: ${socket.id} JOINED-${boardId}`)
     })
 
     socket.on('UPDATE_BOARD', async (payload) => {
@@ -29,12 +29,10 @@ io.on("connection", (socket) => {
             const { boardId, board } = payload;
 
             // Send the socketId with the update
-            
             io.to(boardId).emit('UPDATE_BOARD', { 
                 board, 
                 socketId: socket.id 
             });
-            console.log("UPDATING BOARD BY ", socket.id);
         } catch (error) {
             console.error('Error updating board:', error);
         }
@@ -43,6 +41,31 @@ io.on("connection", (socket) => {
     socket.on('LEAVE_BOARD', (boardId) => {
         socket.leave(boardId);
     })
+
+    // TASK REALTIME UPDATE (Task Preview)
+    socket.on('JOIN_TASK', (taskId) => {
+        socket.join(taskId);
+    })
+
+    socket.on('UPDATE_TASK', async (payload) => {
+        try{
+            const { taskId, task } = payload;
+            
+            // Send the socketId with the update
+            io.to(taskId).emit('UPDATE_TASK', { 
+                task, 
+                socketId: socket.id 
+            });
+
+        }catch(error){
+            console.error('Error updating task:', error);
+        }
+    })
+
+    socket.on('LEAVE_TASK', (taskId) => {
+        socket.leave(taskId);
+    })
+
 
     socket.on("disconnect", () => {
         console.log('A user has disconnected - ', socket.id)

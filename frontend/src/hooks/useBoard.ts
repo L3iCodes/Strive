@@ -15,18 +15,18 @@ export const useBoard = (boardId?: string) => {
     });
 
     const { data:kanban , isLoading:isKanbanLoading } = useQuery<BoardProps>({
-        queryKey: ['kanban', boardId],   // include the id in the key
+        queryKey: ['kanban', boardId], 
         queryFn: () => getKanbanBoard(boardId as string),
-        // enabled: !!boardId,
+        enabled: !!boardId,
         
-        // // CRITICAL: Prevent automatic refetches during drag operations
-        // refetchOnWindowFocus: false,  // Don't refetch when window regains focus
-        // refetchOnMount: false,         // Don't refetch when component remounts
-        // refetchOnReconnect: false,     // Don't refetch on network reconnect
-        // staleTime: 0,      // Consider data fresh for 5 minutes
+        // CRITICAL: Prevent automatic refetches during drag operations
+        refetchOnWindowFocus: false,  // Don't refetch when window regains focus
+        refetchOnMount: false,         // Don't refetch when component remounts
+        refetchOnReconnect: false,     // Don't refetch on network reconnect
+        staleTime: 0,      // Consider data fresh for 5 minutes
         
-        // // Optional: Keep data in cache longer
-        // gcTime: 10 * 60 * 1000,   
+        // Optional: Keep data in cache longer
+        gcTime: 10 * 60 * 1000,   
     });
 
     const createBoardMutation = useMutation({
@@ -42,7 +42,6 @@ export const useBoard = (boardId?: string) => {
     const deleteBoardMutation = useMutation({
         mutationFn: (boardId: string) => deleteBoard(boardId),
         onMutate: async (boardId) => {
-            console.log(boardId)
             // Cancel queries
             await queryClient.cancelQueries({ queryKey: ['boards'] });
 

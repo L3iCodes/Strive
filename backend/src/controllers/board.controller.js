@@ -213,7 +213,7 @@ export const createBoard = async (req, res) => {
 
 export const getKanbanBoard = async (req, res) => {
     const { id } = req.params;
-    
+
     try{
         const board = await findBoardAndPopulate(id);
         if (!board) return res.status(404).json({ message: "Error fetching updated board" });

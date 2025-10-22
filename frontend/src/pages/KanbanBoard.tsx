@@ -35,7 +35,7 @@ const KanbanBoard = () => {
                 : board && (<BoardHeader name={board.name} collaborators={board.collaborators} openManage={() => setIsTeamManagerOpen(s => !s)} />)
             }
 
-            <Board/>
+            <Board board={board}/>
 
             <TeamManager
                 boardName={board?.name} 
