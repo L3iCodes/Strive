@@ -47,6 +47,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
         onError: (error) => {
             console.log(error);
             // Refetch if there's an error
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             queryClient.invalidateQueries({queryKey: ['kanban', boardId]});
         }
     });
@@ -84,6 +85,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
             console.log(error);
             
             // Revert board data if there is an error
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             if(context?.previousBoard){
                 queryClient.setQueryData(['kanban', boardId], context.previousBoard);
             };
@@ -418,23 +420,50 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
             queryClient.invalidateQueries({queryKey: ['task', taskId]})
             queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
         },
-        onError: (error, _variables, _context) => {
+        onError: (error, _variables, context) => {
             console.log(error);
             
-            // // Revert board data if there is an error
-            // if(context?.previousBoard){
-            //     queryClient.setQueryData(['kanban', boardId], context.previousBoard);
-            //     queryClient.setQueryData(['task', taskId], context.previousTask);
-            // };
+            // Revert board data if there is an error
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
+            socket?.emit('UPDATE_TASK', { task: queryClient.getQueryData(['task', taskId]), taskId: taskId });
+
+            if(context?.previousBoard){
+                queryClient.setQueryData(['kanban', boardId], context.previousBoard);
+                queryClient.setQueryData(['task', taskId], context.previousTask);
+            };
         }
     })
 
     const assignTaskMutation = useMutation({
         mutationFn: assignTask,
-        onMutate: ({ user }: assignTaskVariables) => {
-
+        onMutate: ({ user, sectionId, taskId }: assignTaskVariables) => {
             const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
-            const previousTask = queryClient.getQueryData<BoardProps>(['task', taskId]);
+            const previousTask = queryClient.getQueryData<Task>(['task', taskId]);
+
+            queryClient.setQueryData<BoardProps>(['kanban', boardId], (old):any => {
+                if(!old) return old;
+                
+                const updatedSections = old.sections.map((section) =>
+                    section._id === sectionId
+                    ? {
+                        ...section,
+                        tasks: section.tasks.map((task) =>
+                            task._id === taskId
+                            ? {
+                                ...task,
+                                assignees: [...task.assignees, user]
+                                }
+                            : task
+                        ),
+                        }
+                    : section
+                );
+                
+                return {
+                    ...old,
+                    sections: updatedSections
+                }
+            });
             
             // Update task cache
             queryClient.setQueryData<Task>(['task', taskId], (old: any) => {
@@ -446,7 +475,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
                 };
             });
 
-            // socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             socket?.emit('UPDATE_TASK', { task:queryClient.getQueryData(['task', taskId]), taskId: taskId });
            
             return { previousBoard, previousTask }
@@ -459,6 +488,8 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
             console.log(error);
 
             // Revert board data if there is an error
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
+            socket?.emit('UPDATE_TASK', { task:queryClient.getQueryData(['task', taskId]), taskId: taskId });
             if(context?.previousTask){
                 queryClient.setQueryData(['kanban', boardId], context.previousBoard);
                 queryClient.setQueryData(['task', taskId], context.previousTask);
@@ -468,10 +499,34 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
 
     const removeAssigneekMutation = useMutation({
         mutationFn: removeAssignee,
-         onMutate: ({ user }: assignTaskVariables) => {
-
+         onMutate: ({ user, sectionId }: assignTaskVariables) => {
             const previousBoard = queryClient.getQueryData<BoardProps>(['kanban', boardId]);
-            const previousTask = queryClient.getQueryData<BoardProps>(['task', taskId]);
+            const previousTask = queryClient.getQueryData<Task>(['task', taskId]);
+
+            queryClient.setQueryData<BoardProps>(['kanban', boardId], (old):any => {
+                if(!old) return old;
+                
+                const updatedSections = old.sections.map((section) =>
+                    section._id === sectionId
+                    ? {
+                        ...section,
+                        tasks: section.tasks.map((task) =>
+                            task._id === taskId
+                            ? {
+                                ...task,
+                                assignees: task.assignees.filter(assignee => assignee._id !== user?._id)
+                                }
+                            : task
+                        ),
+                        }
+                    : section
+                );
+                
+                return {
+                    ...old,
+                    sections: updatedSections
+                }
+            });
 
             // Update task cache
             queryClient.setQueryData<Task>(['task', taskId], (old) => {
@@ -483,6 +538,7 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
                 };
             });
 
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
             socket?.emit('UPDATE_TASK', { task:queryClient.getQueryData(['task', taskId]), taskId: taskId });
            
             return { previousBoard, previousTask }
@@ -495,6 +551,8 @@ export const useTask = ({boardId, taskId}: UseTaskVariable) => {
              console.log(error);
 
             // Revert board data if there is an error
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
+            socket?.emit('UPDATE_TASK', { task:queryClient.getQueryData(['task', taskId]), taskId: taskId });
             if(context?.previousTask){
                 queryClient.setQueryData(['kanban', boardId], context.previousBoard);
                 queryClient.setQueryData(['task', taskId], context.previousTask);

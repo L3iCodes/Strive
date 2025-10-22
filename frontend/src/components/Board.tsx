@@ -33,7 +33,6 @@ const Board = ({board}:BoardPropsVariable) => {
 
         const handleConnect = () => {
             socket.emit('JOIN_BOARD', boardId);
-            console.log(`Joined board ${boardId}`);
         };
 
         // If already connected, join immediately
@@ -59,6 +58,7 @@ const Board = ({board}:BoardPropsVariable) => {
             }
            
             console.log('Updating board from socket');
+            console.log(payload.board)
             
             // Force deep clone to ensure new reference
             queryClient.setQueryData(['kanban', boardId], payload.board);

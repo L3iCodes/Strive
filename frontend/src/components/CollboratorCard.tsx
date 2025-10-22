@@ -96,8 +96,9 @@ export const CollaboratorCard = ({collaborator}: CollaboratorCardProps) => {
 interface CollaboratorAssignedCardProps {
     taskId: string;
     collaborator: User;
+    sectionId: string;
 }
-export const CollaboratorAssignedCard = ({taskId, collaborator}: CollaboratorAssignedCardProps) => {
+export const CollaboratorAssignedCard = ({taskId, collaborator, sectionId}: CollaboratorAssignedCardProps) => {
     const param = useParams();
     const { removeAssigneekMutation } = useTask({ boardId:param.id, taskId:taskId })
     const { userRole } = useAuthStore();
@@ -113,7 +114,7 @@ export const CollaboratorAssignedCard = ({taskId, collaborator}: CollaboratorAss
             
             {userRole !== 'viewer' && (
                 <UserMinus 
-                    onClick={() => removeAssigneekMutation.mutate({taskId:taskId, assigneeId:collaborator._id as string, user:collaborator})}
+                    onClick={() => removeAssigneekMutation.mutate({taskId:taskId, assigneeId:collaborator._id as string, user:collaborator, sectionId:sectionId})}
                     size={25} 
                     className="text-base-content/50 ml-auto p-1 rounded-full cursor-pointer hover:text-error-content hover:bg-error active:bg-error/80 "
                 />

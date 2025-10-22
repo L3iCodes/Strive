@@ -38,7 +38,6 @@ export default InvitationTab
 const InviteCard = ({invitation}: any) => {
     const param = useParams();
     const { inviteResponseMutation } = useCollab(param.id as string);
-    console.log(invitation)
     return (
         <div className='p-1 flex items-center gap-2 border-b border-base-content/10'>
             <img 

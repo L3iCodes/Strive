@@ -44,6 +44,7 @@ export interface assignTaskVariables {
     taskId: string;
     assigneeId: string;
     user?: User;
+    sectionId: string;
 };
 
 export interface Task{

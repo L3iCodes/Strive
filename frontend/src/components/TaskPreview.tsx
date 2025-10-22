@@ -101,7 +101,7 @@ const TaskPreview = () => {
                       
                         {/* Assigned user list */}
                         {task?.assignees.map(collaborator => (
-                            <CollaboratorAssignedCard key={collaborator._id} taskId={task._id as string} collaborator={collaborator}/>
+                            <CollaboratorAssignedCard key={collaborator._id} taskId={task._id as string} collaborator={collaborator} sectionId={task.section as string}/>
                         ))}
                     </div>
                     
@@ -116,7 +116,7 @@ const TaskPreview = () => {
                             </button>
 
                             {isAssigneeOpen && (
-                                <CollabSearch taskId={task?._id as string} assignees={task?.assignees}/>
+                                <CollabSearch taskId={task?._id as string} assignees={task?.assignees} sectionId={task?.section as string}/>
                             )}
                         </div>
                     )}

@@ -8,9 +8,10 @@ import { useTask } from "../hooks/useTask";
 interface CollabSearchProps{
     taskId: string;
     assignees: User[] | undefined;
+    sectionId: string;
 }
 
-const CollabSearch = ({ assignees, taskId }:CollabSearchProps) => {
+const CollabSearch = ({ assignees, taskId, sectionId }:CollabSearchProps) => {
     const param = useParams();
     const { kanban:board } = useBoard(param.id as string);
     const { assignTaskMutation } = useTask( {boardId:param.id as string, taskId:taskId} )
@@ -61,7 +62,7 @@ const CollabSearch = ({ assignees, taskId }:CollabSearchProps) => {
                         })
                         .map(collaborator => (
                             <div 
-                                onClick={() => assignTaskMutation.mutate({taskId:taskId, assigneeId:collaborator.user._id as string, user:collaborator.user})}
+                                onClick={() => assignTaskMutation.mutate({taskId:taskId, assigneeId:collaborator.user._id as string, user:collaborator.user, sectionId:sectionId})}
                                 key={collaborator.user._id} 
                                 className="w-full flex gap-2 cursor-pointer border-1 border-base-content/0 hover:bg-base-300 hover:border-base-content/10 p-1"
                             >
