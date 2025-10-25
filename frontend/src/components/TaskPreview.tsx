@@ -47,6 +47,7 @@ const TaskPreview = () => {
     useEffect(() => {
         if(!socket || !taskId) return;
         
+        // Ignore own update
         const handleTaskUpdate = (payload: { task: Task; socketId: string }) => {
             if (payload.socketId === socket.id) {
                 return;

@@ -51,14 +51,11 @@ const Board = ({board}:BoardPropsVariable) => {
     useEffect(() => {
         if(!socket || !boardId) return;
        
+        // Ignore for own update
         const handleBoardUpdate = (payload: { board: BoardProps; socketId: string }) => {
             if (payload.socketId === socket.id) {
-                console.log('Ignoring own update');
                 return;
             }
-           
-            console.log('Updating board from socket');
-            console.log(payload.board)
             
             // Force deep clone to ensure new reference
             queryClient.setQueryData(['kanban', boardId], payload.board);

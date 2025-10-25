@@ -1,12 +1,14 @@
 import { useMutation, useQueryClient, useQuery} from "@tanstack/react-query";
-import { createBoard, deleteBoard, getBoards, getKanbanBoard, updateLastOpened } from "../apis/board.api";
-import { useEffect, useState } from "react";
+import { createBoard, deleteBoard, getBoards, getKanbanBoard, updateBoard, updateLastOpened } from "../apis/board.api";
+import { useState } from "react";
 import type { BoardSummary, BoardProps } from "../types";
 import { useAuthStore } from "../store/useAuthStore";
+import { useSocket } from "./useSocket";
 
 export const useBoard = (boardId?: string) => {
     const queryClient = useQueryClient();
     const { user } = useAuthStore();
+    const { socket } = useSocket();
     const [filteredBoards, setFilterBoard] = useState<BoardSummary[]>([]);
 
     const { data:boardList, isLoading:isBoardLoading } = useQuery<BoardSummary[]>({
@@ -36,6 +38,38 @@ export const useBoard = (boardId?: string) => {
         },
         onError: (error) => {
             console.log(error);
+        }
+    });
+
+    const updateBoardMutation = useMutation({
+        mutationFn: updateBoard,
+        onMutate: (variable) => {
+            const previousBoard = queryClient.getQueryData(['kanban', boardId]);
+
+            // Update cache with new section
+            queryClient.setQueryData<BoardProps>(['kanban', boardId], (old: BoardProps | undefined) => {
+                if (!old) return old;
+                
+                const updatedBoard = {
+                    ...old, 
+                    name: variable.title
+                };
+
+                return updatedBoard;
+            });
+
+            socket?.emit('UPDATE_BOARD', { board:queryClient.getQueryData(['kanban', boardId]), boardId: boardId });
+            return({ previousBoard })
+        },
+        onSuccess: (_data) => {
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]})
+        },
+        onError: (error, _variables, context) => {
+            console.log(error)
+
+            if(context?.previousBoard){
+                queryClient.setQueryData(['kanban', boardId], context.previousBoard)
+            };
         }
     });
 
@@ -112,6 +146,7 @@ export const useBoard = (boardId?: string) => {
             kanban,
             isKanbanLoading,
             
-            updateLastOpenedMutation
+            updateLastOpenedMutation,
+            updateBoardMutation
         });
 };

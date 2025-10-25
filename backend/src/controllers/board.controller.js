@@ -225,6 +225,23 @@ export const getKanbanBoard = async (req, res) => {
     }
 };
 
+export const updateBoard = async (req, res) => {
+    const { id, title } = req.body;
+
+    try{
+        const board = await Board.findByIdAndUpdate(
+            id,
+            { $set: { name: title } },
+            { new: true }
+        );
+
+        return res.status(200).json(board);
+    }catch(error){
+        console.log('Error in updateBoard controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};
+
 export const deleteBoard = async (req, res) => {
     const { boardId } = req.params;
 

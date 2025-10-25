@@ -38,6 +38,15 @@ export const deleteBoard = async (boardId: string) => {
     };
 };
 
+export const updateBoard = async (boardData: any) => {
+    try{
+        const res = await axiosInstance.post(`/board/update`, boardData);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};
+
 export const updateLastOpened = async (boardData: any): Promise<BoardProps> => {
     try{
         const res = await axiosInstance.post("/board/updateLastOpened", boardData);

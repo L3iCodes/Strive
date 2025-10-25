@@ -32,7 +32,7 @@ const KanbanBoard = () => {
         <div className="h-full flex flex-col gap-2">
             {isKanbanLoading
                 ? (<BoardHeaderLoading />)
-                : board && (<BoardHeader name={board.name} collaborators={board.collaborators} openManage={() => setIsTeamManagerOpen(s => !s)} />)
+                : board && (<BoardHeader boardId={board._id} name={board.name} collaborators={board.collaborators} openManage={() => setIsTeamManagerOpen(s => !s)} />)
             }
 
             <Board board={board}/>

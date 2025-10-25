@@ -1,17 +1,53 @@
 import { Ellipsis } from "lucide-react"
 import type { Collaborators } from "../types";
+import { useEffect, useRef, useState } from "react";
+import { useAuthStore } from "../store/useAuthStore";
+import { useBoard } from "../hooks/useBoard";
+import { useParams } from "react-router-dom";
 
 interface BoardHeaderProps{
+    boardId: string;
     name: string;
     collaborators: Collaborators[];
     openManage: () => void;
 }
 
-export const BoardHeader = ({name, collaborators, openManage}: BoardHeaderProps) => {
+export const BoardHeader = ({boardId, name, collaborators, openManage}: BoardHeaderProps) => {
+    const inputRef = useRef(null);
+    const { userRole } = useAuthStore();
+    const { updateBoardMutation } = useBoard(boardId)
+    const [ boardName, setBoardName ] = useState(name);
+    const [editMode, setEditMode] = useState(false);
+
+    useEffect(() => {
+        setBoardName(name);
+    }, [name])
+
     return (
         <div className="w-full flex items-center p-1 border-1 border-base-content/10 h-10">
             <div className="flex flex-col">
-                <h1 className="font-bold ml-1">{name}</h1>
+                <input 
+                    type="text"
+                    ref={inputRef} 
+                    placeholder="Board Name"
+                    value={boardName || name} 
+                    readOnly={!editMode}
+                    className={`input text-[14px] h-full !p-[1px] font-bold w-full rounded-xs ${editMode ? 'cursor-text border-1 bg-base-100' : 'border-0 cursor-pointer !px-1'}`}
+                    onChange={(e) => setBoardName(e.currentTarget.value)}
+                    onClick={() => userRole !== 'viewer' && setEditMode(s=>!s)}
+                    onKeyDown={(e) => {
+                        if(e.key === 'Enter') {
+                            if(boardName.trim() === ""){
+                                setBoardName(s => s = 'Section')
+                            }
+                            updateBoardMutation.mutate(
+                                {id:boardId, title: boardName},
+                                { onError: () => setBoardName(name)}
+                            );
+                            setEditMode(false);
+                        };
+                    }}
+                />
             </div>
             <div className="flex ml-auto items-center gap-1">
                 <div className="w-[200px] h-[20px] flex gap-1 relative">
