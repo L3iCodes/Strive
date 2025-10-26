@@ -1,4 +1,4 @@
-import { ChevronLeft, Kanban, User, Settings, Menu } from "lucide-react"
+import { ChevronLeft, Kanban, User, Settings, Menu, LogOut } from "lucide-react"
 import { useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom";
 import { useThemeStore } from "../store/useThemeStore";
@@ -12,8 +12,7 @@ type ThemeControllerIconProps = {
 
 const navbarContent = [
     {id: "/", name: "Boards", icon: <Kanban size={18}/>},
-    {id: "/profile", name: "Profile", icon: <User size={18}/>},
-    {id: "/settings", name: "Settings", icon: <Settings size={18}/>}
+    {id: "/profile", name: "Profile", icon: <User size={18}/>}
 ];
 
 const Navbar = () => {
@@ -27,7 +26,7 @@ const Navbar = () => {
     return (
         <div className={`absolute shrink-0 h-[60px] md:h-screen md:relative flex flex-col bg-base-200/90 border-r-1 border-r-base-content/10 text-base-content
                         transition-all ease-in-out duration-300 ${navOpen ? 'w-[200px] h-screen' : "w-[60px]" } z-100`}>
-            <div className="w-full h-[60px] px-5 flex items-center border-b-1 border-base-content/10">
+            <div className="w-full h-[60px] shrink-0 px-5 flex items-center border-b-1 border-base-content/10">
                 <h1 className={`font-bold ${!navOpen && 'hidden opacity-0'}`}>Strive</h1>
                 <div 
                     onClick={() => setNavOpen(s => !s)}
@@ -36,7 +35,7 @@ const Navbar = () => {
                         {navOpen ? <ChevronLeft size={20}/> : <><h1 className="hidden font-bold md:block">S</h1> <Menu className="md:hidden" size={20}/></>}
                 </div>
             </div>
-            <div className={`hidden w-full p-3 md:flex items-center gap-2 ${navOpen ? '!flex' : 'justify-center'}`}>
+            <div className={`hidden shrink-0 w-full p-3 md:flex items-center gap-2 ${navOpen ? '!flex' : 'justify-center'}`}>
                 <img 
                     src={user?.avatar || 'https://avatar.iran.liara.run/public'}
                     className="w-6 h-6 object-cover border-1 border-primary rounded-2xl "
@@ -51,12 +50,12 @@ const Navbar = () => {
                 {navOpen && <InvitationTab />}
                 
             </div>
-            <div className={`hidden h-fit w-full p-3 md:flex flex-col gap-2 ${navOpen && '!flex'}`}>
+            <div className={`hidden h-full w-full p-3 md:flex flex-col gap-2 ${navOpen && '!flex'}`}>
                 {navbarContent.map(item => (
                     <div 
                         onClick={() => navigate(item.id)}
                         key={item.id} 
-                        className={`w-full p-2 flex items-center gap-3 rounded-xs text-xs font-medium cursor-pointer hover:bg-base-300/60 active:bg-base-300 ${pathName === item.id && ('bg-base-300 border-1 border-base-content/10')}`}
+                        className={`group relative w-full p-2 flex items-center gap-3 rounded-xs text-xs font-medium cursor-pointer hover:bg-base-300/60 active:bg-base-300 ${pathName === item.id && ('bg-base-300 border-1 border-base-content/10')}`}
                         >
                             {item.icon}
                             <h3
@@ -65,12 +64,39 @@ const Navbar = () => {
                             >
                                 {item.name}
                             </h3>
+
+                            {/* Hover Text */}
+                            {!navOpen && (
+                                <div className="absolute left-10 bg-base-300 border-1 border-base-content/10 p-2 rounded-xs
+                                                transition-all duration-100 ease-in opacity-0 group-hover:opacity-100  ">
+                                    <h3>{item.name}</h3>
+                                </div>
+                            )}
                     </div>
                 ))}
+
+                <div 
+                    onClick={() => logoutMutation.mutate()}
+                    className={`group relative w-full p-2 flex items-center mt-auto gap-3 rounded-xs text-xs font-medium cursor-pointer hover:bg-base-300/60 active:bg-base-300`}
+                    >
+                        <LogOut size={18}/>
+                        <h3
+                            className={`transition-all duration-300 overflow-hidden 
+                                    ${navOpen ? "opacity-100 w-auto" : "opacity-0 hidden"}`}
+                        >
+                            LogOut
+                        </h3>
+
+                        {/* Hover Text */}
+                            {!navOpen && (
+                                <div className="absolute left-10 bg-base-300 border-1 border-base-content/10 p-2 rounded-xs
+                                                transition-all duration-100 ease-in opacity-0 group-hover:opacity-100  ">
+                                    <h3>Logout</h3>
+                                </div>
+                            )}
+                </div>
             </div>
 
-            <button onClick={()=> logoutMutation.mutate()} className="btn btn-xs">Logout</button>
-           
             <div className={`hidden w-full h-[60px] md:flex items-center mt-auto border-t-1 border-base-content/10 ${!navOpen ? "justify-center" : "!flex"}`}>
                 {<ThemeControllerIcon navOpen={navOpen}/>}
             </div>
