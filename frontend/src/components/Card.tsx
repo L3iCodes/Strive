@@ -25,7 +25,7 @@ const Card = ({board}: CardProps) => {
             }} 
             className="relative w-full h-[200px] flex p-2 item flex-col border-[1.5px] border-base-content/10 rounded-xs cursor-pointer hover:bg-base-300/30 active:bg-base-300"
         >
-            {openMenu && (<BoardMenu boardId={board._id} />)}
+            {openMenu && (<BoardMenu boardId={board._id} owner={board.owner}/>)}
             
             <div className="flex items-center">
                 <h1 className="font-medium">{board.name}</h1>

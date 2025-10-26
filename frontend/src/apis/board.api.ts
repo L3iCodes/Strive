@@ -28,8 +28,16 @@ export const createBoard = async (boardData: any): Promise<BoardProps> => {
     };
 };
 
+export const leaveBoard = async (boardData: any) => {
+    try{
+        const res = await axiosInstance.post(`/board/leave`, boardData);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};
+
 export const deleteBoard = async (boardId: string) => {
-    console.log('deleting in api', boardId)
     try{
         const res = await axiosInstance.delete(`/board/delete/${boardId}`);
         return res.data;

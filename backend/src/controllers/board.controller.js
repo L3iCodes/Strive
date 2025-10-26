@@ -280,6 +280,42 @@ export const deleteBoard = async (req, res) => {
     };
 };
 
+export const leaveBoard = async (req, res) => {
+    const { _id } = req.user;
+    const { boardId } = req.body;
+
+    try{
+        // Remove the user from the board
+        const board = await Board.findOneAndUpdate(
+            { _id: boardId },
+            { $pull: { collaborators: { user: _id } } }
+        );
+        if(!board) return res.status(404).json({message: "Board does not exists"});
+
+        // Remove the board Id from the user
+        await User.findOneAndUpdate(
+            { _id: _id },
+            { $pull: { boards: { _id: boardId } } }
+        );
+
+        // Remove all task where user was assigned
+        await Task.updateMany(
+            {
+                board: boardId,
+                assignees: _id
+            },
+
+            { $pull: { assignees: _id } }
+        );
+
+        const populatedBoard = await findBoardAndPopulate(boardId)
+        return res.status(200).json(populatedBoard);
+    }catch(error){
+        console.log('Error in leaveBoard controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};
+
 export const updateLastOpened = async (req, res) => {
     const { _id } = req.user;
     const { boardId } = req.body;

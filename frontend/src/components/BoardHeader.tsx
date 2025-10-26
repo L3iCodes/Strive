@@ -3,7 +3,8 @@ import type { Collaborators } from "../types";
 import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useBoard } from "../hooks/useBoard";
-import { useParams } from "react-router-dom";
+import { BoardMenu2 } from "./Menu";
+import { useNavigate } from "react-router-dom";
 
 interface BoardHeaderProps{
     boardId: string;
@@ -14,10 +15,12 @@ interface BoardHeaderProps{
 
 export const BoardHeader = ({boardId, name, collaborators, openManage}: BoardHeaderProps) => {
     const inputRef = useRef(null);
+    const navigate = useNavigate();
     const { userRole } = useAuthStore();
-    const { updateBoardMutation } = useBoard(boardId)
+    const { updateBoardMutation, leaveBoardMutation } = useBoard(boardId)
     const [ boardName, setBoardName ] = useState(name);
     const [editMode, setEditMode] = useState(false);
+    const [ isBoardMenuOpen, setIsBoardMenuOpen ] = useState(false);
 
     useEffect(() => {
         setBoardName(name);
@@ -30,7 +33,7 @@ export const BoardHeader = ({boardId, name, collaborators, openManage}: BoardHea
                     type="text"
                     ref={inputRef} 
                     placeholder="Board Name"
-                    value={boardName || name} 
+                    value={boardName} 
                     readOnly={!editMode}
                     className={`input text-[14px] h-full !p-[1px] font-bold w-full rounded-xs ${editMode ? 'cursor-text border-1 bg-base-100' : 'border-0 cursor-pointer !px-1'}`}
                     onChange={(e) => setBoardName(e.currentTarget.value)}
@@ -54,9 +57,8 @@ export const BoardHeader = ({boardId, name, collaborators, openManage}: BoardHea
                     {collaborators?.map((field:any, index:number) => {
                         if(field.status === 'pending') return;
                         return (
-                            <div key={field.user?._id || index}> {/* Use the user's ID as the key, fall back to index */}
+                            <div key={field.user?._id || index}>
                                 <img
-                                    // Remove the key from the img element
                                     src={field.user?.avatar}
                                     className={`w-5 h-5 absolute rounded-full border-1 border-base-300`}
                                     style={{ right: `${index * 5}px` }}
@@ -67,9 +69,25 @@ export const BoardHeader = ({boardId, name, collaborators, openManage}: BoardHea
                 </div>
                 <button onClick={openManage} className="ml-1 btn btn-xs border-base-content/10 btn-primary">Manage Team</button>
             </div>
-            <div className="ml-2 p-1 hover:bg-base-200 rounded-xs border-1 hover:border-base-content/10 border-base-content/0 cursor-pointer">
+            <div onClick={() => setIsBoardMenuOpen(s => !s)} className="ml-2 p-1 hover:bg-base-200 rounded-xs border-1 hover:border-base-content/10 border-base-content/0 cursor-pointer">
                 <Ellipsis size={18}/>
             </div>
+
+            {isBoardMenuOpen && (
+                <BoardMenu2 
+                    boardId={boardId} 
+                    onLeave={() => { // Note: Added braces for a block function body, though not strictly required here.
+                        leaveBoardMutation.mutate(
+                            { boardId: boardId },
+                            {
+                                onSuccess: () => {
+                                    navigate('/');
+                                },
+                            }
+                        );
+                    }}
+                />
+            )}
         </div>
     )
 }

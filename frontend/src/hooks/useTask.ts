@@ -6,7 +6,7 @@ import { useSocket } from "./useSocket";
 
 interface UseTaskVariable {
     boardId?: string,
-    taskId: string;
+    taskId?: string;
 }
 
 export const useTask = ({boardId, taskId}: UseTaskVariable) => {

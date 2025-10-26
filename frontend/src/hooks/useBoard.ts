@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient, useQuery} from "@tanstack/react-query";
-import { createBoard, deleteBoard, getBoards, getKanbanBoard, updateBoard, updateLastOpened } from "../apis/board.api";
+import { createBoard, deleteBoard, getBoards, getKanbanBoard, leaveBoard, updateBoard, updateLastOpened } from "../apis/board.api";
 import { useState } from "react";
 import type { BoardSummary, BoardProps } from "../types";
 import { useAuthStore } from "../store/useAuthStore";
@@ -34,7 +34,8 @@ export const useBoard = (boardId?: string) => {
     const createBoardMutation = useMutation({
         mutationFn: createBoard,
         onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ["boards"]})
+            queryClient.invalidateQueries({queryKey: ["boards"]});
+
         },
         onError: (error) => {
             console.log(error);
@@ -113,6 +114,19 @@ export const useBoard = (boardId?: string) => {
             console.log(error)
         }
     })
+    
+    const leaveBoardMutation = useMutation({
+        mutationFn: leaveBoard,
+        onSuccess: (data) => {
+            console.log(data)
+            queryClient.invalidateQueries({queryKey:['boards']})
+
+            socket?.emit('UPDATE_BOARD', { board:data, boardId:data._id });
+        },
+        onError: (error) => {
+            console.log(error)
+        }
+    })
 
     const filter = (tab: any) => {
             let filtered: BoardSummary[] = [];
@@ -147,6 +161,7 @@ export const useBoard = (boardId?: string) => {
             isKanbanLoading,
             
             updateLastOpenedMutation,
-            updateBoardMutation
+            updateBoardMutation,
+            leaveBoardMutation
         });
 };
