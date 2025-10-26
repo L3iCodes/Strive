@@ -5,12 +5,14 @@ import { useBoard } from './useBoard';
 import { useParams } from 'react-router-dom';
 import { arrayMove } from '@dnd-kit/sortable';
 import { useDragAPI } from './useDragAPI';
+import { useAuthStore } from '../store/useAuthStore';
 
 export const useDrag = () => {
     const param = useParams();
     const [activeDragId, setActiveDragId] = useState<string>();
     const [activeDragItem, setActiveDragItem] = useState<Task | Section | null>(null)     
     const { kanban: board } = useBoard(param.id);
+    const { userRole } = useAuthStore()
     const { sectionReorderMutation, dragTaskMutation } = useDragAPI(param.id as string);
     
     const sensors = useSensors(
@@ -28,6 +30,8 @@ export const useDrag = () => {
     );
 
     const handleDragStart = (event: DragStartEvent) => {
+        if(userRole === 'viewer') return;
+
         const { active } = event;
         setActiveDragId( active.id as string );
         
@@ -56,6 +60,7 @@ export const useDrag = () => {
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
+        if(userRole === 'viewer') return;
         setActiveDragId(undefined); 
         setActiveDragItem(null);
 

@@ -55,7 +55,7 @@ const Card = ({board}: CardProps) => {
                 </div>
             </div>
 
-            <p className="text-[10px] mt-2 text-base-content/40">Last updated {board.lastOpened as string}</p>
+            <p className="text-[10px] mt-2 text-base-content/40">Last updated {new Date(board.lastOpened).toISOString().split("T")[0]}</p>
         </div>
     );
 };

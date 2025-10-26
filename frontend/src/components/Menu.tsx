@@ -29,7 +29,7 @@ export const BoardMenu = ({ boardId, owner }: BoardMenuProps) => {
     const [ openConfirmation, setOpenConfirmation ] = useState(false);
 
     return (
-        <div className="w-fit h-fit p-[2px] flex items-center justify-center bg-base-300 text-base-content border-1 border-base-content/30 rounded-xs shadow-2xs/0 absolute top-2 right-2 ">
+        <div className="w-fit h-fit p-[2px] flex items-center justify-center bg-base-300 text-base-content border-1 border-base-content/30 rounded-xs shadow-2xs/0 absolute top-2 right-2 z-50 ">
             
             {!openConfirmation && (
                 <div 

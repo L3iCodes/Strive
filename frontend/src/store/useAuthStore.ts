@@ -12,15 +12,18 @@ export interface User {
 interface AuthProps {
     user: User | null;
     isAuthenticated: boolean;
+    isLoading: boolean;
     userRole: 'owner' | 'viewer' | 'editor' | null;
     setUser: (user: User | null) => void;
     setIsAuthenticated: (authState: boolean) => void;
+    setIsLoading: (loadState: boolean) => void;
     setUserRole: (owner: User, collaborators:Collaborators[]) => void;
 };
 
 export const useAuthStore = create<AuthProps>((set, get) => ({
     user: null,
     isAuthenticated: false,
+    isLoading:true,
     userRole: null,
     
     setUser: (user) => {
@@ -29,6 +32,10 @@ export const useAuthStore = create<AuthProps>((set, get) => ({
 
     setIsAuthenticated: (authState) => {
         set({isAuthenticated: authState})
+    },
+
+    setIsLoading: (loadState) => {
+        set({isLoading: loadState})
     },
 
     setUserRole: (owner, collaborators) => {

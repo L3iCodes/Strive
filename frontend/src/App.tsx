@@ -18,6 +18,8 @@ import ProfilePage from "./pages/ProfilePage";
 
 // Hooks & Context
 import { SocketContextProvider } from "./hooks/useSocket";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AppLayout from "./components/AppLayout";
 
 function App() {
     const { theme } = useThemeStore()
@@ -28,31 +30,58 @@ function App() {
         verifyMutation.mutate();
     }, []);
 
+
     return (
         <div className="h-screen max-h-screen max-w-screen flex flex-col md:flex-row bg-base-100 relative" data-theme={theme}>
             <SocketContextProvider>
                 <Routers>
-                    {isAuthenticated && <Navbar />}
-                    <div className="h-full w-full flex flex-col overflow-auto"> {/* Right Side */}
-                        {isAuthenticated && <Header />}
-                            <div className="w-full h-full p-5 overflow-hidden">
-                                {verifyMutation.isPending && (
-                                    <div className="w-full h-full flex gap-2 absolute top-0 left-0 z-100 bg-base-100 justify-center items-center"> 
-                                        <span className="loading loading-infinity loading-xl"></span>
-                                        <p>Connecting to Server. Please Wait</p>
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={
+                                <ProtectedRoute>
+                                    <AppLayout>
+                                        <BoardPage />
+                                    </AppLayout>
+                                </ProtectedRoute>
+                            } />
+                        <Route
+                            path="/login"
+                            element={
+                                <ProtectedRoute requireAuth={false}>
+                                    <div className="w-full h-full p-5">
+                                        <LoginPage />
                                     </div>
-                                )}
-                                
-                                    <Routes>
-                                        <Route path="/" element={isAuthenticated ? <BoardPage /> : <Navigate to="/login" />} />
-                                        <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
-                                        <Route path="/signup" element={!isAuthenticated ? <SignupPage /> : <Navigate to="/" />} />
-                                        <Route path="/board/:id" element={isAuthenticated ? <KanbanBoard /> : <Navigate to="/login" />} />
-                                        <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />} />
-                                    </Routes>
-                                
-                            </div>
-                        </div>
+                                </ProtectedRoute>
+                            } />
+                        <Route
+                            path="/signup"
+                            element={
+                                <ProtectedRoute requireAuth={false}>
+                                    <div className="w-full h-full p-5">
+                                        <SignupPage />
+                                    </div>
+                                </ProtectedRoute>
+                            } />
+                        <Route
+                            path="/board/:id"
+                            element={
+                                <ProtectedRoute>
+                                    <AppLayout>
+                                        <KanbanBoard />
+                                    </AppLayout>
+                                </ProtectedRoute>
+                            } />
+                        <Route
+                            path="/profile"
+                            element={
+                                <ProtectedRoute>
+                                    <AppLayout>
+                                        <ProfilePage />
+                                    </AppLayout>
+                                </ProtectedRoute>
+                            } />
+                    </Routes>
                 </Routers>
             </SocketContextProvider>
         </div>

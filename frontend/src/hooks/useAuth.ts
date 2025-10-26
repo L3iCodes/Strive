@@ -3,7 +3,7 @@ import { login, logout, signup, verify } from "../apis/auth.api"
 import { useAuthStore } from "../store/useAuthStore"
 
 export const useAuth = () => {
-    const { setUser, setIsAuthenticated } = useAuthStore();
+    const { setUser, setIsAuthenticated, setIsLoading } = useAuthStore();
 
     const loginMutation = useMutation({
         mutationFn: login,
@@ -11,7 +11,7 @@ export const useAuth = () => {
             setUser(data);
             setIsAuthenticated(true);
         },
-        onError: (error) => {
+        onError: (_error) => {
             // Add notif
         }
     });
@@ -22,18 +22,18 @@ export const useAuth = () => {
             setUser(data);
             setIsAuthenticated(true);
         },
-        onError: (error) => {
+        onError: (_error) => {
             // Add notif
         }
     });
 
     const logoutMutation = useMutation({
         mutationFn: logout,
-        onSuccess: (data) => {
+        onSuccess: (_data) => {
             setUser(null);
             setIsAuthenticated(false);
         },
-        onError: (error) => {
+        onError: (_error) => {
             setUser(null);
             setIsAuthenticated(false);
         }
@@ -41,13 +41,19 @@ export const useAuth = () => {
 
     const verifyMutation = useMutation({
         mutationFn: verify,
+        onMutate:() => {
+            setIsLoading(true);
+        },
         onSuccess: (data) => {
             setUser(data);
             setIsAuthenticated(true);
         },
-        onError: (error) => {
+        onError: (_error) => {
             setUser(null);
             setIsAuthenticated(false);
+        },
+        onSettled: () => {
+            setIsLoading(false);
         }
     });
 

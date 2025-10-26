@@ -20,7 +20,7 @@ interface BoardPropsVariable {
 const Board = ({board}:BoardPropsVariable) => {
     const {id: boardId} = useParams();
     const { sensors, handleDragStart, handleDragEnd, activeDragItem, activeDragId } = useDrag();
-    const { setUserRole } = useAuthStore();
+    const { setUserRole, userRole } = useAuthStore();
     const { socket } = useSocket();
     const queryClient = useQueryClient();
 
@@ -110,10 +110,12 @@ const Board = ({board}:BoardPropsVariable) => {
                     </DragOverlay>
                 </DndContext>
 
-                {openNewSection 
+                {userRole !== 'viewer' && (
+                    openNewSection
                     ? (<NewSectionForm onClose={() => setOpenNewSection(false)}/>)
                     : (<button onClick={() => setOpenNewSection(true)} className="btn w-[230px] btn-dash btn-primary"> New Section</button>)
-                }
+                )}
+               
             </div>
             
         </SectionListContext.Provider>
