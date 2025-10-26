@@ -113,7 +113,6 @@ export const BoardMenu = ({ boardId, owner }: BoardMenuProps) => {
     );
 }
 
-
 export const TaskMenu = ({ taskData }: TaskMenuProps) => {
     const param = useParams();
     const { deleteTaskMutation, moveTaskMutation } = useTask({boardId:param.id, taskId:taskData._id as string});
@@ -124,13 +123,13 @@ export const TaskMenu = ({ taskData }: TaskMenuProps) => {
     };
 
     return (
-        <div className="w-fit h-fit p-[2px] flex items-center justify-center bg-base-content text-base-300 rounded-xs shadow-2xs/0 absolute top-2 right-2 z-50">
+        <div className="w-fit h-fit p-[2px] flex items-center justify-center bg-base-300 text-base-content rounded-xs shadow-2xs/0 absolute top-2 right-2 z-50 border-1 border-base-content/30">
             <div 
                 onClick={(e) => {
                     e.stopPropagation();
                     setOpenMoveMenu(s => !s);
                 }}
-                className="p-1 hover:bg-warning hover:text-error-content active:bg-base-300">
+                className="p-1 hover:bg-warning hover:text-warning-content active:bg-base-300">
                 <Move size={13} />
             </div>
 
@@ -154,7 +153,7 @@ export const MoveMenu = ({ sectionId, onMove }: { sectionId: string, onMove:(sec
     if(sectionList && sectionList?.length < 2) return;
 
     return (
-        <div className="w-[100px] h-fit p-[2px] flex flex-col justify-center bg-base-content text-base-300 rounded-xs shadow-2xs/0 absolute top-7 right-0 z-50">
+        <div className="w-[100px] h-fit p-[2px] flex flex-col justify-center bg-base-300 text-base-content rounded-xs border-1 border-base-content/30 shadow-2xs/0 absolute top-7 right-0 z-50">
             {sectionList?.map(section => (
                 section._id !== sectionId && (
                 <p 
@@ -162,7 +161,7 @@ export const MoveMenu = ({ sectionId, onMove }: { sectionId: string, onMove:(sec
                         e.stopPropagation();
                         onMove(section._id);
                     }}
-                    className="p-1 hover:bg-base-100/20 truncate">
+                    className="p-1 hover:bg-base-100 truncate">
                     {section.name}
                 </p>)
             ))}    
@@ -172,7 +171,7 @@ export const MoveMenu = ({ sectionId, onMove }: { sectionId: string, onMove:(sec
 
 export const SectionMenu = ({onCollapse, onEdit, onDelete}: SectionMenu) => {
     return (
-        <div className="w-[120px] h-fit p-[2px] flex flex-col bg-base-content text-base-300 rounded-xs shadow-md absolute top-8 right-0 border-1 border-accent z-100">
+        <div className="w-[120px] h-fit p-[2px] flex flex-col bg-base-300 text-base-content rounded-xs shadow-md absolute top-8 right-0 border-1 border-accent z-100">
             <div
                 onClick={(e) => {
                     e.stopPropagation();
@@ -209,14 +208,14 @@ export const SectionMenu = ({onCollapse, onEdit, onDelete}: SectionMenu) => {
 
 export const BoardMenu2 = ({ onLeave }: BoardMenuProps) => {
     return (
-        <div className="w-[140px] h-fit p-[2px] flex flex-col bg-base-content text-base-300 rounded-xs shadow-md absolute top-30 md:top-15 right-5 border-1 border-accent z-100">
+        <div className="w-[140px] h-fit p-[2px] flex flex-col bg-base-300 text-base-content rounded-xs shadow-md absolute top-30 md:top-15 right-5 border-1 border-base-content/30 z-100">
             <div 
                 onClick={(e) => {
                     e.stopPropagation();
                     onLeave && onLeave();
                 }}
                 className="flex gap-2 items-center p-1 hover:bg-error hover:text-error-content active:bg-error/50 text-xs cursor-pointer">
-                <Trash size={13} />
+                <LogOut size={13} />
                 <p>Leave Board</p>
             </div>
 
