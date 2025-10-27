@@ -286,3 +286,15 @@ export const requestResponse = async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error"});
     };
 };
+
+export const clearNotification = async (req, res) => {
+    const { _id } = req.user;
+
+    try{
+        await Notification.deleteMany({ to: _id })
+        return res.status(201).json({ message: 'Succesfully cleared notification' });
+    }catch(error){
+        console.log('Error in clearNotification controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};

@@ -15,7 +15,7 @@ export interface InviteUserVariables {
 };
 
 export interface InvitationVariables {
-    inviteId: string;
+    _id: string;
     from: User;
     to:  User;
     board:  BoardProps;

@@ -59,3 +59,13 @@ export const requestResponse = async (requestData: any) => {
         throw new Error(error.response?.data?.message || 'An unexpected error occurred');
     };
 };
+
+export const clearNotification = async () => {
+
+    try{
+        const res = await axiosInstance.delete(`collab/clearNotification`);
+        return res.data;
+    }catch(error: any){
+        throw new Error(error.response?.data?.message || 'An unexpected error occurred');
+    };
+};

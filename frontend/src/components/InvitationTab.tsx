@@ -7,7 +7,9 @@ import { useCollab } from '../hooks/useCollab';
 import { useParams } from 'react-router-dom';
 
 const InvitationTab = () => {
+    const { id:boardId } = useParams();
     const [openInvitationTab, setOpenInvitationTab] = useState(false);
+    const { clearNotificationMutation } = useCollab(boardId as string);
     
     const { data: invitations } = useQuery<InvitationVariables[] | undefined>({
         queryKey: ['invites'],
@@ -19,12 +21,25 @@ const InvitationTab = () => {
             <Bell onClick={() => setOpenInvitationTab(s => !s)} className={` hover:fill-base-content cursor-pointer `} size={18}/>
 
             {openInvitationTab && (
-                <div className='w-[400px] max-h-[500px] p-2 flex flex-col gap-2 bg-base-100 border-1 border-base-content/10 shadow-2xl -left-30 sm:left-0 top-8 absolute'>
-                    <h2 className='text-sm font-medium p-1 border-b-1 border-base-content/10'>Notification</h2>
+                <div className='w-[400px] min-h-[100px] max-h-[500px] p-2 flex flex-col gap-2 bg-base-100 border-1 border-base-content/10 shadow-2xl -left-30 sm:left-0 top-8 absolute'>
+                    <div className='flex p-1 border-b-1 border-base-content/10 text-sm'>
+                        <h2 className='font-medium '>Notification</h2>
+                        <button
+                            onClick={() => clearNotificationMutation.mutate()} 
+                            className='ml-auto cursor-pointer hover:text-error active:text-error/80'
+                            >
+                                Clear
+                        </button>
+                    </div>
+                    
 
-                    <div className='flex flex-col gap-2 overflow-auto'>
+                    <div className='h-full flex flex-col gap-2 overflow-auto'>
+                        {invitations && invitations?.length < 1 && (
+                            <h1 className='mx-auto mt-3 font-medium text-base-content/60'>No Notification</h1>
+                        )}
+
                         {invitations?.map(invitation => (
-                            <InviteCard key={invitation.inviteId} invitation={invitation} />
+                            <InviteCard key={invitation._id} invitation={invitation} />
                         ))}
                     </div>
                 </div>
@@ -36,10 +51,10 @@ const InvitationTab = () => {
 export default InvitationTab
 
 const InviteCard = ({invitation}: any) => {
-    const param = useParams();
-    const { inviteResponseMutation, requestResponseMutation } = useCollab(param.id as string);
+    const { id:boardId } = useParams();
+    const { inviteResponseMutation, requestResponseMutation } = useCollab(boardId as string);
     return (
-        <div className='p-1 flex items-center gap-2 border-b border-base-content/10'>
+        <div className='p-1 flex items-center gap-2 border-base-content/10 rounded-xs hover:bg-base-300'>
             <img 
                 src={invitation?.from.avatar || ''}
                 className='h-7 w-7 object-cover rounded-full border-2 border-base-content/10'

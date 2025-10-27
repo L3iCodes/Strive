@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { inviteResponse, inviteUser, requestAccess, requestResponse, updateRole } from "../apis/collab.api";
+import { clearNotification, inviteResponse, inviteUser, requestAccess, requestResponse, updateRole } from "../apis/collab.api";
 import { useSocket } from "./useSocket";
 
 export const useCollab = (boardId: string) => {
@@ -20,9 +20,7 @@ export const useCollab = (boardId: string) => {
     const inviteResponseMutation = useMutation({
         mutationFn: inviteResponse,
         onSuccess: async (data) => {
-            console.log('NEW DATA', data.board)
-            console.log('BOARDID:', boardId)
-
+            queryClient.invalidateQueries({queryKey: ['kanban', boardId]});
             queryClient.invalidateQueries({queryKey: ['invites']});
             queryClient.invalidateQueries({queryKey: ['boards']});
             
@@ -70,5 +68,15 @@ export const useCollab = (boardId: string) => {
         }
     });
 
-    return({ inviteUserMutation, inviteResponseMutation, updateRoleMutation, requestAccessMutation, requestResponseMutation });
+    const clearNotificationMutation = useMutation({
+        mutationFn: clearNotification,
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['invites']});
+        },
+        onError: (error) => {
+            console.log(error)
+        }
+    });
+
+    return({ inviteUserMutation, inviteResponseMutation, updateRoleMutation, requestAccessMutation, requestResponseMutation, clearNotificationMutation });
 };

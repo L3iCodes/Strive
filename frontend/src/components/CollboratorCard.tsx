@@ -16,7 +16,6 @@ export const PendingCard = ({collaborator}: CollaboratorCardProps) => {
     const param  = useParams();
     const { inviteResponseMutation } = useCollab(param.id as string);
     const { userRole } = useAuthStore();
-
     return (
         <div className="p-2 flex items-center bg-base-300 gap-2 rounded-xs">
             <div className="w-9 h-9 flex justify-center items-center rounded-full bg-base-100 border-1 border-base-content/20">
