@@ -6,7 +6,6 @@ import SectionComponent from "./Section";
 import NewSectionForm from "./forms/NewSectionForm";
 import { useAuthStore } from "../store/useAuthStore";
 import { useParams } from "react-router-dom";
-import { useBoard } from "../hooks/useBoard";
 import { useDrag } from "../hooks/useDrag";
 
 import TaskComponent from "./Task";
