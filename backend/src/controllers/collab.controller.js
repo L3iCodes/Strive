@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import Board from "../models/board.model.js";
 import Notification from "../models/notification.model.js";
+import { findBoardAndPopulate } from "../services/board.service.js";
 
 export const getInvites = async (req, res) => {
     const { _id } = req.user;
@@ -106,6 +107,10 @@ export const inviteResponse = async (req, res) => {
                 type: 'message',
                 message: message || 'Has accepted your invite.',
             });
+
+             const populatedBoard = await findBoardAndPopulate(invitation.board)
+
+            return res.status(201).json({ message: 'User accepted to invitation', board:populatedBoard });
         };
 
         if(action === 'reject'){
@@ -133,9 +138,11 @@ export const inviteResponse = async (req, res) => {
                     message: message || 'Has rejected your invite.',
                 });
             } 
+
+            return res.status(201).json({ message: 'User rejected to invitation' });
         };
 
-        return res.status(201).json({ message: 'User responded to invitation' });
+        
     }catch(error){
         console.log('Error in inviteAction controller', error);
         return res.status(500).json({ message: "Internal Server Error"});
@@ -187,4 +194,95 @@ export const updateRole = async (req, res) => {
         console.log('Error in editPermission controller', error);
         return res.status(500).json({ message: "Internal Server Error"});
     };
-}
+};
+
+export const requestAccess = async (req, res) => {
+    const { _id } = req.user;
+    const { boardId } = req.body;
+
+    try{
+        const board = await Board.findById(boardId);
+        if(!board) return res.status(404).json({message: "Board does not exists"});
+
+        const requestInvitation = await Notification.create({
+            from: _id,
+            to: board.owner,
+            board: board._id,
+            type: 'request',
+            message: `Has requested access to [${board.name}]`,
+        });
+
+        return res.status(201).json({message: 'Request sent', requestInvitation});
+    }catch(error){
+        console.log('Error in inviteUser controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};
+
+export const requestResponse = async (req, res) => {
+    const { inviteId, action, message, isSendResponse=true } = req.body;
+
+    try{
+        const invitation = await Notification.findById(inviteId);
+        if(!invitation) {
+            await Notification.findByIdAndDelete(inviteId);
+            return res.status(404).json({message: "Invitation does not exists"});
+        };
+
+        if(action === 'accept'){
+            const newCollaborator = {
+                inviteId: invitation._id,
+                user: invitation.from,
+                status: 'accepted',
+                role: 'viewer'
+            };
+
+            // Add user in the board collaborators
+            const board = await Board.findByIdAndUpdate(
+                invitation.board,
+                { $push: { collaborators: newCollaborator } },
+                { new: true },
+            );
+            if(!board) return res.status(404).json({message: "Board does not exists"});
+
+            // Add the board to the list
+            await User.findByIdAndUpdate(
+                invitation.from,
+                { $push: { boards: { _id:invitation.board, lastOpened: Date.now() } }},
+                { new: true } 
+            )
+            
+            await Notification.findByIdAndDelete(inviteId);
+
+            // Return response
+            await Notification.create({
+                from: invitation.to,
+                to: invitation.from,
+                board: invitation.board,
+                type: 'message',
+                message: message || 'Has accepted your request.',
+            });
+        };
+
+        if(action === 'reject'){
+            // Remove the user from the collaborator field
+            await Notification.findByIdAndDelete(inviteId);
+
+            if(isSendResponse){
+                // Return response
+                await Notification.create({
+                    from: invitation.to,
+                    to: invitation.from,
+                    board: invitation.board,
+                    type: 'message',
+                    message: message || 'Has rejected your request.',
+                });
+            } 
+        };
+
+        return res.status(201).json({ message: 'User responded to request' });
+    }catch(error){
+        console.log('Error in requestResponse controller', error);
+        return res.status(500).json({ message: "Internal Server Error"});
+    };
+};

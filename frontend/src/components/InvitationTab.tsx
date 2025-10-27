@@ -15,7 +15,7 @@ const InvitationTab = () => {
     });
 
     return (
-        <div className='ml-auto relative'>
+        <div className='ml-auto relative z-100'>
             <Bell onClick={() => setOpenInvitationTab(s => !s)} className={` hover:fill-base-content cursor-pointer `} size={18}/>
 
             {openInvitationTab && (
@@ -37,7 +37,7 @@ export default InvitationTab
 
 const InviteCard = ({invitation}: any) => {
     const param = useParams();
-    const { inviteResponseMutation } = useCollab(param.id as string);
+    const { inviteResponseMutation, requestResponseMutation } = useCollab(param.id as string);
     return (
         <div className='p-1 flex items-center gap-2 border-b border-base-content/10'>
             <img 
@@ -69,6 +69,31 @@ const InviteCard = ({invitation}: any) => {
 
                         <div
                             onClick={() => inviteResponseMutation.mutate({ inviteId:invitation._id, action:'accept' })}
+                            className='bg-base-300 rounded-full p-1 hover:bg-success hover:text-success-content cursor-pointer active:bg-success/50'
+                            >
+                                <Check size={18}/>
+                        </div>
+                    </div>
+                </>
+            )}
+
+            {invitation?.type === 'request' && ( 
+                <>
+                    <div>
+                        <h2 className='text-xs font-bold'>{invitation?.from.username}</h2>
+                        <p className='text-xs '>Has requested to collaborate in [{invitation?.board?.name}]</p>
+                    </div>
+
+                    <div className='ml-auto flex gap-1'>
+                        <div 
+                            onClick={() => requestResponseMutation.mutate({ inviteId:invitation._id, action:'reject' })}
+                            className='bg-base-300 rounded-full p-1 hover:bg-error hover:text-error-content cursor-pointer active:bg-error-content/50'
+                            >
+                                <X size={18}/>
+                        </div>
+
+                        <div
+                            onClick={() => requestResponseMutation.mutate({ inviteId:invitation._id, action:'accept' })}
                             className='bg-base-300 rounded-full p-1 hover:bg-success hover:text-success-content cursor-pointer active:bg-success/50'
                             >
                                 <Check size={18}/>

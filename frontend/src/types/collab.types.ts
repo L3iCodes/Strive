@@ -19,6 +19,6 @@ export interface InvitationVariables {
     from: User;
     to:  User;
     board:  BoardProps;
-    type: 'message' | 'invite';
+    type: 'message' | 'invite' | 'request';
     message: string;
 };
