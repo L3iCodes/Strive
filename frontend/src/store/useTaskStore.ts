@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import type { Task } from "../types";
 
 interface BoardStore {
     taskId: string | null;

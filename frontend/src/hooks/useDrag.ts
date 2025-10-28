@@ -1,5 +1,5 @@
 import { MouseSensor, TouchSensor, useSensor, useSensors, type DragStartEvent, type Active, type UniqueIdentifier, type DragEndEvent } from '@dnd-kit/core'
-import { act, useState } from 'react';
+import { useState } from 'react';
 import type { Task, Section } from '../types';
 import { useBoard } from './useBoard';
 import { useParams } from 'react-router-dom';

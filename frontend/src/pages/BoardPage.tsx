@@ -8,7 +8,6 @@ import { Grid3x3, List as ListIcon, Plus } from "lucide-react"
 import Modal from "../components/Modal"
 import NewBoardForm from "../components/forms/NewBoardForm"
 import { useBoard } from "../hooks/useBoard"
-import { useParams } from "react-router-dom"
 
 // Types
 type TabState = 'recent' | 'personal' | 'shared'

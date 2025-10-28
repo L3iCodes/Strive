@@ -1,4 +1,4 @@
-import { ChevronLeft, Kanban, User, Settings, Menu, LogOut } from "lucide-react"
+import { ChevronLeft, Kanban, User, Menu, LogOut } from "lucide-react"
 import { useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom";
 import { useThemeStore } from "../store/useThemeStore";

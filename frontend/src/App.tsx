@@ -1,11 +1,9 @@
 // Dependencies
-import { BrowserRouter as Routers, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Routers, Routes, Route } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
 import { useEffect } from "react";
 
 // Components
-import Navbar from "./components/Navbar";
-import Header from "./components/Header";
 import { useThemeStore } from "./store/useThemeStore";
 import { useAuthStore } from "./store/useAuthStore";
 
@@ -23,13 +21,11 @@ import AppLayout from "./components/AppLayout";
 
 function App() {
     const { theme } = useThemeStore()
-    const { isAuthenticated } = useAuthStore();
     const { verifyMutation } = useAuth();
 
     useEffect(() => {
         verifyMutation.mutate();
     }, []);
-
 
     return (
         <div className="h-screen max-h-screen max-w-screen flex flex-col md:flex-row bg-base-100 relative" data-theme={theme}>
