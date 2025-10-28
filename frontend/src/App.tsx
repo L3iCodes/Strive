@@ -5,7 +5,6 @@ import { useEffect } from "react";
 
 // Components
 import { useThemeStore } from "./store/useThemeStore";
-import { useAuthStore } from "./store/useAuthStore";
 
 // Pages
 import BoardPage from "./pages/BoardPage";
