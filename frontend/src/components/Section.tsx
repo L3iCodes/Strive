@@ -75,12 +75,15 @@ const SectionComponent = ({ section, id, className }: SectionComponentProps) => 
                         onChange={(e) => setSectionName(e.currentTarget.value)}
                         onClick={handleEditMode}
                         onKeyDown={(e) => {
+                            let newName = e.currentTarget.value;
+
                             if(e.key === 'Enter') {
-                                if(sectionName.trim() === ""){
-                                    setSectionName(s => s = 'Section')
+                                if(newName.trim() === ""){
+                                    newName = 'Section';
+                                    setSectionName(newName)
                                 }
                                 updateSectionMutation.mutate(
-                                    {sectionId:section._id, sectionName: sectionName},
+                                    {sectionId:section._id, sectionName: newName},
                                     { onError: () => setSectionName(section.name)}
                                 );
                                 setEditMode(false);

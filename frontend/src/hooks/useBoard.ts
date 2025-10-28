@@ -92,7 +92,7 @@ export const useBoard = (boardId?: string) => {
 
             return { previousBoards };
         },  
-        onSuccess: (data) => {
+        onSuccess: (_data) => {
             
         },
         onError: (error, _boardId, context) => {
@@ -118,7 +118,6 @@ export const useBoard = (boardId?: string) => {
     const leaveBoardMutation = useMutation({
         mutationFn: leaveBoard,
         onSuccess: (data) => {
-            console.log(data)
             queryClient.invalidateQueries({queryKey:['boards']})
 
             socket?.emit('UPDATE_BOARD', { board:data, boardId:data._id });

@@ -5,7 +5,7 @@ import { useUser } from "../hooks/useUser";
 const ProfilePage = () => {
     const { user } = useAuthStore();
     const { changePassMutation, updateProfileMutation } = useUser();
-    const [editMode, setEditMode] = useState(false)
+    const [editMode, _setEditMode] = useState(false)
     const [changePassword, setChangePassword] = useState(false)
     const [passwordVerification, setPasswordVerification] = useState({oldPassword: "", newPassword: ""});
 

@@ -26,6 +26,7 @@ export const BoardHeader = ({boardId, name, collaborators, openManage}: BoardHea
         setBoardName(name);
     }, [name])
 
+
     return (
         <div className="w-full flex items-center p-1 border-1 border-base-content/10 h-10">
             <div className="flex flex-col">
@@ -40,11 +41,15 @@ export const BoardHeader = ({boardId, name, collaborators, openManage}: BoardHea
                     onClick={() => userRole !== 'viewer' && setEditMode(s=>!s)}
                     onKeyDown={(e) => {
                         if(e.key === 'Enter') {
-                            if(boardName.trim() === ""){
-                                setBoardName(s => s = 'Section')
-                            }
+                            let NewName = e.currentTarget.value;
+
+                            if(e.currentTarget.value.trim() === ""){
+                                NewName = 'Board';
+                                setBoardName(NewName);
+                            };
+                            
                             updateBoardMutation.mutate(
-                                {id:boardId, title: boardName},
+                                {id:boardId, title:NewName},
                                 { onError: () => setBoardName(name)}
                             );
                             setEditMode(false);
