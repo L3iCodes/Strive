@@ -1,4 +1,4 @@
-import { MouseSensor, TouchSensor, useSensor, useSensors, type DragStartEvent, type Active, type UniqueIdentifier, type DragEndEvent } from '@dnd-kit/core'
+import { MouseSensor, TouchSensor, useSensor, useSensors, type DragStartEvent, type DragEndEvent } from '@dnd-kit/core'
 import { useState } from 'react';
 import type { Task, Section } from '../types';
 import { useBoard } from './useBoard';
