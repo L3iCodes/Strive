@@ -52,7 +52,7 @@ const NewBoardForm = () => {
                 <label className="flex flex-col gap-1">
                     <span className="font-medium">Description</span>
                     <textarea 
-                        placeholder="Enter board name" 
+                        placeholder="Enter board description" 
                         className="w-full h-[100px] px-2 py-2 rounded-xs border-1 border-base-content/10 resize-none"
                         onChange={(e) => setBoardData({...boardData, desc:e.currentTarget.value})}/>
                 </label>

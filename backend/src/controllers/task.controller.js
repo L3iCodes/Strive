@@ -1,7 +1,7 @@
 import Task from "../models/task.model.js";
 import Section from "../models/section.model.js";
 import Notification from "../models/notification.model.js"
-import { createActivityService } from "../services/activity.service.js";
+// import { createActivityService } from "../services/activity.service.js";
 
 export const getTask = async (req, res) => {
     const { taskId } = req.params;
