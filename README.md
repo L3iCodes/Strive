@@ -44,7 +44,7 @@ Strive offers a complete set of tools to manage your workflow:
 | Area | Technology | Purpose |
 | :--- | :--- | :--- |
 | **Frontend** | **React** | Building the dynamic and responsive user interface. |
-| **Backend** | **Node.js** (and likely **Express.js**) | Handling API requests, business logic, and server-side operations. |
+| **Backend** | **Node.js** , **Express.js** | Handling API requests, business logic, and server-side operations. |
 | **Real-Time** | **Socket.IO** | Enabling instant updates for collaborative features. |
 | **Database** | **MongoDB** | Persistent storage for user data, boards, and tasks. |
 
